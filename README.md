@@ -32,7 +32,9 @@ Live status is read from `https://newl1-devnet-rpc.bnbchain.org/` (chain id, lat
 | ERC-8004 registration | Script is ready (`bnbagent` 0.5.1, BSC testnet registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`). Not submitted: no `PRIVATE_KEY` in this environment |
 | `PublicRehearsal` + `DemoAMM` | Simulated privacy. Real contracts, cleartext notes, tested in Foundry and run on a local anvil |
 | Type `0x77` / `transact` spend | Not executed. Proofs need `newl1-shield` |
-| BSC testnet / New L1 deploy of the rehearsal | Not done. Needs `PRIVATE_KEY` and testnet BNB. See `contracts/README.md` |
+| BSC testnet / New L1 deploy of the rehearsal | Not done. Needs `PRIVATE_KEY`, `ORACLE_FEED`, and 0.2 tBNB. See `contracts/README.md` |
+| CoinMarketCap BNB/USD check | Implemented. Live only when `CMC_API_KEY` is set. Otherwise skipped, and no request is sent |
+| Atlas deviation guard | Implemented against AggregatorV3. Tested with `MockAggregator`. No BSC testnet BNB/USD feed address was published |
 
 Local anvil addresses (chain 31337, ephemeral, not a public network):
 
@@ -67,9 +69,15 @@ npm run build
 npm start
 ```
 
+## What is new, and what is reused
+
+Reused from DarkSwap: the name, the dark visual language (near-black ground, lavender, Source Sans 3, Space Mono), and the product idea of a private swap plus a natural-language intent. The production app at darkswap.app, its Solana routes, and its NEAR Intents integration are not in this repository and are not modified.
+
+New for BNB Bangkok: the landing page, the public rehearsal contracts, the capped agent, the CoinMarketCap BNB/USD check, and the AggregatorV3 deviation guard. See `docs/cmc-atlas-writeup.md` and `docs/hackquest-submission.md`.
+
 ## What is new compared with DarkSwap today
 
-Production DarkSwap routes swaps that start on Solana, through NEAR Intents, and keeps DarkPools on Solana. This repo does not change that app. The new pieces are the New L1 shielded-pool read, the public rehearsal of atomicCall, and an intent agent aimed at BSC testnet identity.
+Production DarkSwap routes swaps that start on Solana, through NEAR Intents, and keeps DarkPools on Solana. This repo does not change that app. The new pieces are the New L1 shielded-pool read, the public rehearsal of atomicCall, an intent agent aimed at BSC testnet identity, a CoinMarketCap market check, and an oracle guard.
 
 ## Agent
 
@@ -97,14 +105,16 @@ MegaFuel sponsors registration on BSC testnet, so that call does not need tBNB. 
 
 ## Demo script
 
-About two and a half minutes.
+About three minutes.
 
-1. Open the landing page. Read the receipt out loud: chain id 1105, the latest block, total shielded BNB, pool `0x…5000`. Those numbers are the devnet, fetched at render.
-2. Scroll to “Shield, swap, reshield.” Say what stays public: the deposit, the atomic-call target and amount, and a direct `0x77` fee. Say the circuits are unaudited and the proof CLI is not published.
-3. Open `/swap`. Leave 0.1 BNB and show the cap warning. Change it to 0.04 and show 39.72159 rNOTE. Say this is the demo AMM, in the clear.
-4. In a terminal, run `forge test` in `contracts/` and `./script/probe-devnet.sh`. The tests are the rehearsal. The probe is the real pool, read-only.
-5. Run the agent quote for 0.1 BNB and show the refusal. Run execute for 0.01 BNB against local anvil if it is up, and say the word “public” when the receipt lands. The shielded spend is the step this repo does not take.
-6. Close on the roadmap: public testnet Q1 2027 and mainnet H2 2027 are BNB Chain planning targets from the New L1 FAQ dated 2 November 2026, not a DarkSwap launch date. The product fee, later, would sit on the public edge of a route. This build takes none, and it launches no token.
+1. **0:00.** Open the landing page. Read the receipt: chain id 1105, latest block, shielded BNB, pool `0x…5000`. Say these are live devnet reads. Say the swap on this site is a public rehearsal. There is no type `0x77` proof.
+2. **0:25.** Scroll to “Shield, swap, reshield.” Name what stays public: the deposit, the call target, the amount, and a direct fee.
+3. **0:45.** Open the market-check panel. If `CMC_API_KEY` is set, read the CoinMarketCap BNB/USD print, the AMM’s implied price (about 987 USD on the seed pool, because 1 rNOTE is treated as 1 USD), and the decision. If the key is unset, say no request was sent. Point at `agent/logs/cmc-requests.jsonl` when a line exists: timestamp, endpoint, status, price, response hash, and no key.
+4. **1:20.** Open `/swap`. Show 0.1 BNB quoting 98.715803 rNOTE and the 0.05 cap warning. Change it to 0.04 and show the quote move.
+5. **1:45.** In a terminal, with `CMC_API_KEY` set: `cd agent && PYTHONPATH=. python3 -m darkswap_agent quote "swap 0.04 bnb to rNOTE privately"`. The status is `market_refused` when the live BNB print is outside 500 bps of the seed pool. Show the new log line.
+6. **2:15.** `cd contracts && forge test --match-test test_guard`. The aligned swap passes inside the existing suite. `test_guardRevertsWhenOracleDeviatesAndDoesNotSpendTheNote` and `test_guardRevertsWhenOracleIsStale` are the Atlas-shaped refusals. Say `ORACLE_FEED` is unset because the public catalog had no BNB/USD SingleFeed on BSC testnet.
+7. **2:40.** Quote `swap 0.1 bnb to rNOTE privately` and show the cap refusal, status `refused`, with the market fields still attached.
+8. **2:50.** Close on the roadmap: public testnet Q1 2027 and mainnet H2 2027 are BNB Chain FAQ targets dated 2 November 2026, not a launch date. No fee and no token in this build.
 
 ## Deploy
 
@@ -137,6 +147,7 @@ Never commit a private key or seed. `.env.example` lists the names. Nothing in t
 | --- | --- | --- |
 | Read the devnet, quote, run `forge test` | none | none |
 | Register the agent on BSC testnet | `PRIVATE_KEY`, `WALLET_PASSWORD` | none. MegaFuel sponsors ERC-8004 registration |
-| Deploy the public rehearsal | `PRIVATE_KEY`, `AMM_BNB_LIQUIDITY=50000000000000000`, `AMM_TOKEN_LIQUIDITY=50000000000000000000` | **0.2 tBNB** on that address |
+| Deploy the guarded rehearsal | `PRIVATE_KEY`, `ORACLE_FEED`, `AMM_BNB_LIQUIDITY=50000000000000000`, `AMM_TOKEN_LIQUIDITY=50000000000000000000` | **0.2 tBNB** on that address |
+| CoinMarketCap check | `CMC_API_KEY` | none. Proof log: `agent/logs/cmc-requests.jsonl` |
 
 The 0.2 tBNB covers 0.05 tBNB of AMM liquidity, deploy gas (about 2.0 million gas; about 0.02 tBNB at 10 gwei, more on New L1 because the fee is on the declared gas limit), and a 0.01 tBNB demo swap. BSC testnet is chain 97: use the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). New L1 has no faucet; bridge the tBNB. Leaving `AMM_BNB_LIQUIDITY` unset tries to seed 10 tBNB and will not fit a faucet drip.

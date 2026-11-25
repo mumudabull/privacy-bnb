@@ -11,6 +11,12 @@ from darkswap_agent.rehearsal import atomic_swap_calldata, plan_calls, shield_ca
 from darkswap_agent.service import handle_intent
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+_SAVED_CMC_KEY = os.environ.pop("CMC_API_KEY", None)
+
+
+def tearDownModule() -> None:
+    if _SAVED_CMC_KEY is not None:
+        os.environ["CMC_API_KEY"] = _SAVED_CMC_KEY
 
 
 class IntentTests(unittest.TestCase):
@@ -48,6 +54,9 @@ class QuoteTests(unittest.TestCase):
                     os.environ[key] = value
         self.assertEqual(quoted["status"], "quoted_only")
         self.assertIn("RPC_URL", str(quoted["reason"]))
+        market = quoted["market"]
+        assert isinstance(market, dict)
+        self.assertEqual(market["status"], "skipped")
 
     def test_plan_uses_the_rehearsal_selectors(self) -> None:
         self.assertTrue(shield_calldata().startswith("0x70d39cff"))

@@ -3,7 +3,9 @@ pragma solidity 0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {DemoAMM} from "../src/DemoAMM.sol";
+import {IAggregatorV3} from "../src/IAggregatorV3.sol";
 import {IShieldedPool} from "../src/IShieldedPool.sol";
+import {MockAggregator} from "../src/MockAggregator.sol";
 import {PublicRehearsal} from "../src/PublicRehearsal.sol";
 import {SwapMath} from "../src/SwapMath.sol";
 
@@ -15,11 +17,14 @@ contract RehearsalTest is Test {
 
     DemoAMM internal amm;
     PublicRehearsal internal rehearsal;
+    MockAggregator internal oracle;
     address internal alice = makeAddr("alice");
 
     function setUp() public {
         amm = new DemoAMM{value: BNB_LIQ}(TOKEN_LIQ);
-        rehearsal = new PublicRehearsal(amm);
+        oracle = new MockAggregator(18);
+        oracle.setAnswer(int256(QUOTE_POINT_ONE * 1e18 / (0.1 ether)));
+        rehearsal = new PublicRehearsal(amm, IAggregatorV3(address(oracle)), 100, 1 hours);
         vm.deal(alice, 1 ether);
     }
 
@@ -91,6 +96,30 @@ contract RehearsalTest is Test {
         vm.prank(alice);
         vm.expectRevert(abi.encodeWithSelector(DemoAMM.Slippage.selector, QUOTE_POINT_ONE, QUOTE_POINT_ONE + 1));
         rehearsal.atomicSwap(id, QUOTE_POINT_ONE + 1);
+    }
+
+    function test_guardRevertsWhenOracleDeviatesAndDoesNotSpendTheNote() public {
+        uint256 implied = QUOTE_POINT_ONE * 1e18 / (0.1 ether);
+        uint256 pushed = implied * 80 / 100;
+        oracle.setAnswer(int256(pushed));
+        vm.prank(alice);
+        uint256 id = rehearsal.shield{value: 0.1 ether}();
+        vm.prank(alice);
+        vm.expectRevert(abi.encodeWithSelector(PublicRehearsal.OracleDeviation.selector, implied, pushed));
+        rehearsal.atomicSwap(id, 0);
+        (,,,, bool spent,) = rehearsal.notes(id);
+        assertFalse(spent);
+    }
+
+    function test_guardRevertsWhenOracleIsStale() public {
+        vm.warp(1_000_000);
+        uint256 staleAt = block.timestamp - 2 hours;
+        oracle.setUpdatedAt(staleAt);
+        vm.prank(alice);
+        uint256 id = rehearsal.shield{value: 0.1 ether}();
+        vm.prank(alice);
+        vm.expectRevert(abi.encodeWithSelector(PublicRehearsal.StaleOracle.selector, staleAt));
+        rehearsal.atomicSwap(id, 0);
     }
 
     function test_shieldedPoolSelectorsMatchDevnet() public pure {

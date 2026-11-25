@@ -16,6 +16,7 @@ contracts/cache
 contracts/broadcast
 
 agent/.venv
+agent/logs/*.jsonl
 **/__pycache__
 **/*.pyc
 .venv

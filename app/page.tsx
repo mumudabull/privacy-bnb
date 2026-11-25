@@ -4,6 +4,7 @@ import { Bangkok } from "@/components/bangkok";
 import { DevnetPanel } from "@/components/devnet-panel";
 import { Flow } from "@/components/flow";
 import { Hero } from "@/components/hero";
+import { MarketCheck } from "@/components/market-check";
 import { Roadmap } from "@/components/roadmap";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -24,6 +25,7 @@ export default async function HomePage() {
           <Architecture />
           <DevnetPanel status={status} />
           <Roadmap />
+          <MarketCheck />
           <Bangkok />
         </div>
       </main>

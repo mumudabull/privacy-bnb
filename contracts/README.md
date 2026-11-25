@@ -52,6 +52,8 @@ export AMM_TOKEN_LIQUIDITY=50000000000000000000 # 50 rNOTE, same 1:1000 price as
 forge script script/Deploy.s.sol --rpc-url bsc_testnet --broadcast
 ```
 
+Also set `ORACLE_FEED` to an AggregatorV3 you have verified. The deploy script refuses a zero address. On 25 Nov 2026 the public Atlas catalog had no BNB/USD SingleFeed on BSC testnet (chain 97). Do not paste `0xeace519ebb14fb8404fa6ddd23c3b34abade44aa`; that contract is shared by other BNB Chain pairs in the catalog and was not verified as this feed. Optional: `MAX_DEVIATION_BPS` (default 500) and `MAX_STALE_SECONDS` (default 3600).
+
 Fund the `PRIVATE_KEY` address with **0.2 tBNB** before that command.
 
 - 0.05 tBNB is locked as AMM liquidity.

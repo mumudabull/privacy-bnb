@@ -1,6 +1,7 @@
 import os
 
 from darkswap_agent.intent import IntentError, SwapIntent, parse_intent
+from darkswap_agent.market import describe_market, fetch_cmc, implied_bnb_usd_wei
 from darkswap_agent.quote import (
     DEMO_RESERVE_BNB,
     DEMO_RESERVE_TOKEN,
@@ -34,6 +35,9 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         "privacy": PRIVACY_LINE,
         "example_calls_for_note_0": plan_calls(0, quoted),
     }
+    seed_implied = implied_bnb_usd_wei(intent.amount_wei, quoted)
+    cmc = fetch_cmc()
+    result["market"] = describe_market(seed_implied, cmc)
     if intent.asset_out.lower() not in EXECUTABLE_ASSETS:
         result["asset_note"] = (
             f"{intent.asset_out} is not executable. This rehearsal only swaps BNB for rNOTE."
@@ -50,6 +54,9 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         )
         return result
     if not execute:
+        if _market_refuses(result):
+            result["status"] = "market_refused"
+            result["reason"] = "AMM implied BNB price is outside the CoinMarketCap band."
         return result
 
     rpc_url = os.environ.get("RPC_URL", "").strip()
@@ -70,6 +77,12 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         result["quote_rnote_wei"] = live_quote
         result["quote_rnote"] = format_units(live_quote)
         result["pool"] = "live DemoAMM reserves, minimum output equals this quote"
+        live_implied = implied_bnb_usd_wei(intent.amount_wei, live_quote)
+        result["market"] = describe_market(live_implied, cmc)
+        if _market_refuses(result):
+            result["status"] = "market_refused"
+            result["reason"] = "Live AMM price is outside the CoinMarketCap band. Not broadcast."
+            return result
         settled = run_rehearsal(rpc_url, rehearsal, sender, intent.amount_wei, live_quote)
     except (RehearsalError, OSError, TimeoutError) as error:
         result["status"] = "broadcast_failed"
@@ -91,6 +104,11 @@ def _cap_wei() -> int:
     if cap < 0:
         return EXECUTION_CAP_WEI
     return cap
+
+
+def _market_refuses(result: dict[str, object]) -> bool:
+    market = result.get("market")
+    return isinstance(market, dict) and market.get("status") == "refuse"
 
 
 def describe(intent: SwapIntent) -> str:
