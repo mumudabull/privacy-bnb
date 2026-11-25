@@ -4,7 +4,11 @@ Private swaps on [BNB Chain New L1](https://docs.bnbchain.org/newl1/overview/), 
 
 [DarkSwap](https://darkswap.app) today routes private swaps that start on Solana, through NEAR Intents, with DarkPools shielded balances on Solana. This repository is new code for BNB. It does not modify the production app.
 
-## What this slice is
+## What is in the repo
+
+The landing page, plus a public swap rehearsal.
+
+## Landing page
 
 A landing page you can deploy on Vercel:
 
@@ -15,7 +19,7 @@ A landing page you can deploy on Vercel:
 
 Live status is read from `https://newl1-devnet-rpc.bnbchain.org/` (chain id, latest block, client version, and `ShieldedPool` at `0x0000000000000000000000000000000000005000`: code, `totalShielded`, Merkle root, note queue, deposit pause).
 
-## What is real, on this page
+## What is real, and what is simulated
 
 | Piece | Status |
 | --- | --- |
@@ -23,9 +27,20 @@ Live status is read from `https://newl1-devnet-rpc.bnbchain.org/` (chain id, lat
 | Shielded pool bytecode and view calls | Real. Selectors answered on devnet |
 | Shield → atomicCall → reshield as a user flow | Specified from the docs. This page does not submit it |
 | Privacy of a swap | Not claimed here. Circuits are unaudited. Proofs need the `newl1-shield` CLI, which has no public repo |
-| Agent registration | Described. Not performed by the page |
+| Agent registration | Described on the page. Not performed yet |
+| `PublicRehearsal` + `DemoAMM` | Simulated privacy. Real contracts, cleartext notes, tested in Foundry and run on a local anvil |
+| Type `0x77` / `transact` spend | Not executed. Proofs need `newl1-shield` |
+| BSC testnet / New L1 deploy of the rehearsal | Not done. Needs `PRIVATE_KEY` and testnet BNB. See `contracts/README.md` |
 
-The swap prototype and the agent land in follow-up changes. They will keep the same rule: a public rehearsal is labeled simulated, and a shielded transaction is only claimed when a real proof is submitted.
+Local anvil addresses (chain 31337, ephemeral, not a public network):
+
+| Contract | Address |
+| --- | --- |
+| DemoAMM | `0x5FbDB2315678afecb367f032d93F642f64180aa3` |
+| rNOTE | `0xa16E02E87b7454126E5E10d957A927A7F5B5d2be` |
+| PublicRehearsal | `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` |
+
+Real pool, read-only, New L1 devnet: `0x0000000000000000000000000000000000005000`.
 
 ## Run the page
 
@@ -35,7 +50,15 @@ npm test
 npm run dev
 ```
 
-Open `http://localhost:3000`. Optional: copy `.env.example` to `.env.local` and set `NEWL1_RPC_URL` if you need a different endpoint. No private key is required to read the devnet.
+Open `http://localhost:3000`. The public rehearsal quote is at `http://localhost:3000/swap`. Optional: copy `.env.example` to `.env.local` and set `NEWL1_RPC_URL` if you need a different endpoint. No private key is required to read the devnet or to run the quote.
+
+```bash
+cd contracts
+forge test
+./script/probe-devnet.sh
+```
+
+`forge test` runs shield → atomic swap → reshield → withdraw on a local EVM. The probe script only reads the devnet pool. Details and the anvil broadcast commands are in `contracts/README.md`.
 
 ```bash
 npm run build

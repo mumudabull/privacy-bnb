@@ -63,7 +63,8 @@ export function Flow() {
         </div>
       </div>
       <p className="fine">
-        Spec:{" "}
+        The in-repo demo of this shape is a <a href="/swap">public rehearsal</a>. It is
+        not a shielded transfer. Spec:{" "}
         <a href={LINKS.privacy}>Shielded pool</a>,{" "}
         <a href={LINKS.txTypes}>transaction type 0x77</a>. The July 2026 forum post
         describes an earlier Groth16 circuit. Current docs specify two PLONK proofs, 864

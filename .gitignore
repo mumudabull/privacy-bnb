@@ -14,7 +14,6 @@ landing-mobile.png
 contracts/out
 contracts/cache
 contracts/broadcast
-contracts/lib
 
 agent/.venv
 **/__pycache__

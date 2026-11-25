@@ -482,6 +482,32 @@ h1 {
 .footer-links a:hover { color: var(--text); }
 .legal { margin: 18px 0 0; max-width: 68ch; }
 
+.swap-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr); gap: 22px; margin-top: 28px; }
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(18, 16, 24, 0.72);
+  padding: 18px;
+}
+.field { display: flex; flex-direction: column; gap: 8px; color: var(--muted); font-size: 14px; }
+.field input {
+  background: var(--bg-inset);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 18px;
+}
+.trace { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.trace li { border-top: 1px solid var(--line); padding-top: 10px; }
+.trace strong { display: block; font-size: 15px; }
+.trace span { color: var(--muted); font-size: 14px; }
+.swap-page { padding: 36px 0 72px; }
+@media (max-width: 900px) {
+  .swap-layout { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 900px) {
   .hero, .split, .flow-grid, .stats, .public-grid, .criteria { grid-template-columns: 1fr; }
   .arch-list li, .timeline li { grid-template-columns: 1fr; gap: 6px; }

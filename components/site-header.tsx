@@ -1,12 +1,13 @@
 import { LINKS } from "@/lib/network";
 
 const NAV = [
-  ["Flow", "#flow"],
-  ["Agent", "#agent"],
-  ["Architecture", "#architecture"],
-  ["Devnet", "#devnet"],
-  ["Roadmap", "#roadmap"],
-  ["Bangkok", "#bangkok"],
+  ["Flow", "/#flow"],
+  ["Swap", "/swap"],
+  ["Agent", "/#agent"],
+  ["Architecture", "/#architecture"],
+  ["Devnet", "/#devnet"],
+  ["Roadmap", "/#roadmap"],
+  ["Bangkok", "/#bangkok"],
 ] as const;
 
 export function SiteHeader() {
@@ -16,7 +17,7 @@ export function SiteHeader() {
         Skip to content
       </a>
       <div className="wrap header-inner">
-        <a className="brand" href="#top">
+        <a className="brand" href="/">
           <strong>DarkSwap</strong>
           <span>on BNB</span>
         </a>
