@@ -1,0 +1,24 @@
+{
+  "name": "darkswap-bnb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DarkSwap on BNB — private swap landing for the BNB Bangkok hackathon.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts"
+  },
+  "dependencies": {
+    "next": "^15.5.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.3"
+  }
+}
