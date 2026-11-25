@@ -1,13 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { decideMarket, deviationBps, impliedBnbUsdWei, usdToWei } from "./market.ts";
-import { quoteExactIn } from "./quote.ts";
 
 describe("market check", () => {
-  it("treats the seed pool as about 987 USD per BNB and refuses a 600 print", () => {
-    const amountIn = 10n ** 17n;
-    const amountOut = quoteExactIn(amountIn, 10n * 10n ** 18n, 10_000n * 10n ** 18n);
-    const implied = impliedBnbUsdWei(amountIn, amountOut);
+  it("treats the seed spot as 1000 USD per BNB and refuses a 600 print", () => {
+    const implied = impliedBnbUsdWei(10n * 10n ** 18n, 10_000n * 10n ** 18n);
+    assert.equal(implied, 1000n * 10n ** 18n);
     const reference = usdToWei("600");
     assert.ok(reference);
     assert.ok(deviationBps(implied, reference) > 500n);

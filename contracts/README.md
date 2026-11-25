@@ -41,6 +41,8 @@ export DEMO_AMOUNT_WEI=10000000000000000
 forge script script/DemoFlow.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --unlocked --sender $DEPLOY_SENDER
 ```
 
+On chain 31337 with `ORACLE_FEED` unset, the script deploys a `MockAggregator` priced at the pool spot (`reserveToken / reserveBnb`, 1 rNOTE = 1 USD) and wires it in. The log says it is not an Atlas feed. The guard compares that spot, so a 0.01 BNB trade on a 0.05 BNB / 50 rNOTE pool still passes a 500 bps band when the feed matches the spot. Trade slippage is the `minOut` check.
+
 ## Deploy on BSC testnet or New L1 devnet
 
 Stop here unless you already have a throwaway key and testnet funds. This repo does not contain a key.

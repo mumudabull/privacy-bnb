@@ -2,11 +2,14 @@ import { createHash } from "node:crypto";
 import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { decideMarket, impliedBnbUsdWei, usdToWei, type MarketDecision } from "./market";
-import { DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN, quoteExactIn } from "./quote";
+import { DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN } from "./quote";
 
 const ENDPOINT = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
 const QUERY = "symbol=BNB&convert=USD";
 const PRICE = /"USD"\s*:\s*\{[^{}]*"price"\s*:\s*([0-9]+(?:\.[0-9]+)?)/;
+const MEMORY_MS = 60_000;
+
+let memory: { at: number; key: string; value: MarketCheck } | null = null;
 
 export type MarketCheck = {
   decision: MarketDecision;
@@ -40,9 +43,7 @@ async function writeLog(record: Record<string, string | number | null>): Promise
 }
 
 export async function readMarketCheck(): Promise<MarketCheck> {
-  const amountIn = 10n ** 17n;
-  const amountOut = quoteExactIn(amountIn, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN);
-  const implied = impliedBnbUsdWei(amountIn, amountOut);
+  const implied = impliedBnbUsdWei(DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN);
   const maxDeviationBps = Number(process.env.CMC_MAX_DEVIATION_BPS ?? "500");
   const maxBps = Number.isInteger(maxDeviationBps) && maxDeviationBps >= 0 ? BigInt(maxDeviationBps) : 500n;
   const base = {
@@ -61,13 +62,16 @@ export async function readMarketCheck(): Promise<MarketCheck> {
       detail: "CMC_API_KEY is unset. No request was sent.",
     };
   }
+  if (memory && memory.key === key && Date.now() - memory.at < MEMORY_MS) {
+    return memory.value;
+  }
 
   let status = 0;
   let body = "";
   try {
     const response = await fetch(`${ENDPOINT}?${QUERY}`, {
       headers: { Accept: "application/json", "X-CMC_PRO_API_KEY": key },
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
     status = response.status;
     body = await response.text();
@@ -95,7 +99,7 @@ export async function readMarketCheck(): Promise<MarketCheck> {
   });
   const reference = price ? usdToWei(price) : null;
   const decided = decideMarket(implied, reference, maxBps);
-  return {
+  const value: MarketCheck = {
     ...base,
     decision: price ? decided.status : "unavailable",
     cmcUsd: price,
@@ -103,7 +107,9 @@ export async function readMarketCheck(): Promise<MarketCheck> {
     httpStatus: status,
     responseSha256: digest,
     detail: price
-      ? "Compared with the seed AMM, treating 1 rNOTE as 1 USD."
+      ? "Compared with the seed pool spot, treating 1 rNOTE as 1 USD."
       : "CoinMarketCap did not return a BNB/USD price.",
   };
+  memory = { at: Date.now(), key, value };
+  return value;
 }

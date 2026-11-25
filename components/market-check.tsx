@@ -27,7 +27,7 @@ export async function MarketCheck() {
         <article className="stat-card">
           <span>AMM implied</span>
           <strong>{check.ammImpliedUsd}</strong>
-          <em>USD per BNB, seed pool, 0.1 BNB</em>
+          <em>USD per BNB, seed spot</em>
         </article>
         <article className="stat-card">
           <span>CMC BNB/USD</span>

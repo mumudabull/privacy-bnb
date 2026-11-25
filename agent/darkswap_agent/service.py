@@ -35,7 +35,7 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         "privacy": PRIVACY_LINE,
         "example_calls_for_note_0": plan_calls(0, quoted),
     }
-    seed_implied = implied_bnb_usd_wei(intent.amount_wei, quoted)
+    seed_implied = implied_bnb_usd_wei(DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
     cmc = fetch_cmc()
     result["market"] = describe_market(seed_implied, cmc)
     if intent.asset_out.lower() not in EXECUTABLE_ASSETS:
@@ -77,11 +77,11 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         result["quote_rnote_wei"] = live_quote
         result["quote_rnote"] = format_units(live_quote)
         result["pool"] = "live DemoAMM reserves, minimum output equals this quote"
-        live_implied = implied_bnb_usd_wei(intent.amount_wei, live_quote)
+        live_implied = implied_bnb_usd_wei(reserve_bnb, reserve_token)
         result["market"] = describe_market(live_implied, cmc)
         if _market_refuses(result):
             result["status"] = "market_refused"
-            result["reason"] = "Live AMM price is outside the CoinMarketCap band. Not broadcast."
+            result["reason"] = "Live AMM spot is outside the CoinMarketCap band. Not broadcast."
             return result
         settled = run_rehearsal(rpc_url, rehearsal, sender, intent.amount_wei, live_quote)
     except (RehearsalError, OSError, TimeoutError) as error:

@@ -14,6 +14,8 @@ contract RehearsalTest is Test {
     uint256 internal constant TOKEN_LIQ = 10_000 ether;
     /// @dev quote(0.1 ether, 10 ether, 10_000 ether) with a 30 bps fee.
     uint256 internal constant QUOTE_POINT_ONE = 98_715803439706129885;
+    /// @dev Spot price of the seed pool: 10_000 rNOTE / 10 BNB, 1 rNOTE = 1 USD.
+    uint256 internal constant SPOT_USD_WAD = 1000 ether;
 
     DemoAMM internal amm;
     PublicRehearsal internal rehearsal;
@@ -23,7 +25,7 @@ contract RehearsalTest is Test {
     function setUp() public {
         amm = new DemoAMM{value: BNB_LIQ}(TOKEN_LIQ);
         oracle = new MockAggregator(18);
-        oracle.setAnswer(int256(QUOTE_POINT_ONE * 1e18 / (0.1 ether)));
+        oracle.setAnswer(int256(SPOT_USD_WAD));
         rehearsal = new PublicRehearsal(amm, IAggregatorV3(address(oracle)), 100, 1 hours);
         vm.deal(alice, 1 ether);
     }
@@ -99,16 +101,29 @@ contract RehearsalTest is Test {
     }
 
     function test_guardRevertsWhenOracleDeviatesAndDoesNotSpendTheNote() public {
-        uint256 implied = QUOTE_POINT_ONE * 1e18 / (0.1 ether);
-        uint256 pushed = implied * 80 / 100;
+        uint256 pushed = SPOT_USD_WAD * 80 / 100;
         oracle.setAnswer(int256(pushed));
         vm.prank(alice);
         uint256 id = rehearsal.shield{value: 0.1 ether}();
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(PublicRehearsal.OracleDeviation.selector, implied, pushed));
+        vm.expectRevert(abi.encodeWithSelector(PublicRehearsal.OracleDeviation.selector, SPOT_USD_WAD, pushed));
         rehearsal.atomicSwap(id, 0);
         (,,,, bool spent,) = rehearsal.notes(id);
         assertFalse(spent);
+    }
+
+    function test_documentedDemoSizePassesWhenOracleMatchesSpot() public {
+        DemoAMM thin = new DemoAMM{value: 0.05 ether}(50 ether);
+        MockAggregator feed = new MockAggregator(18);
+        uint256 spot = 50 ether * 1e18 / (0.05 ether);
+        feed.setAnswer(int256(spot));
+        PublicRehearsal guarded = new PublicRehearsal(thin, IAggregatorV3(address(feed)), 500, 1 hours);
+        vm.startPrank(alice);
+        uint256 id = guarded.shield{value: 0.01 ether}();
+        uint256 quoted = thin.quoteBnbToToken(0.01 ether);
+        (, uint256 tokensOut) = guarded.atomicSwap(id, quoted);
+        vm.stopPrank();
+        assertEq(tokensOut, quoted);
     }
 
     function test_guardRevertsWhenOracleIsStale() public {

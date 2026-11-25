@@ -31,7 +31,7 @@ The same check is rendered on the landing page. With no key, the page says the r
 
 - Round 0, a zero update time, a future update time, or age above `MAX_STALE_SECONDS` reverts `StaleOracle`.
 - A non-positive answer reverts `BadOraclePrice`.
-- Implied BNB/USD versus the scaled oracle answer, above `MAX_DEVIATION_BPS`, reverts `OracleDeviation`. The note stays unspent.
+- Spot BNB/USD (`reserveToken / reserveBnb`, 1 rNOTE = 1 USD) versus the scaled oracle answer, above `MAX_DEVIATION_BPS`, reverts `OracleDeviation`. The note stays unspent. Trade slippage is the separate `minOut` check, so a 0.01 BNB swap on a 0.05 BNB / 50 rNOTE pool still passes when the feed matches the 1000 USD spot.
 
 `forge test` covers the aligned pass (the existing swap), the deviation revert, and the stale revert.
 

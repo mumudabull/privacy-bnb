@@ -90,7 +90,7 @@ contract PublicRehearsal {
         if (note.spent) revert AlreadySpent(id);
         if (note.asset != Asset.Bnb) revert WrongAsset();
         if (note.amount == 0) revert ZeroAmount();
-        _enforceOracle(note.amount);
+        _enforceOracle();
         note.spent = true;
         uint256 amountIn = note.amount;
         emit RehearsalUnshield(id, msg.sender, amountIn);
@@ -124,10 +124,10 @@ contract PublicRehearsal {
         emit RehearsalWithdrawToken(id, msg.sender, amount);
     }
 
-    /// @dev Implied BNB/USD uses 1 rNOTE = 1 USD, scaled to 1e18. The oracle answer is scaled to 1e18.
-    function _enforceOracle(uint256 amountIn) internal view {
-        uint256 tokensOut = amm.quoteBnbToToken(amountIn);
-        uint256 ammPrice = tokensOut * 1e18 / amountIn;
+    /// @dev Spot BNB/USD uses 1 rNOTE = 1 USD: reserveToken / reserveBnb, scaled to 1e18.
+    ///      Trade slippage is enforced by minTokens, not by this band.
+    function _enforceOracle() internal view {
+        uint256 ammPrice = amm.reserveToken() * 1e18 / amm.reserveBnb();
         (uint80 roundId, int256 answer, , uint256 updatedAt, uint80 answeredInRound) = oracle.latestRoundData();
         if (
             roundId == 0 || updatedAt == 0 || updatedAt > block.timestamp

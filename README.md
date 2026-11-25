@@ -147,7 +147,8 @@ Never commit a private key or seed. `.env.example` lists the names. Nothing in t
 | --- | --- | --- |
 | Read the devnet, quote, run `forge test` | none | none |
 | Register the agent on BSC testnet | `PRIVATE_KEY`, `WALLET_PASSWORD` | none. MegaFuel sponsors ERC-8004 registration |
-| Deploy the guarded rehearsal | `PRIVATE_KEY`, `ORACLE_FEED`, `AMM_BNB_LIQUIDITY=50000000000000000`, `AMM_TOKEN_LIQUIDITY=50000000000000000000` | **0.2 tBNB** on that address |
+| Deploy the guarded rehearsal on BSC testnet or New L1 | `PRIVATE_KEY`, `ORACLE_FEED`, `AMM_BNB_LIQUIDITY=50000000000000000`, `AMM_TOKEN_LIQUIDITY=50000000000000000000` | **0.2 tBNB** on that address |
+| Local Anvil deploy | `DEPLOY_SENDER` unlocked account. `ORACLE_FEED` unset | none. The script deploys a mock feed at the pool spot |
 | CoinMarketCap check | `CMC_API_KEY` | none. Proof log: `agent/logs/cmc-requests.jsonl` |
 
 The 0.2 tBNB covers 0.05 tBNB of AMM liquidity, deploy gas (about 2.0 million gas; about 0.02 tBNB at 10 gwei, more on New L1 because the fee is on the declared gas limit), and a 0.01 tBNB demo swap. BSC testnet is chain 97: use the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). New L1 has no faucet; bridge the tBNB. Leaving `AMM_BNB_LIQUIDITY` unset tries to seed 10 tBNB and will not fit a faucet drip.

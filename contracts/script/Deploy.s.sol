@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 import {Script, console2} from "forge-std/Script.sol";
 import {DemoAMM} from "../src/DemoAMM.sol";
 import {IAggregatorV3} from "../src/IAggregatorV3.sol";
+import {MockAggregator} from "../src/MockAggregator.sol";
 import {PublicRehearsal} from "../src/PublicRehearsal.sol";
 
 /// @notice Deploys the public rehearsal. Refuses to invent a key.
@@ -16,11 +17,13 @@ contract Deploy is Script {
         address oracle = vm.envOr("ORACLE_FEED", address(0));
         uint16 maxDeviationBps = uint16(vm.envOr("MAX_DEVIATION_BPS", uint256(500)));
         uint32 maxStaleSeconds = uint32(vm.envOr("MAX_STALE_SECONDS", uint256(3600)));
-        if (oracle == address(0)) {
+        bool deployMock = oracle == address(0) && block.chainid == 31337;
+        if (oracle == address(0) && !deployMock) {
             console2.log("Refusing to deploy. ORACLE_FEED is unset.");
             console2.log("The public Atlas catalog checked on 25 Nov 2026 has no BNB/USD SingleFeed on BSC testnet.");
             console2.log("Do not reuse 0xeace519ebb14fb8404fa6ddd23c3b34abade44aa; that address is shared by other BNB Chain pairs and is not a verified testnet BNB/USD aggregator.");
             console2.log("Set ORACLE_FEED to an AggregatorV3 you have verified, plus MAX_DEVIATION_BPS and MAX_STALE_SECONDS.");
+            console2.log("Chain 31337 deploys a MockAggregator at the pool spot instead. That mock is not an Atlas feed.");
             revert("ORACLE_FEED missing");
         }
         uint256 key = vm.envOr("PRIVATE_KEY", uint256(0));
@@ -41,6 +44,14 @@ contract Deploy is Script {
         }
 
         DemoAMM amm = new DemoAMM{value: bnbLiquidity}(tokenLiquidity);
+        if (deployMock) {
+            uint256 spot = tokenLiquidity * 1e18 / bnbLiquidity;
+            MockAggregator mock = new MockAggregator(18);
+            mock.setAnswer(int256(spot));
+            oracle = address(mock);
+            console2.log("MockAggregator (not an Atlas feed)", oracle);
+            console2.log("mock spot 1e18", spot);
+        }
         PublicRehearsal rehearsal =
             new PublicRehearsal(amm, IAggregatorV3(oracle), maxDeviationBps, maxStaleSeconds);
         vm.stopBroadcast();
