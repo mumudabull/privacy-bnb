@@ -8,7 +8,9 @@ from darkswap_agent.quote import (
     format_units,
     quote_exact_in,
 )
-from darkswap_agent.rehearsal import PRIVACY_LINE, RehearsalError, plan_calls, run_rehearsal
+from darkswap_agent.rehearsal import PRIVACY_LINE, RehearsalError, plan_calls, read_reserves, run_rehearsal
+
+EXECUTABLE_ASSETS = {"rnote", "the demo token"}
 
 
 def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
@@ -28,18 +30,24 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         "quote_rnote": format_units(quoted),
         "quote_rnote_wei": quoted,
         "execution_cap_bnb": format_units(cap),
-        "pool": "demo AMM seed 10 BNB / 10000 rNOTE, 0.30% fee",
+        "pool": "seed quote, 10 BNB / 10000 rNOTE, 0.30% fee",
         "privacy": PRIVACY_LINE,
-        "example_calls_for_note_0": plan_calls(0),
+        "example_calls_for_note_0": plan_calls(0, quoted),
     }
-    if intent.asset_out.lower() not in {"rnote", "the demo token", "x"}:
+    if intent.asset_out.lower() not in EXECUTABLE_ASSETS:
         result["asset_note"] = (
-            f"{intent.asset_out} is not a shielded asset on New L1. "
-            "The rehearsal quotes rNOTE, a public demo token."
+            f"{intent.asset_out} is not executable. This rehearsal only swaps BNB for rNOTE."
         )
     if intent.amount_wei > cap:
         result["status"] = "refused"
         result["reason"] = f"Above the {format_units(cap)} BNB execution cap. Quote only."
+        return result
+    if execute and intent.asset_out.lower() not in EXECUTABLE_ASSETS:
+        result["status"] = "refused"
+        result["reason"] = (
+            f"Refusing to broadcast a swap to {intent.asset_out}. "
+            "Execution only supports rNOTE."
+        )
         return result
     if not execute:
         return result
@@ -55,7 +63,14 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         )
         return result
     try:
-        settled = run_rehearsal(rpc_url, rehearsal, sender, intent.amount_wei)
+        reserve_bnb, reserve_token = read_reserves(rpc_url, rehearsal)
+        live_quote = quote_exact_in(intent.amount_wei, reserve_bnb, reserve_token)
+        if live_quote <= 0:
+            raise RehearsalError("live pool quote was zero")
+        result["quote_rnote_wei"] = live_quote
+        result["quote_rnote"] = format_units(live_quote)
+        result["pool"] = "live DemoAMM reserves, minimum output equals this quote"
+        settled = run_rehearsal(rpc_url, rehearsal, sender, intent.amount_wei, live_quote)
     except (RehearsalError, OSError, TimeoutError) as error:
         result["status"] = "broadcast_failed"
         result["reason"] = str(error)

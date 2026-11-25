@@ -52,7 +52,23 @@ class QuoteTests(unittest.TestCase):
     def test_plan_uses_the_rehearsal_selectors(self) -> None:
         self.assertTrue(shield_calldata().startswith("0x70d39cff"))
         self.assertTrue(atomic_swap_calldata(3, 0).startswith("0xed23a8e6"))
-        self.assertEqual(len(plan_calls(3)), 3)
+        self.assertEqual(len(plan_calls(3, 1)), 3)
+
+    def test_execute_refuses_an_unsupported_asset_without_broadcasting(self) -> None:
+        saved = {key: os.environ.get(key) for key in ("RPC_URL", "REHEARSAL", "SENDER")}
+        os.environ["RPC_URL"] = "http://127.0.0.1:1"
+        os.environ["REHEARSAL"] = "0x" + "11" * 20
+        os.environ["SENDER"] = "0x" + "22" * 20
+        try:
+            refused = handle_intent("swap 0.01 bnb to USDT", execute=True)
+        finally:
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        self.assertEqual(refused["status"], "refused")
+        self.assertIn("rNOTE", str(refused["reason"]))
 
 
 class McpTests(unittest.TestCase):
@@ -92,23 +108,19 @@ class McpTests(unittest.TestCase):
 
     def _send(self, process: subprocess.Popen[bytes], payload: dict[str, object]) -> None:
         assert process.stdin is not None
-        raw = json.dumps(payload).encode()
-        process.stdin.write(f"Content-Length: {len(raw)}\r\n\r\n".encode() + raw)
+        process.stdin.write(json.dumps(payload).encode() + b"\n")
         process.stdin.flush()
 
     def _read(self, process: subprocess.Popen[bytes]) -> dict[str, object]:
         assert process.stdout is not None
-        headers: dict[str, str] = {}
         while True:
             line = process.stdout.readline()
-            if line in (b"\r\n", b"\n"):
-                break
-            key, _, value = line.decode().partition(":")
-            headers[key.strip().lower()] = value.strip()
-        length = int(headers["content-length"])
-        body = json.loads(process.stdout.read(length))
-        assert isinstance(body, dict)
-        return body
+            if line == b"":
+                raise AssertionError("MCP server closed stdout")
+            if line.strip():
+                body = json.loads(line)
+                assert isinstance(body, dict)
+                return body
 
 
 def _anvil_up() -> bool:
@@ -143,6 +155,7 @@ class AnvilRehearsalTests(unittest.TestCase):
         self.assertEqual(result["status"], "rehearsed", result.get("reason"))
         settlement = result["settlement"]
         assert isinstance(settlement, dict)
+        self.assertEqual(int(settlement["tokens_out_wei"]), int(result["quote_rnote_wei"]))
         self.assertGreater(int(settlement["token_balance_wei"]), 0)
         self.assertIn("Public rehearsal", str(settlement["privacy"]))
 

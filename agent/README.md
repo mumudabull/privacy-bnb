@@ -35,4 +35,4 @@ Registration uses `bnbagent` 0.5.1 on `bsc-testnet` (chain 97). The SDK preset r
 
 ## MCP
 
-`python3 -m darkswap_agent mcp` speaks Content-Length JSON-RPC: `initialize`, `tools/list`, and `tools/call` for `quote_swap`. The tool quotes and applies the cap. It does not broadcast and it does not take an x402 payment. ERC-8183 escrow is the SDK’s job flow; this hackathon build stops at identity-ready registration plus the capped quote.
+`python3 -m darkswap_agent mcp` speaks newline-delimited JSON-RPC (MCP stdio, 2024-11-05): `initialize`, `tools/list`, and `tools/call` for `quote_swap`. The tool quotes and applies the cap. It does not broadcast and it does not take an x402 payment. Execution only proceeds for rNOTE, and the on-chain swap uses the live pool quote as its minimum output. ERC-8183 escrow is the SDK’s job flow; this hackathon build stops at identity-ready registration plus the capped quote.

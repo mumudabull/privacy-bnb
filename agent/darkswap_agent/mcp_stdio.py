@@ -1,6 +1,6 @@
 """A small MCP stdio server with one tool: quote_swap.
 
-Speaks Content-Length framing, initialize, tools/list, and tools/call.
+Messages are newline-delimited JSON-RPC, per the 2024-11-05 stdio transport.
 The tool quotes. It does not broadcast.
 """
 
@@ -13,29 +13,24 @@ PROTOCOL = "2024-11-05"
 
 
 def _read_message() -> dict[str, object] | None:
-    headers: dict[str, str] = {}
     while True:
         line = sys.stdin.buffer.readline()
         if line == b"":
             return None
-        if line in (b"\r\n", b"\n"):
-            break
-        decoded = line.decode("utf-8")
-        key, _, value = decoded.partition(":")
-        headers[key.strip().lower()] = value.strip()
-    length = int(headers.get("content-length", "0"))
-    if length <= 0:
-        return None
-    payload = json.loads(sys.stdin.buffer.read(length))
-    if not isinstance(payload, dict):
-        raise ValueError("MCP message was not an object")
-    return payload
+        stripped = line.strip()
+        if not stripped:
+            continue
+        payload = json.loads(stripped)
+        if not isinstance(payload, dict):
+            raise ValueError("MCP message was not an object")
+        return payload
 
 
 def _write_message(payload: dict[str, object]) -> None:
-    raw = json.dumps(payload).encode("utf-8")
-    sys.stdout.buffer.write(f"Content-Length: {len(raw)}\r\n\r\n".encode("utf-8"))
-    sys.stdout.buffer.write(raw)
+    raw = json.dumps(payload, separators=(",", ":"))
+    if "\n" in raw or "\r" in raw:
+        raise ValueError("MCP message contained a newline")
+    sys.stdout.buffer.write(raw.encode("utf-8") + b"\n")
     sys.stdout.buffer.flush()
 
 
