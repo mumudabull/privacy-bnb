@@ -129,6 +129,14 @@ The [July 2026 forum introduction](https://forum.bnbchain.org/t/introducing-the-
 - New L1: [overview](https://docs.bnbchain.org/newl1/overview/) · [privacy](https://docs.bnbchain.org/newl1/core-concepts/privacy/) · [network](https://docs.bnbchain.org/newl1/get-started/network-info/) · [quick guide](https://docs.bnbchain.org/newl1/developers/quick-guide/)
 - Agents: [BNB Agent SDK](https://docs.bnbchain.org/developer-kit/bnbagent-sdk/) · [github.com/bnb-chain/bnbagent-sdk](https://github.com/bnb-chain/bnbagent-sdk)
 
-## Keys
+## Keys and testnet funds
 
-Never commit a private key or seed. `.env.example` lists the names. Deploying contracts or registering an agent needs `PRIVATE_KEY` and, for the SDK, `WALLET_PASSWORD`, plus testnet funds. This landing page does not use them.
+Never commit a private key or seed. `.env.example` lists the names. Nothing in this environment was deployed to BSC testnet or New L1, and no ERC-8004 id was minted.
+
+| Step | Env | Funds |
+| --- | --- | --- |
+| Read the devnet, quote, run `forge test` | none | none |
+| Register the agent on BSC testnet | `PRIVATE_KEY`, `WALLET_PASSWORD` | none. MegaFuel sponsors ERC-8004 registration |
+| Deploy the public rehearsal | `PRIVATE_KEY`, `AMM_BNB_LIQUIDITY=50000000000000000`, `AMM_TOKEN_LIQUIDITY=50000000000000000000` | **0.2 tBNB** on that address |
+
+The 0.2 tBNB covers 0.05 tBNB of AMM liquidity, deploy gas (about 2.0 million gas; about 0.02 tBNB at 10 gwei, more on New L1 because the fee is on the declared gas limit), and a 0.01 tBNB demo swap. BSC testnet is chain 97: use the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). New L1 has no faucet; bridge the tBNB. Leaving `AMM_BNB_LIQUIDITY` unset tries to seed 10 tBNB and will not fit a faucet drip.
