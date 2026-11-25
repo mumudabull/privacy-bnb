@@ -43,17 +43,27 @@ forge script script/DemoFlow.s.sol --rpc-url http://127.0.0.1:8545 --broadcast -
 
 ## Deploy on BSC testnet or New L1 devnet
 
-Stop here unless you already have a throwaway key and testnet funds.
+Stop here unless you already have a throwaway key and testnet funds. This repo does not contain a key.
 
 ```bash
 export PRIVATE_KEY=0x...   # not committed
-export AMM_BNB_LIQUIDITY=10000000000000000
+export AMM_BNB_LIQUIDITY=50000000000000000      # 0.05 tBNB seeded into the AMM
+export AMM_TOKEN_LIQUIDITY=50000000000000000000 # 50 rNOTE, same 1:1000 price as the 10 / 10,000 seed
 forge script script/Deploy.s.sol --rpc-url bsc_testnet --broadcast
 ```
 
-- `PRIVATE_KEY`: hex key of a throwaway deployer.
-- BSC testnet is chain id 97. Fund that address with tBNB from the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). RPC name in `foundry.toml`: `bsc_testnet`.
-- New L1 devnet (chain id 1105) has no faucet. Bridge tBNB from BSC testnet, then point `--rpc-url newl1_devnet` at the same key. The devnet may reset. The pool and the bridge are unaudited.
+Fund the `PRIVATE_KEY` address with **0.2 tBNB** before that command.
+
+- 0.05 tBNB is locked as AMM liquidity.
+- The deploy used about 2,006,377 gas in a local run. At 10 gwei that is about 0.02 tBNB. New L1 charges the declared gas limit, so the same transaction can cost more than gas-used.
+- 0.01 tBNB is enough for one demo swap under the agent cap.
+- 0.2 tBNB covers those three with room. The script default without `AMM_BNB_LIQUIDITY` is 10 tBNB of liquidity, which a faucet will not supply.
+
+`PRIVATE_KEY` is the only signer variable. BSC testnet is chain id 97. Get tBNB from the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). RPC name in `foundry.toml`: `bsc_testnet`.
+
+New L1 devnet (chain id 1105) has no faucet. Bridge that same tBNB from BSC testnet, then use `--rpc-url newl1_devnet`. The devnet may reset. The pool and the bridge are unaudited.
+
+`DemoFlow` quotes the AMM and passes that amount as `minOut`. A worse fill reverts. `MIN_OUT_WEI` overrides the quote.
 
 This environment did not have `PRIVATE_KEY` or a funded deployer, so nothing was deployed to BSC testnet or New L1.
 
