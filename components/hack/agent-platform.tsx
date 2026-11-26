@@ -15,8 +15,6 @@ function chainClass(state: HackChainState): string {
   switch (state) {
     case "live":
       return "hack-chip hack-chip-live";
-    case "soon":
-      return "hack-chip hack-chip-soon";
     default: {
       const unreachable: never = state;
       return unreachable;

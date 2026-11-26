@@ -907,11 +907,6 @@
   color: #15100a;
   font-weight: 600;
 }
-.hack-chip-soon {
-  border: 1px solid var(--line-strong);
-  background: transparent;
-  color: var(--text);
-}
 @media (max-width: 860px) {
   .hack-agents-grid { grid-template-columns: minmax(0, 1fr); }
   .hack-agents { padding-bottom: 48px; }
