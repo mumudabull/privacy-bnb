@@ -24,6 +24,12 @@ export const HACK_PATHS: Record<HackLocale, string> = {
 /** The one sentence shape the agent parses. It stays in English in every locale. */
 const CANONICAL_SENTENCE = "swap 0.04 bnb to rNOTE privately";
 
+/** Public MCP endpoint on the hackathon host. The route is app/api/mcp/route.ts. */
+const MCP_PUBLIC_URL = "https://hack.darkswap.app/api/mcp";
+
+/** Same name as QUOTE_TOOL_NAME in lib/mcp-server.ts. The parity test keeps them equal. */
+const MCP_TOOL_NAME = "quote_swap";
+
 type TitledParagraph = { name: string; body: string };
 type PathStep = { when: string; title: string; body: string };
 
@@ -50,8 +56,40 @@ export type HackSimulationCopy = {
   ];
 };
 
+export type HackChainState = "live" | "soon";
+
+export type HackChainCopy = {
+  name: string;
+  status: string;
+  state: HackChainState;
+};
+
+/** The section under the hero: this agent, the MCP tool, and chain status. */
+export type HackAgentsCopy = {
+  title: string;
+  intro: string;
+  agentTitle: string;
+  agentBody: string;
+  mcpTitle: string;
+  mcpBody: string;
+  mcpMethod: string;
+  mcpUrl: string;
+  mcpToolLabel: string;
+  mcpTool: string;
+  mcpCopy: string;
+  mcpCopied: string;
+  mcpTechnical: string;
+  chainsTitle: string;
+  chainsBody: string;
+  chains: readonly [HackChainCopy, HackChainCopy, HackChainCopy];
+};
+
 export type HackConsoleCopy = {
   inputLabel: string;
+  consoleTitle: string;
+  consoleExplainer: string;
+  inputPlaceholder: string;
+  tryLabel: string;
   submit: string;
   submitting: string;
   examplesLabel: string;
@@ -87,9 +125,12 @@ export type HackPageCopy = {
   navigationCode: string;
   /** Link to the other language, written in that language. */
   otherLanguage: { locale: HackLocale; label: string };
+  heroEyebrow: string;
   heroTitle: string;
+  heroSubline: string;
   heroBody: string;
   heroNote: string;
+  agents: HackAgentsCopy;
   lineageTitle: string;
   lineage: readonly TitledParagraph[];
   ledgerTitle: string;
@@ -128,7 +169,10 @@ const ENGLISH: HackPageCopy = {
   navigationTechnicalPage: "Technical page",
   navigationCode: "Code",
   otherLanguage: { locale: "zh", label: "中文" },
+  heroEyebrow: "AI swap agent",
   heroTitle: "Say the swap. The agent holds the line.",
+  heroSubline:
+    "An AI agent for private swaps on BNB, and an MCP API other agents can call across Solana, NEAR, and BNB. The BNB testnet quote is live here as a public rehearsal. Solana and NEAR on this API are launching soon.",
   heroBody:
     "DarkSwap on BNB is a swap agent that takes a plain sentence, quotes it, and refuses anything that breaks its limits. The quote runs against BNB testnet and is built for the shielded pool on BNB Chain’s New L1. This page does not send a swap.",
   heroNote:
@@ -193,8 +237,36 @@ const ENGLISH: HackPageCopy = {
   closeFollow: "Follow DarkSwap on X",
   closeCode: "Read the code",
   closeSolana: "Use DarkSwap on Solana",
+  agents: {
+    title: "An AI swap agent, and an API for yours",
+    intro:
+      "DarkSwap quotes a swap from plain words and holds its limits. The same quote is an MCP tool other agents can call. This endpoint is a public rehearsal on BNB testnet: nothing is signed or sent.",
+    agentTitle: "The agent",
+    agentBody: "Say a swap. It quotes the pool, checks the market, and refuses anything over its limits.",
+    mcpTitle: "MCP endpoint",
+    mcpBody: `Connect your own agent over MCP: POST ${MCP_PUBLIC_URL}, tool ${MCP_TOOL_NAME}`,
+    mcpMethod: "POST",
+    mcpUrl: MCP_PUBLIC_URL,
+    mcpToolLabel: "tool",
+    mcpTool: MCP_TOOL_NAME,
+    mcpCopy: "Copy",
+    mcpCopied: "Copied",
+    mcpTechnical: "Technical page",
+    chainsTitle: "Chains",
+    chainsBody: "Where this API quotes today.",
+    chains: [
+      { name: "BNB testnet", status: "Live (testnet)", state: "live" },
+      { name: "Solana", status: "Launching soon", state: "soon" },
+      { name: "NEAR", status: "Launching soon", state: "soon" },
+    ],
+  },
   console: {
     inputLabel: "Say the swap",
+    consoleTitle: "Talk to the DarkSwap agent",
+    consoleExplainer:
+      "Type a swap in plain words. The agent quotes it, checks the market, and refuses anything over its limits.",
+    inputPlaceholder: CANONICAL_SENTENCE,
+    tryLabel: "Try:",
     submit: "Get a quote",
     submitting: "Quoting",
     examplesLabel: "Example sentences",
@@ -293,7 +365,10 @@ const CHINESE: HackPageCopy = {
   navigationTechnicalPage: "技术页面",
   navigationCode: "代码",
   otherLanguage: { locale: "en", label: "English" },
+  heroEyebrow: "AI 兑换智能体",
   heroTitle: "说出你的兑换，智能体守住底线。",
+  heroSubline:
+    "面向隐私兑换的 AI 智能体，以及供其他智能体调用的 MCP API，覆盖 Solana、NEAR 和 BNB。这里的 BNB 测试网报价已经可用，并且是公开演练。本 API 上的 Solana 和 NEAR 即将上线。",
   heroBody:
     "DarkSwap on BNB 是一个兑换智能体：它读懂一句普通的话，给出报价，并拒绝任何超出限制的请求。报价针对 BNB 测试网，并为 BNB Chain 新 L1 的屏蔽池而构建。本页面不会发送兑换。",
   heroNote:
@@ -357,8 +432,35 @@ const CHINESE: HackPageCopy = {
   closeFollow: "在 X 上关注 DarkSwap",
   closeCode: "查看代码",
   closeSolana: "在 Solana 上使用 DarkSwap",
+  agents: {
+    title: "一个 AI 兑换智能体，以及给你的智能体的 API",
+    intro:
+      "DarkSwap 用一句普通的话给出兑换报价，并守住自己的限制。同一份报价也是其他智能体可以调用的 MCP 工具。这个端点是 BNB 测试网上的公开演练：不会签名，也不会发送交易。",
+    agentTitle: "智能体",
+    agentBody: "说出一笔兑换。它按资金池报价、检查市场，并拒绝任何超出限制的请求。",
+    mcpTitle: "MCP 端点",
+    mcpBody: `让你自己的智能体通过 MCP 接入：POST ${MCP_PUBLIC_URL}，工具 ${MCP_TOOL_NAME}`,
+    mcpMethod: "POST",
+    mcpUrl: MCP_PUBLIC_URL,
+    mcpToolLabel: "工具",
+    mcpTool: MCP_TOOL_NAME,
+    mcpCopy: "复制",
+    mcpCopied: "已复制",
+    mcpTechnical: "技术页面",
+    chainsTitle: "链",
+    chainsBody: "这个 API 目前在哪些链上报价。",
+    chains: [
+      { name: "BNB 测试网", status: "已上线（测试网）", state: "live" },
+      { name: "Solana", status: "即将上线", state: "soon" },
+      { name: "NEAR", status: "即将上线", state: "soon" },
+    ],
+  },
   console: {
     inputLabel: "说出你的兑换",
+    consoleTitle: "和 DarkSwap 智能体对话",
+    consoleExplainer: "用普通的话写出一笔兑换。智能体会报价、检查市场，并拒绝任何超出限制的请求。",
+    inputPlaceholder: CANONICAL_SENTENCE,
+    tryLabel: "试试：",
     submit: "获取报价",
     submitting: "报价中",
     examplesLabel: "示例指令",

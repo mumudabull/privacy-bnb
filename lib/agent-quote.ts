@@ -9,6 +9,7 @@
 import { formatBnb } from "./format.ts";
 import { parseIntent } from "./intent.ts";
 import type { MarketDecision } from "./market.ts";
+import { ORACLE_MAX_STALE_SECONDS } from "./risk.ts";
 import {
   DEMO_RESERVE_BNB,
   DEMO_RESERVE_TOKEN,
@@ -98,6 +99,33 @@ export function buildAgentQuote(
     };
   }
   const capWei = market.capWei ? BigInt(market.capWei) : executionCapWei;
+  if (!EXECUTABLE_ASSETS.has(intent.assetOut.toLowerCase())) {
+    return {
+      status: "rejected",
+      reason: "Only BNB to rNOTE is supported on testnet.",
+      privacy: PRIVACY_LINE,
+      amountBnb: formatBnb(intent.amountWei, 6),
+      amountWei: intent.amountWei.toString(),
+      assetOut: intent.assetOut,
+      privateRequested: intent.privateRequested,
+      executionCapBnb: formatBnb(capWei, 6),
+      market: toSerializableMarketSummary(market),
+    };
+  }
+  const atlasBlock = atlasBlockReason(market);
+  if (atlasBlock) {
+    return {
+      status: "market_refused",
+      reason: atlasBlock,
+      privacy: PRIVACY_LINE,
+      amountBnb: formatBnb(intent.amountWei, 6),
+      amountWei: intent.amountWei.toString(),
+      assetOut: intent.assetOut,
+      privateRequested: intent.privateRequested,
+      executionCapBnb: formatBnb(capWei, 6),
+      market: toSerializableMarketSummary(market),
+    };
+  }
   const quotedWei = quoteExactIn(intent.amountWei, reserves.bnb, reserves.token);
   const impact = priceImpactBps(intent.amountWei, reserves.bnb, reserves.token);
 
@@ -116,9 +144,6 @@ export function buildAgentQuote(
     market: toSerializableMarketSummary(market),
   };
 
-  if (!EXECUTABLE_ASSETS.has(intent.assetOut.toLowerCase())) {
-    quote.assetNote = `${intent.assetOut} is not executable. This rehearsal only swaps BNB for rNOTE.`;
-  }
   if (intent.amountWei > capWei) {
     quote.status = "refused";
     quote.reason =
@@ -171,6 +196,16 @@ export function toSerializableMarketSummary(market: MarketSummary): MarketSummar
       explorer: market.atlas.explorer,
     },
   };
+}
+
+/** A stale print or a failed read must not become a quote. Age uses the 3600s oracle window. */
+function atlasBlockReason(market: MarketSummary, nowSeconds = Math.floor(Date.now() / 1000)): string | undefined {
+  const atlas = market.atlas;
+  if (atlas.status === "unavailable") return "Atlas oracle could not be read. Quote refused.";
+  const ageSeconds = atlas.updatedAt === null ? null : nowSeconds - atlas.updatedAt;
+  const stale = atlas.status === "stale" || (ageSeconds !== null && ageSeconds > ORACLE_MAX_STALE_SECONDS);
+  if (stale) return `Atlas oracle is stale (older than ${ORACLE_MAX_STALE_SECONDS}s). Quote refused.`;
+  return undefined;
 }
 
 function reservesOf(market: MarketSummary): { bnb: bigint; token: bigint } | null {

@@ -26,7 +26,7 @@
 | Capability | Network or environment | Status |
 | --- | --- | --- |
 | ShieldedPool reads | BNB Chain New L1 devnet · `1105` | Live read-only RPC integration. Pool at `0x0000000000000000000000000000000000005000`. |
-| Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://privacy-bnb.vercel.app/api/mcp`. The Python agent supports optional Claude parsing for free-form requests. |
+| Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://hack.darkswap.app/api/mcp`. The Python agent supports optional Claude parsing for free-form requests. |
 | Swap rehearsal and oracle guard | Local Anvil · `31337` | Executable public flow with a demo AMM, cleartext notes, and a mock AggregatorV3 feed. |
 | Atlas BNB/USD | BSC testnet · `97` | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D). Confirmed by the Atlas team, read on chain. 18 decimals. The quote uses it with no key. |
 | CoinMarketCap BNB/USD | CoinMarketCap Pro API | Compared as well when `CMC_API_KEY` is set. With the key unset, that half of the check is skipped. |

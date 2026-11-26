@@ -131,9 +131,9 @@
 .hack-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 56px;
+  gap: 40px;
   align-items: start;
-  padding: 56px 0 88px;
+  padding: 28px 0 36px;
 }
 .hack-warp, .hack-warp-still {
   width: 96px;
@@ -174,6 +174,21 @@
   border-left: 2px solid var(--hack-accent-line);
   padding-left: 14px;
 }
+.hack-hero-copy .hack-eyebrow {
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #cdaef8;
+}
+.hack-hero-copy .hack-hero-subline {
+  margin: 14px 0 0;
+  max-width: 38rem;
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--text);
+}
 
 /* Console */
 .hack-console {
@@ -181,6 +196,78 @@
   border-radius: 20px;
   background: linear-gradient(180deg, var(--hack-accent-wash), rgba(18, 16, 24, 0.92));
   padding: 22px;
+}
+.hack-console-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px 14px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.hack-agent-avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #cdaef8;
+  color: #15100a;
+}
+.hack-page .hack-console-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--text);
+}
+.hack-console-head-copy p {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.hack-console-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.hack-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.hack-try {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.hack-try-label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.hack-try .hack-console-examples { margin: 0; }
+/* Smaller than the agent header. The words stay, the pink warning box does not. */
+.hack-console .testnet-readonly-note {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
 }
 .hack-console-label-row {
   display: flex;
@@ -214,23 +301,57 @@
 .hack-console-row {
   display: flex;
   gap: 10px;
+  align-items: stretch;
 }
-.hack-console-row input {
+/*
+ * Near-white prompt. The dark page is the contrast; placeholder and caret stay
+ * dark enough to read on this fill. The focus ring sits outside the field.
+ */
+.hack-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 48px;
+  min-height: 58px;
   padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid var(--line-strong);
-  background: var(--bg-inset);
-  color: var(--text);
+  border-radius: 14px;
+  border: 1px solid #e4ddd2;
+  background: #f7f4ee;
+  color: #1a140c;
+}
+.hack-prompt svg { color: #5b3a9e; flex: 0 0 auto; }
+.hack-prompt input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  min-height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #1a140c;
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: 17px;
+  caret-color: #1a140c;
 }
-.hack-console-row input:focus-visible {
-  outline: 2px solid var(--hack-accent);
-  outline-offset: 2px;
+.hack-prompt input::placeholder {
+  color: #4e463e;
+  opacity: 1;
 }
+.hack-prompt:focus-within {
+  outline: 2px solid #8b50e8;
+  outline-offset: 3px;
+}
+.hack-prompt input:focus,
+.hack-prompt input:focus-visible {
+  outline: none;
+}
+/*
+ * Filled controls use a literal lavender, not --hack-accent. That mix depends
+ * on a registered percentage and can paint as nothing, which leaves the dark
+ * ink invisible on the dark console. Hover, focus, and disabled keep the fill.
+ */
 .hack-console-row button,
 .hack-button {
   display: inline-flex;
@@ -241,8 +362,8 @@
   padding: 0 18px;
   border: 0;
   border-radius: 12px;
-  background: var(--hack-accent);
-  color: var(--hack-ink);
+  background: #cdaef8;
+  color: #15100a;
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;
@@ -252,13 +373,20 @@
 }
 .hack-console-row button:hover,
 .hack-button:hover {
-  background: color-mix(in oklab, var(--hack-accent), white 18%);
+  background: #deccfb;
+  color: #15100a;
 }
-.hack-console-row button:disabled { cursor: progress; opacity: 0.75; }
+.hack-console-row button:disabled,
+.hack-button:disabled {
+  background: #cdaef8;
+  color: #15100a;
+  cursor: progress;
+  opacity: 0.72;
+}
 .hack-console-row button:focus-visible,
 .hack-button:focus-visible,
 .hack-console-examples button:focus-visible {
-  outline: 2px solid var(--text);
+  outline: 3px solid #f6f4ef;
   outline-offset: 3px;
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -287,8 +415,15 @@
   cursor: pointer;
 }
 .hack-console-examples button:hover {
-  border-color: var(--hack-accent);
+  border-color: #cdaef8;
   color: var(--text);
+}
+.hack-console-examples button:disabled {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--line-strong);
+  opacity: 0.72;
+  cursor: progress;
 }
 .hack-console-answer {
   margin-top: 18px;
@@ -483,21 +618,27 @@
   gap: 12px;
   margin-top: 28px;
 }
-.hack-button-quiet {
+.hack-button-quiet,
+.hack-button-quiet:hover,
+.hack-button-quiet:disabled {
   background: transparent;
   color: var(--text);
   border: 1px solid var(--line-strong);
+  opacity: 1;
 }
 .hack-button-quiet:hover {
-  background: transparent;
-  border-color: var(--hack-accent);
+  border-color: #cdaef8;
+}
+.hack-button-quiet:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
 }
 
 @media (max-width: 860px) {
   .hack-hero {
     grid-template-columns: minmax(0, 1fr);
-    gap: 36px;
-    padding: 28px 0 64px;
+    gap: 28px;
+    padding: 16px 0 28px;
   }
   .hack-lineage ol,
   .hack-path ol,
@@ -538,7 +679,8 @@
   letter-spacing: 0;
   line-height: 1.25;
 }
-.hack-page:lang(zh-Hans) .hack-demo-badge {
+.hack-page:lang(zh-Hans) .hack-demo-badge,
+.hack-page:lang(zh-Hans) .hack-eyebrow {
   letter-spacing: 0;
   text-transform: none;
   font-family: inherit;
@@ -606,22 +748,29 @@
   gap: 10px;
   margin-top: 14px;
 }
-/* Same fill and ink as the quote submit button. Quiet matches the outline buttons. */
-.hack-page .hack-simulation .hack-button {
-  background: var(--hack-accent);
-  color: var(--hack-ink);
+/* Same literal fill as the quote submit button. Quiet stays an outline. */
+.hack-page .hack-simulation .hack-button,
+.hack-page .hack-simulation .hack-button:hover,
+.hack-page .hack-simulation .hack-button:disabled {
+  background: #cdaef8;
+  color: #15100a;
 }
 .hack-page .hack-simulation .hack-button:hover {
-  background: color-mix(in oklab, var(--hack-accent), white 18%);
+  background: #deccfb;
 }
 .hack-page .hack-simulation .hack-button-quiet,
-.hack-page .hack-simulation .hack-button-quiet:hover {
+.hack-page .hack-simulation .hack-button-quiet:hover,
+.hack-page .hack-simulation .hack-button-quiet:disabled {
   background: transparent;
   color: var(--text);
   border: 1px solid var(--line-strong);
 }
 .hack-page .hack-simulation .hack-button-quiet:hover {
-  border-color: var(--hack-accent);
+  border-color: #cdaef8;
+}
+.hack-page .hack-simulation .hack-button-quiet:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
 }
 .hack-page .hack-simulation-actions .hack-button {
   min-height: 40px;
@@ -630,7 +779,7 @@
 }
 .hack-page .hack-simulation-actions .hack-button:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 0.72;
 }
 
 .hack-page:lang(zh-Hans) .hack-lineage li p,
@@ -646,4 +795,124 @@
 .hack-header nav { align-items: center; }
 @media (max-width: 480px) {
   .hack-header nav { gap: 16px; }
+}
+
+/* Agent and MCP section, directly under the hero. */
+.hack-agents {
+  margin: 8px 0 28px;
+  padding: 28px 22px 32px;
+  border: 1px solid #cdaef8;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(205, 174, 248, 0.16), rgba(18, 16, 24, 0.55));
+}
+.hack-agents-intro {
+  margin: 14px 0 0;
+  max-width: 42rem;
+  font-size: 18px;
+  color: var(--muted);
+}
+.hack-agents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+.hack-agents article {
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  background: rgba(18, 16, 24, 0.72);
+}
+.hack-agents h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cdaef8;
+}
+.hack-agents article > p {
+  margin: 10px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+.hack-mcp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.hack-mcp-url {
+  margin: 0;
+  flex: 1 1 180px;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.hack-method {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #cdaef8;
+  color: #15100a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.hack-mcp-tool {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.hack-mcp-tool code {
+  font-family: var(--mono);
+  color: var(--text);
+}
+.hack-agents-link {
+  margin: 12px 0 0;
+}
+.hack-agents-link a {
+  color: #cdaef8;
+  font-size: 15px;
+}
+.hack-chains {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hack-chains li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--text);
+}
+.hack-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.hack-chip-live {
+  background: #cdaef8;
+  color: #15100a;
+  font-weight: 600;
+}
+.hack-chip-soon {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+}
+@media (max-width: 860px) {
+  .hack-agents-grid { grid-template-columns: minmax(0, 1fr); }
+  .hack-agents { padding-bottom: 48px; }
 }
