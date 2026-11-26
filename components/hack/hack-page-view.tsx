@@ -62,7 +62,7 @@ export function HackPageView({ locale, className }: HackPageViewProps) {
               <source src="/brand/warp.webm" type="video/webm" />
               <source src="/brand/warp.mp4" type="video/mp4" />
             </video>
-            <img className="hack-warp-still" src="/brand/logo.svg" alt="DarkSwap on BNB" />
+            <img className="hack-warp-still" src="/brand/final-v3-512.png" alt="DarkSwap on BNB" />
             <h1>{copy.heroTitle}</h1>
             <p>{copy.heroBody}</p>
             <p className="hack-hero-note">{copy.heroNote}</p>

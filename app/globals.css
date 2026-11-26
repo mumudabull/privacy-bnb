@@ -125,17 +125,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
 main { position: relative; }
 .hero {
   display: grid;
-  grid-template-columns: 168px minmax(0, 1.35fr) minmax(280px, 0.8fr);
-  gap: 36px;
+  grid-template-columns: 168px minmax(0, 1.35fr) minmax(260px, 0.8fr);
+  gap: 28px 32px;
   padding: 72px 0 36px;
-  align-items: end;
+  align-items: start;
 }
-.hero-mark { width: 168px; height: 168px; justify-self: start; position: relative; }
-.hero-mark video, .hero-mark img { width: 100%; height: 100%; display: block; border-radius: 28px; }
-.warp-still { display: none; }
+.hero > * { min-width: 0; }
+.hero-mark {
+  width: 168px;
+  height: 168px;
+  overflow: hidden;
+  border-radius: 28px;
+  align-self: start;
+}
+.hero-mark video,
+.hero-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero-mark .warp-still { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  .warp { display: none; }
-  .warp-still { display: block; }
+  .hero-mark .warp { display: none; }
+  .hero-mark .warp-still { display: block; }
 }
 .kicker, .section-index, .meta-label {
   font-family: var(--mono);
@@ -211,7 +224,8 @@ h1 {
 .receipt header {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   align-items: baseline;
   margin-bottom: 14px;
 }
@@ -251,14 +265,17 @@ h1 {
 .receipt dt, .stat span { color: var(--faint); font-size: 13px; }
 .receipt dd, .stat strong {
   margin: 0;
+  min-width: 0;
   font-family: var(--mono);
   font-size: 13px;
   text-align: right;
+  overflow-wrap: anywhere;
 }
 .receipt footer {
   margin-top: 14px;
   color: var(--faint);
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .section { padding: 72px 0; }
@@ -530,7 +547,7 @@ h1 {
   .header-inner { flex-wrap: wrap; padding: 10px 0; }
   .nav { margin-left: 0; width: 100%; }
   h1 { font-size: 46px; }
-  .hero-mark { width: 112px; height: 112px; }
+  .hero-mark { width: 136px; height: 136px; }
   .section h2 { max-width: none; }
   .wrap { width: min(var(--max), calc(100% - 28px)); }
 }

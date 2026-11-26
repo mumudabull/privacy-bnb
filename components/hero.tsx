@@ -23,7 +23,7 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
           <source src="/brand/warp.webm" type="video/webm" />
           <source src="/brand/warp.mp4" type="video/mp4" />
         </video>
-        <img className="warp-still" src="/brand/logo.svg" alt="DarkSwap on BNB" />
+        <img className="warp-still" src="/brand/final-v3-512.png" alt="DarkSwap on BNB" />
       </div>
       <div>
         <p className="kicker">Solana roots · NEAR routes · BNB shield</p>

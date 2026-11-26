@@ -132,14 +132,15 @@
 .hack-warp, .hack-warp-still {
   width: 96px;
   height: 96px;
-  display: block;
   margin-bottom: 18px;
   border-radius: 18px;
+  object-fit: cover;
 }
-.hack-warp-still { display: none; }
+.hack-warp { display: block; }
+.hack-hero .hack-warp-still { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  .hack-warp { display: none; }
-  .hack-warp-still { display: block; }
+  .hack-hero .hack-warp { display: none; }
+  .hack-hero .hack-warp-still { display: block; }
 }
 .hack-hero h1 {
   font-size: clamp(44px, 6.4vw, 84px);
