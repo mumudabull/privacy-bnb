@@ -8,6 +8,7 @@ const SOURCES = {
   bridges: "https://arxiv.org/abs/2409.04937",
   near: "https://nearstats.org/",
   bnb: "https://docs.bnbchain.org/newl1/core-concepts/privacy/",
+  forum: "https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481",
 } as const;
 
 const STEPS = [
@@ -43,6 +44,20 @@ export function WhyDarkswap() {
         runs now.
       </p>
       <div className="why-sources">
+        <p>
+          <strong>Live on New L1.</strong> atomicCall unshields, calls public DeFi, and
+          reshields in one transaction.{" "}
+          <a href={SOURCES.forum}>BNB&apos;s post</a> measured that at about 1,010,000 gas
+          against a mock DEX. That call is DarkSwap&apos;s private swap step. The preview
+          pool holds native BNB only, so the funnel lands assets as BNB notes for now.
+          Withdrawals can never be paused by governance.
+        </p>
+        <p>
+          <strong>Roadmap.</strong> New L1 relayers are the main submission path. They pay
+          gas, hide the user&apos;s EOA, are paid with a private fee note, and cannot change
+          the recipient or the amount. DarkSwap&apos;s ERC-8004 agent is designed to be that
+          relayer for a user intent. ERC20 is a reserved field on BNB&apos;s roadmap.
+        </p>
         <p>
           <a href={SOURCES.llama}>DefiLlama</a> tracks 55 privacy protocols with $763.5m
           TVL, about 98% of it in Tornado Cash, Railgun, and Zama.

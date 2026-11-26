@@ -44,6 +44,10 @@ DarkSwap funnels assets from any chain, through an intent, into one BNB New L1 s
 
 That funnel is the roadmap. Deposits into the pool are public today. This repository does not submit a type 0x77 proof yet. The seed pool is about 555 rNOTE per BNB so a live CoinMarketCap print can sit inside the 500 bps band. Set `DEMO_RNOTE_PER_BNB` to change it.
 
+**Live on New L1.** atomicCall unshields, calls public DeFi, and reshields in one transaction. [BNB's post](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481) measured that at about 1,010,000 gas against a mock DEX. That call is DarkSwap's private swap step. The preview pool holds native BNB only, so the funnel lands assets as BNB notes for now. Withdrawals can never be paused by governance.
+
+**Roadmap.** New L1 relayers are the main submission path. They pay gas, hide the user's EOA, are paid with a private fee note, and cannot change the recipient or the amount. DarkSwap's ERC-8004 agent is designed to be that relayer for a user intent. ERC20 is a reserved field on BNB's roadmap.
+
 ## What stays public
 
 In the **intended New L1 flow**, the deposit exposes the depositor, amount and asset. The atomic call reveals the swap target, calldata and input and output amounts. The reshielded open note can keep its owner private while its amount and asset remain visible. The devnet pool currently shields native BNB. The demo’s `rNOTE` is a local test token. [New L1 shielded pool docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)
