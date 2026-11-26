@@ -65,6 +65,10 @@ export function WhyDarkswap() {
           <strong>Roadmap.</strong> DarkSwap&apos;s ERC-8004 agent (id 2930) becomes the relayer for
           user intents into one New L1 pool.
         </p>
+        <p>
+          <strong>Roadmap, for LPs.</strong> Move liquidity into DarkSwap dark pools on BNB for
+          higher yield and arbitrage flow from private order routing. Not live.
+        </p>
       </div>
       <ol className="flow-grid why-funnel">
         {STEPS.map((step) => (

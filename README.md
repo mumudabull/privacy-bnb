@@ -47,6 +47,8 @@ Small, split pools mean thin anonymity sets, and every hop between them leaks.
 
 **Roadmap.** DarkSwap's ERC-8004 agent (id 2930) becomes the relayer for user intents into one New L1 pool.
 
+**Roadmap, for LPs.** Move liquidity into DarkSwap dark pools on BNB for higher yield and arbitrage flow from private order routing. Not live.
+
 Funnel: any chain, intent, one pool, agent. That funnel is the roadmap. No type 0x77 proof in this repo yet. Deposits are public today.
 
 The seed pool is about 555 rNOTE per BNB so a live CoinMarketCap print can sit inside the 500 bps band. Set `DEMO_RNOTE_PER_BNB` to change it.
