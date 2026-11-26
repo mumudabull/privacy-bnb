@@ -43,9 +43,7 @@
 
 Small, split pools mean thin anonymity sets, and every hop between them leaks.
 
-**Live.** The private swap step is one atomicCall on New L1, about 1.01m gas against a mock DEX ([BNB forum](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481)). The preview pool is native BNB, so the funnel lands assets as BNB notes.
-
-**Roadmap.** DarkSwap's ERC-8004 agent (id 2930) becomes the relayer for user intents, routing liquidity from the $41.25B / 39-chain NEAR Intents network ([NEAR Stats](https://nearstats.org/)) into one New L1 pool.
+**Roadmap, for LPs.** Move liquidity into DarkSwap dark pools on BNB for higher yield and arbitrage flow from private order routing. Not live.
 
 Funnel: any chain, intent, one pool, agent. That funnel is the roadmap. No type 0x77 proof in this repo yet. Deposits are public today.
 
@@ -88,6 +86,6 @@ See the [contract guide](./contracts/README.md) for the full Anvil walkthrough, 
 
 ## Built at BNB Bangkok
 
-This build extends the work behind [DarkSwap](https://darkswap.app/), which starts swaps on Solana and routes them through NEAR Intents. The Bangkok work adds New L1 pool reads, a public swap rehearsal, capped agent quotes and price guards. The next milestone is a proof-backed native BNB flow on New L1.
+darkswap.app: live private swaps (private routing) and Multi Exchange, with real users. The Bangkok work adds New L1 pool reads, a public swap rehearsal, capped agent quotes and price guards. The next milestone is a proof-backed native BNB flow on New L1.
 
 [BNB Bangkok on HackQuest](https://www.hackquest.io/hackathons/BNB-Bangkok) · [Demo Night](https://luma.com/5topfryz) · [BNB Chain New L1 docs](https://docs.bnbchain.org/newl1/overview/) · [@darkswapapp](https://x.com/darkswapapp)

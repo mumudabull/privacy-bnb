@@ -27,8 +27,8 @@ export function Architecture() {
       <p className="section-index">03 — Architecture</p>
       <h2>Four layers, one route.</h2>
       <p className="section-lead">
-        Production DarkSwap stays where it is, on Solana and NEAR. This repository is the
-        new BNB code, kept separate. It reads the live devnet pool and, beside that,
+        darkswap.app: live private swaps (private routing) and Multi Exchange, with real
+        users. This repository is the new BNB code, kept separate. It reads the live devnet pool and, beside that,
         runs a public rehearsal of the same three hops. The rehearsal is not a privacy
         guarantee.
       </p>

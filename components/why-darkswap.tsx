@@ -3,8 +3,6 @@ const SOURCES = {
   bridges: "https://arxiv.org/abs/2409.04937",
   privacyCash: "https://defillama.com/protocol/privacy-cash",
   zcash: "https://www.atlaszec.com/shielded.html",
-  forum: "https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481",
-  near: "https://nearstats.org/",
 } as const;
 
 const CARDS = [
@@ -58,14 +56,8 @@ export function WhyDarkswap() {
       </p>
       <div className="why-lines">
         <p>
-          <strong>Live.</strong> The private swap step is one atomicCall on New L1, about 1.01m gas
-          against a mock DEX (<a href={SOURCES.forum}>BNB forum</a>). The preview pool is native BNB,
-          so the funnel lands assets as BNB notes.
-        </p>
-        <p>
-          <strong>Roadmap.</strong> DarkSwap&apos;s ERC-8004 agent (id 2930) becomes the relayer for
-          user intents, routing liquidity from the $41.25B / 39-chain NEAR Intents network (
-          <a href={SOURCES.near}>NEAR Stats</a>) into one New L1 pool.
+          <strong>Roadmap, for LPs.</strong> Move liquidity into DarkSwap dark pools on BNB for
+          higher yield and arbitrage flow from private order routing. Not live.
         </p>
       </div>
       <ol className="flow-grid why-funnel">

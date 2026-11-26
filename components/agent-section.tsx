@@ -47,8 +47,8 @@ export function AgentSection() {
           <p className="note">
             Example copy, not a live model call. The command-line agent reads free-form
             sentences with a Claude model when a key is configured; the cap and the
-            market guards still decide. Intents are the bridge from the NEAR Intents
-            route DarkSwap uses today.
+            market guards still decide. darkswap.app: live private swaps (private routing)
+            and Multi Exchange, with real users.
           </p>
         </aside>
       </div>

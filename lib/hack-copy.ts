@@ -109,8 +109,8 @@ const ENGLISH: HackPageCopy = {
       body: "DarkSwap started as a private swap for Solana users. That app is live at darkswap.app and is not changed by this build.",
     },
     {
-      name: "NEAR routes",
-      body: "Swaps travel as intents through NEAR. The same idea drives the agent here: you state the outcome, and the route is worked out for you.",
+      name: "Private routing",
+      body: "darkswap.app: live private swaps (private routing) and Multi Exchange, with real users.",
     },
     {
       name: "BNB shield",
@@ -132,6 +132,7 @@ const ENGLISH: HackPageCopy = {
     "A private swap. Spending a shielded note needs a proof tool that BNB Chain has not published.",
     "Tokens other than native BNB inside the shielded pool.",
     "A relayer, so the sender does not pay gas from a public address.",
+    "For LPs: dark pools on BNB, for higher yield and arbitrage flow from private order routing. Roadmap, not live.",
     "An audit of the circuits. The devnet pool is unaudited.",
   ],
   pathTitle: "The path onto BNB",
@@ -149,7 +150,7 @@ const ENGLISH: HackPageCopy = {
     {
       when: "Mainnet",
       title: "Swap privately, and bring your route",
-      body: "Private swaps on New L1, with a path in for DarkSwap users on Solana and NEAR. BNB Chain’s planning target is H2 2027.",
+      body: "Private swaps on New L1 for darkswap.app users. BNB Chain’s planning target is H2 2027.",
     },
   ],
   pathCaveatBeforeLink: "The testnet and mainnet dates are BNB Chain’s planning targets from its ",
@@ -232,8 +233,8 @@ const CHINESE: HackPageCopy = {
       body: "DarkSwap 最初是面向 Solana 用户的隐私兑换。该应用已在 darkswap.app 上线，本次构建不会改动它。",
     },
     {
-      name: "NEAR 路由",
-      body: "兑换以意图（intent）的形式经由 NEAR 传递。这里的智能体沿用同一思路：你说出想要的结果，路径由系统替你规划。",
+      name: "隐私路由",
+      body: "darkswap.app：已上线的隐私兑换（隐私路由）和 Multi Exchange，有真实用户。",
     },
     {
       name: "BNB 屏蔽",
@@ -255,6 +256,7 @@ const CHINESE: HackPageCopy = {
     "隐私兑换。花费屏蔽票据需要证明工具，而 BNB Chain 尚未发布该工具。",
     "屏蔽池内除原生 BNB 以外的代币。",
     "中继器，让发送方不必从公开地址支付 gas。",
+    "面向 LP：把流动性放进 BNB 上的 DarkSwap 暗池，以获得更高收益，并承接隐私订单路由的套利流。路线图，尚未上线。",
     "电路审计。开发网的屏蔽池尚未经过审计。",
   ],
   pathTitle: "通往 BNB 的路线",
@@ -272,7 +274,7 @@ const CHINESE: HackPageCopy = {
     {
       when: "主网",
       title: "隐私兑换，并带上你的路线",
-      body: "在新 L1 上进行隐私兑换，并为 Solana 和 NEAR 上的 DarkSwap 用户提供迁入路径。BNB Chain 的规划目标是 2027 年下半年。",
+      body: "在新 L1 上为 darkswap.app 用户做隐私兑换。BNB Chain 的规划目标是 2027 年下半年。",
     },
   ],
   pathCaveatBeforeLink: "测试网和主网的日期是 BNB Chain 在其",
