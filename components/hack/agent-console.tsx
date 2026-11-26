@@ -23,15 +23,22 @@ type ConsoleState =
   | { phase: "idle" }
   | { phase: "loading" }
   | { phase: "answered"; quote: AgentQuote; answerId: number }
-  | { phase: "failed" };
+  | { phase: "failed"; rateLimited: boolean };
 
 type McpToolCallResponse = {
   result?: { content?: { type: string; text?: string }[] };
   error?: { message?: string };
 };
 
-/** The quote endpoint did not answer. The console shows demoFallback, not a raw error. */
-class QuoteRequestError extends Error {}
+/** The quote endpoint did not answer, or it answered 429. No price is invented. */
+class QuoteRequestError extends Error {
+  readonly rateLimited: boolean;
+
+  constructor(rateLimited: boolean) {
+    super(rateLimited ? "rate limited" : "quote request failed");
+    this.rateLimited = rateLimited;
+  }
+}
 
 /** Calls quote_swap over MCP and returns the agent's structured answer. */
 async function requestQuote(sentence: string): Promise<AgentQuote> {
@@ -45,13 +52,16 @@ async function requestQuote(sentence: string): Promise<AgentQuote> {
       params: { name: QUOTE_TOOL_NAME, arguments: { intent: sentence } },
     }),
   });
+  if (response.status === 429) {
+    throw new QuoteRequestError(true);
+  }
   if (!response.ok) {
-    throw new QuoteRequestError();
+    throw new QuoteRequestError(false);
   }
   const payload = (await response.json()) as McpToolCallResponse;
   const quoteText = payload.result?.content?.find((block) => block.type === "text")?.text;
   if (payload.error || quoteText === undefined) {
-    throw new QuoteRequestError();
+    throw new QuoteRequestError(false);
   }
   return JSON.parse(quoteText) as AgentQuote;
 }
@@ -72,9 +82,11 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
       const quote = await requestQuote(trimmedSentence);
       answerSeq.current += 1;
       setConsoleState({ phase: "answered", quote, answerId: answerSeq.current });
-    } catch {
-      // The endpoint did not answer. Show the fixed line and do not invent a price.
-      setConsoleState({ phase: "failed" });
+    } catch (error) {
+      // The endpoint did not answer, or it asked the caller to slow down.
+      // Show a fixed line and do not invent a price.
+      const rateLimited = error instanceof QuoteRequestError && error.rateLimited;
+      setConsoleState({ phase: "failed", rateLimited });
     }
   }
 
@@ -94,7 +106,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
 
   function runExample(exampleSentence: string) {
     setSentence(exampleSentence);
-    void submitSentence(exampleSentence);
+    return submitSentence(exampleSentence);
   }
 
   return (
@@ -174,7 +186,9 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
       <div className="hack-console-answer" aria-live="polite">
         {consoleState.phase === "idle" && <p className="hack-console-hint">{copy.idleHint}</p>}
         {consoleState.phase === "failed" && (
-          <p className="hack-console-demo">{copy.demoFallback}</p>
+          <p className="hack-console-demo">
+            {consoleState.rateLimited ? copy.rateLimited : copy.demoFallback}
+          </p>
         )}
         {consoleState.phase === "answered" && (
           <QuoteAnswer key={consoleState.answerId} quote={consoleState.quote} copy={copy} />

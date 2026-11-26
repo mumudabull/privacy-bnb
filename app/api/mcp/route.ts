@@ -4,11 +4,20 @@
  * Streamable HTTP transport in its stateless form: one JSON-RPC request per
  * POST, answered with one JSON body. This is the URL published in the agent's
  * ERC-8004 registration, so other agents and explorers can call quote_swap.
+ * The same route answers the quote control on the hackathon page.
+ * Each address may send 30 requests a minute. The count is per server
+ * instance: this deployment has no shared KV.
  */
 
 import { stringifyJson } from "@/lib/json";
 import { handleMcpMessage, parseErrorResponse } from "@/lib/mcp-server";
 import { readQuoteMarket } from "@/lib/quote-market";
+import {
+  clientAddress,
+  consumeRateLimit,
+  rateLimitedJsonRpc,
+  readJsonRpcId,
+} from "@/lib/rate-limit";
 
 // readMarketCheck uses node:crypto and node:fs, so this cannot run on the edge runtime.
 export const runtime = "nodejs";
@@ -22,8 +31,11 @@ const RESPONSE_HEADERS = {
   "Cache-Control": "no-store",
 } as const;
 
-function jsonResponse(body: unknown, status: number): Response {
-  return new Response(stringifyJson(body), { status, headers: RESPONSE_HEADERS });
+function jsonResponse(body: unknown, status: number, extraHeaders?: Record<string, string>): Response {
+  return new Response(stringifyJson(body), {
+    status,
+    headers: extraHeaders === undefined ? RESPONSE_HEADERS : { ...RESPONSE_HEADERS, ...extraHeaders },
+  });
 }
 
 /**
@@ -68,6 +80,17 @@ export async function POST(request: Request): Promise<Response> {
   try {
     message = JSON.parse(requestText);
   } catch {
+    message = undefined;
+  }
+
+  // Checked before the quote runs, so a full window never reads the market.
+  const decision = consumeRateLimit(clientAddress(request.headers));
+  if (!decision.allowed) {
+    return jsonResponse(rateLimitedJsonRpc(readJsonRpcId(message), decision.retryAfterSeconds), 429, {
+      "Retry-After": String(decision.retryAfterSeconds),
+    });
+  }
+  if (message === undefined) {
     return jsonResponse(parseErrorResponse(), 400);
   }
 

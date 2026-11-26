@@ -57,7 +57,7 @@ export type HackSimulationCopy = {
   ];
 };
 
-export type HackChainState = "live";
+export type HackChainState = "live" | "soon";
 
 export type HackChainCopy = {
   name: string;
@@ -82,7 +82,7 @@ export type HackAgentsCopy = {
   mcpTechnical: string;
   chainsTitle: string;
   chainsBody: string;
-  chains: readonly [HackChainCopy];
+  chains: readonly [HackChainCopy, HackChainCopy, HackChainCopy];
 };
 
 export type HackConsoleCopy = {
@@ -116,6 +116,8 @@ export type HackConsoleCopy = {
   demoBadge: string;
   /** Shown when /api/mcp does not answer. No price is invented. */
   demoFallback: string;
+  /** Shown when /api/mcp answers HTTP 429. No price is invented. */
+  rateLimited: string;
   simulation: HackSimulationCopy;
   errorEndpointStatus: (httpStatus: number) => string;
   errorNoAnswer: string;
@@ -259,7 +261,11 @@ const ENGLISH: HackPageCopy = {
     mcpTechnical: "Technical page",
     chainsTitle: "Chains",
     chainsBody: "Where this API quotes today.",
-    chains: [{ name: "BNB testnet", status: "Live (testnet)", state: "live" }],
+    chains: [
+      { name: "BNB testnet", status: "Live (testnet)", state: "live" },
+      { name: "Solana", status: "Launching soon", state: "soon" },
+      { name: "NEAR", status: "Launching soon", state: "soon" },
+    ],
   },
   console: {
     inputLabel: "Say the swap",
@@ -282,6 +288,7 @@ const ENGLISH: HackPageCopy = {
     readonlyNote: TESTNET_READONLY_NOTE,
     demoBadge: "Read-only quote",
     demoFallback: "The quote endpoint did not answer. Nothing was sent.",
+    rateLimited: "Too many quotes. Wait a moment and try again. Nothing was sent.",
     simulation: {
       label: "Simulation",
       back: "Back",
@@ -453,7 +460,11 @@ const CHINESE: HackPageCopy = {
     mcpTechnical: "技术页面",
     chainsTitle: "链",
     chainsBody: "这个 API 目前在哪些链上报价。",
-    chains: [{ name: "BNB 测试网", status: "已上线（测试网）", state: "live" }],
+    chains: [
+      { name: "BNB 测试网", status: "已上线（测试网）", state: "live" },
+      { name: "Solana", status: "即将上线", state: "soon" },
+      { name: "NEAR", status: "即将上线", state: "soon" },
+    ],
   },
   console: {
     inputLabel: "说出你的兑换",
@@ -475,6 +486,7 @@ const CHINESE: HackPageCopy = {
     readonlyNote: "测试网演示：兑换在 BNB 测试网上是只读的，不会转移真实资金。",
     demoBadge: "只读报价",
     demoFallback: "报价端点没有响应。没有发送任何交易。",
+    rateLimited: "报价次数过多。请稍等再试。没有发送任何交易。",
     simulation: {
       label: "模拟",
       back: "上一步",
