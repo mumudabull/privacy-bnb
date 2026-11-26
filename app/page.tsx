@@ -3,6 +3,7 @@ import { Architecture } from "@/components/architecture";
 import { Bangkok } from "@/components/bangkok";
 import { DevnetPanel } from "@/components/devnet-panel";
 import { Flow } from "@/components/flow";
+import { FunnelStrip } from "@/components/funnel-strip";
 import { Hero } from "@/components/hero";
 import { MarketCheck } from "@/components/market-check";
 import { Roadmap } from "@/components/roadmap";
@@ -19,6 +20,7 @@ export default async function HomePage() {
       <SiteHeader />
       <main id="content">
         <div className="wrap">
+          <FunnelStrip />
           <Hero status={status} />
           <Flow />
           <AgentSection />

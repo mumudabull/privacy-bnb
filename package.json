@@ -11,6 +11,7 @@
     "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts lib/mcp-server.test.ts"
   },
   "dependencies": {
+    "lucide-react": "^1.81.0",
     "next": "^15.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
