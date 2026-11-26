@@ -190,16 +190,20 @@ const ENGLISH: HackPageCopy = {
         market.atlas.priceUsd === null
           ? "Atlas was not read."
           : `Atlas ${market.atlas.priceUsd}, ${market.atlas.deviationBps} bps from the pool at ${market.ammImpliedUsd}.`;
-      const cmc = market.cmcDecision === "skipped" ? "CoinMarketCap was not requested." : `CoinMarketCap ${market.cmcUsd}.`;
+      const cmc =
+        market.cmcDecision === "skipped"
+          ? "cmc: key not configured"
+          : `CMC ${market.cmcUsd}, HTTP ${market.cmcHttpStatus ?? "unread"}, ${market.cmcFetchedAt ?? "unread"}, sha ${market.cmcSha256 ?? "unread"}.`;
+      const risk = market.riskScore == null ? "Risk unread." : `Risk ${market.riskScore} ${market.riskTier}.`;
       switch (market.decision) {
         case "pass":
-          return `${atlas} ${cmc} Inside the ${bandPercent(market)}% band.`;
+          return `${atlas} ${cmc} ${risk} Inside the ${bandPercent(market)}% band.`;
         case "refuse":
-          return `${atlas} ${cmc} Outside the ${bandPercent(market)}% band.`;
+          return `${atlas} ${cmc} ${risk} Outside the ${bandPercent(market)}% band.`;
         case "unavailable":
-          return `${atlas} ${cmc} The on-chain check did not complete.`;
+          return `${atlas} ${cmc} ${risk} The on-chain check did not complete.`;
         case "skipped":
-          return `${atlas} ${cmc}`;
+          return `${atlas} ${cmc} ${risk}`;
       }
     },
     describeUnsupportedAsset: (assetName) =>
@@ -324,16 +328,20 @@ const CHINESE: HackPageCopy = {
         market.atlas.priceUsd === null
           ? "未能读取 Atlas。"
           : `Atlas ${market.atlas.priceUsd}，与资金池 ${market.ammImpliedUsd} 相差 ${market.atlas.deviationBps} bps。`;
-      const cmc = market.cmcDecision === "skipped" ? "未请求 CoinMarketCap。" : `CoinMarketCap ${market.cmcUsd}。`;
+      const cmc =
+        market.cmcDecision === "skipped"
+          ? "cmc: key not configured"
+          : `CMC ${market.cmcUsd}，HTTP ${market.cmcHttpStatus ?? "unread"}，${market.cmcFetchedAt ?? "unread"}，sha ${market.cmcSha256 ?? "unread"}。`;
+      const risk = market.riskScore == null ? "风险未读取。" : `风险 ${market.riskScore} ${market.riskTier}。`;
       switch (market.decision) {
         case "pass":
-          return `${atlas}${cmc}在 ${bandPercent(market)}% 区间内。`;
+          return `${atlas}${cmc}${risk}在 ${bandPercent(market)}% 区间内。`;
         case "refuse":
-          return `${atlas}${cmc}超出 ${bandPercent(market)}% 区间。`;
+          return `${atlas}${cmc}${risk}超出 ${bandPercent(market)}% 区间。`;
         case "unavailable":
-          return `${atlas}${cmc}链上检查没有完成。`;
+          return `${atlas}${cmc}${risk}链上检查没有完成。`;
         case "skipped":
-          return `${atlas}${cmc}`;
+          return `${atlas}${cmc}${risk}`;
       }
     },
     describeUnsupportedAsset: (assetName) =>

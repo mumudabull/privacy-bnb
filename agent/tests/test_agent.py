@@ -11,6 +11,7 @@ from darkswap_agent.rehearsal import atomic_swap_calldata, plan_calls, shield_ca
 from darkswap_agent.service import handle_intent
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+os.environ["DARKSWAP_POOL_SOURCE"] = "seed"
 _SAVED_CMC_KEY = os.environ.pop("CMC_API_KEY", None)
 _SAVED_ANTHROPIC_KEY = os.environ.pop("ANTHROPIC_API_KEY", None)
 

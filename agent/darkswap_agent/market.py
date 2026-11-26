@@ -160,6 +160,8 @@ def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+DEMO_AMM = "0x7C5Cd03B1e554675b146844B7C8Ff3DE20F0Db2E"
+BASE_CAP_WEI = 5 * 10**16
 ATLAS_BNB_USD_FEED = "0x3957d289ee9C38272377786787ea34F9dd29788D"
 DEFAULT_BSC_TESTNET_RPC = "https://bsc-testnet-dataseed.bnbchain.org"
 ATLAS_EXPLORER = f"https://testnet.bscscan.com/address/{ATLAS_BNB_USD_FEED}"
@@ -249,6 +251,39 @@ def fetch_atlas(amm_price_wei: int) -> dict[str, object]:
     return base
 
 
+def assess_risk(inputs: dict[str, float | None]) -> dict[str, object]:
+    """Design-choice score. Not a backtest. Missing inputs add nothing."""
+    bands = {
+        "change_1h": [(2, 8), (4, 16), (8, 24)],
+        "change_24h": [(5, 8), (10, 16), (20, 24)],
+        "change_7d": [(15, 6), (30, 12)],
+        "volume_change_24h": [(25, 6), (80, 12)],
+        "market_cap_change_24h": [(2, 6), (5, 12)],
+    }
+    score = 0
+    for key, steps in bands.items():
+        score += _band(inputs.get(key), steps, False)
+    score += _band(inputs.get("fear_greed"), [(20, 8), (35, 16)], True)
+    score = min(100, score)
+    if score >= 70:
+        return {"score": score, "tier": "quote-only", "max_deviation_bps": 100, "cap_wei": 0}
+    if score >= 40:
+        return {"score": score, "tier": "caution", "max_deviation_bps": 250, "cap_wei": 2 * 10**16}
+    return {"score": score, "tier": "normal", "max_deviation_bps": 500, "cap_wei": BASE_CAP_WEI}
+
+
+def quote_reserves(seed_bnb: int, seed_token: int) -> tuple[int, int, str]:
+    if os.environ.get("DARKSWAP_POOL_SOURCE", "live") == "seed":
+        return seed_bnb, seed_token, "seed"
+    rpc = os.environ.get("RPC_URL_BSC_TESTNET", DEFAULT_BSC_TESTNET_RPC).strip() or DEFAULT_BSC_TESTNET_RPC
+    try:
+        bnb = _eth_word(rpc, DEMO_AMM, "0xaed24cd3")
+        token = _eth_word(rpc, DEMO_AMM, "0xf4325d67")
+    except (OSError, urllib.error.URLError, TimeoutError, ValueError):
+        raise
+    return bnb, token, "live"
+
+
 def quote_market(amm_price_wei: int, cmc: dict[str, object] | None, atlas: dict[str, object]) -> dict[str, object]:
     market = describe_market(amm_price_wei, cmc)
     market["cmc_status"] = market["status"]
@@ -261,6 +296,8 @@ def quote_market(amm_price_wei: int, cmc: dict[str, object] | None, atlas: dict[
         market["status"] = "pass"
     elif atlas_status in ("stale", "unavailable"):
         market["status"] = "unavailable"
+    if cmc is None:
+        market["cmc_label"] = "cmc: key not configured"
     return market
 
 
@@ -298,6 +335,28 @@ def _stale_seconds() -> int:
 
 def _usd(wei: int) -> str:
     return f"{wei / 10**18}.{wei % 10**18:018d}"[:len(str(wei // 10**18)) + 3]
+
+
+def _band(value: float | None, steps: list[tuple[int, int]], fear: bool) -> int:
+    if value is None:
+        return 0
+    magnitude = abs(value - 50) if fear else abs(value)
+    points = 0
+    for threshold, score in steps:
+        if magnitude >= threshold:
+            points = score
+    return points
+
+
+def _eth_word(rpc: str, to: str, data: str) -> int:
+    payload = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "eth_call", "params": [{"to": to, "data": data}, "latest"]}).encode()
+    request = urllib.request.Request(rpc, data=payload, headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(request, timeout=8) as response:
+        body = json.loads(response.read().decode())
+    result = body.get("result")
+    if not isinstance(result, str) or len(result) < 66:
+        raise ValueError("reserve word missing")
+    return int(result[2:66], 16)
 
 
 def _append_atlas(record: dict[str, object]) -> None:

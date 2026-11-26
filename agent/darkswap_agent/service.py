@@ -2,7 +2,7 @@ import os
 
 from darkswap_agent.intent import IntentError, SwapIntent
 from darkswap_agent.interpreter import interpret_intent
-from darkswap_agent.market import fetch_atlas, fetch_cmc, implied_bnb_usd_wei, quote_market
+from darkswap_agent.market import fetch_atlas, fetch_cmc, implied_bnb_usd_wei, quote_market, quote_reserves
 from darkswap_agent.quote import (
     DEMO_RESERVE_BNB,
     DEMO_RESERVE_TOKEN,
@@ -26,7 +26,15 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
     intent = interpreted.intent
 
     cap = _cap_wei()
-    quoted = quote_exact_in(intent.amount_wei, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
+    try:
+        reserve_bnb, reserve_token, pool_source = quote_reserves(DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
+    except (OSError, TimeoutError, ValueError):
+        return {
+            "status": "rejected",
+            "reason": "The BSC testnet DemoAMM reserves could not be read.",
+            "privacy": PRIVACY_LINE,
+        }
+    quoted = quote_exact_in(intent.amount_wei, reserve_bnb, reserve_token)
     result: dict[str, object] = {
         "status": "quoted",
         "amount_bnb": format_units(intent.amount_wei),
@@ -37,11 +45,12 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         "quote_rnote": format_units(quoted),
         "quote_rnote_wei": quoted,
         "execution_cap_bnb": format_units(cap),
-        "pool": f"seed quote, 10 BNB / {DEMO_RNOTE_PER_BNB * 10} rNOTE, 0.30% fee",
+        "pool": f"{pool_source} DemoAMM reserves",
+        "price_impact_bps": _impact_bps(intent.amount_wei, reserve_bnb, reserve_token, quoted),
         "privacy": PRIVACY_LINE,
         "example_calls_for_note_0": plan_calls(0, quoted),
     }
-    seed_implied = implied_bnb_usd_wei(DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
+    seed_implied = implied_bnb_usd_wei(reserve_bnb, reserve_token)
     cmc = fetch_cmc()
     atlas = fetch_atlas(seed_implied)
     result["market"] = quote_market(seed_implied, cmc, atlas)
@@ -98,6 +107,14 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
     result["status"] = "rehearsed"
     result["settlement"] = settled
     return result
+
+
+def _impact_bps(amount_in: int, reserve_in: int, reserve_out: int, amount_out: int) -> int | None:
+    spot = amount_in * reserve_out
+    if amount_out <= 0 or spot <= 0:
+        return None
+    executed = amount_out * reserve_in
+    return abs(spot - executed) * 10_000 // spot
 
 
 def _cap_wei() -> int:
