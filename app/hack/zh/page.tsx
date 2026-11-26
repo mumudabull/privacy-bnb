@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_SC } from "next/font/google";
 import { HackPageView } from "@/components/hack/hack-page-view";
 import { HACK_COPY } from "@/lib/hack-copy";
+import { SOCIAL_CARD } from "@/lib/social-card";
 import "../hack.css";
 
 /*
@@ -33,6 +34,11 @@ export const metadata: Metadata = {
     description: copy.metadataDescription,
     type: "website",
     locale: "zh_CN",
+    images: [SOCIAL_CARD],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [SOCIAL_CARD],
   },
 };
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Source_Sans_3, Space_Mono } from "next/font/google";
+import { SOCIAL_CARD } from "@/lib/social-card";
 import "./globals.css";
 
 const sans = Source_Sans_3({
@@ -28,13 +29,13 @@ export const metadata: Metadata = {
     description: "One deep shielded pool instead of fifty shallow ones. Devnet and testnet only.",
     type: "website",
     url: siteUrl,
-    images: [{ url: "/og-1280x720.png", width: 1280, height: 720, alt: "DarkSwap on BNB" }],
+    images: [SOCIAL_CARD],
   },
   twitter: {
     card: "summary_large_image",
     title: "DarkSwap on BNB",
     description: "One deep shielded pool instead of fifty shallow ones.",
-    images: ["/og-1280x720.png"],
+    images: [SOCIAL_CARD],
   },
 };
 
