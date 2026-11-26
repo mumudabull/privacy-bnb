@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { AgentQuote, MarketSummary } from "./agent-quote.ts";
 import { HACK_COPY, HACK_PATHS, type HackPageCopy } from "./hack-copy.ts";
+import { TESTNET_READONLY_NOTE } from "./testnet-note.ts";
 
 const english = HACK_COPY.en;
 const chinese = HACK_COPY.zh;
@@ -62,6 +63,14 @@ describe("hackathon page copy", () => {
     assert.deepEqual(
       chinese.console.examples.map((example) => example.sentence),
       english.console.examples.map((example) => example.sentence),
+    );
+  });
+
+  it("states the read-only testnet status in each language", () => {
+    assert.equal(english.console.readonlyNote, TESTNET_READONLY_NOTE);
+    assert.equal(
+      chinese.console.readonlyNote,
+      "测试网演示：兑换在 BNB 测试网上是只读的，不会转移真实资金。",
     );
   });
 

@@ -6,6 +6,7 @@
  */
 
 import type { AgentQuote, AgentQuoteStatus, MarketSummary } from "./agent-quote.ts";
+import { TESTNET_READONLY_NOTE } from "./testnet-note.ts";
 
 export type HackLocale = "en" | "zh";
 
@@ -43,6 +44,8 @@ export type HackConsoleCopy = {
   describeMarket: (market: MarketSummary) => string;
   describeUnsupportedAsset: (assetName: string) => string;
   privacyLine: string;
+  /** Same fact as TESTNET_READONLY_NOTE, in this page's language. */
+  readonlyNote: string;
   errorEndpointStatus: (httpStatus: number) => string;
   errorNoAnswer: string;
   errorGeneric: string;
@@ -173,6 +176,7 @@ const ENGLISH: HackPageCopy = {
       { label: "Not a swap", sentence: EXAMPLE_SENTENCES.notASwap },
     ],
     idleHint: "The answer comes from this site’s public agent endpoint. Nothing is signed or sent.",
+    readonlyNote: TESTNET_READONLY_NOTE,
     statusHeadlines: {
       quoted: "Quoted",
       refused: "Refused: above the cap",
@@ -300,6 +304,7 @@ const CHINESE: HackPageCopy = {
       { label: "不是兑换", sentence: EXAMPLE_SENTENCES.notASwap },
     ],
     idleHint: `回答来自本站公开的智能体端点，不会签名，也不会发送任何交易。目前只识别英文指令，例如：${CANONICAL_SENTENCE}`,
+    readonlyNote: "测试网演示：兑换在 BNB 测试网上是只读的，不会转移真实资金。",
     statusHeadlines: {
       quoted: "已报价",
       refused: "已拒绝：超过上限",

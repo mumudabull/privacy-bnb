@@ -92,7 +92,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
 
   return (
     <div className="hack-console">
-      <TestnetReadonlyNote />
+      <TestnetReadonlyNote text={copy.readonlyNote} />
       <form onSubmit={handleSubmit} className="hack-console-form">
         <label htmlFor={inputId}>{copy.inputLabel}</label>
         <div className="hack-console-row">
