@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { AgentQuote, MarketSummary } from "./agent-quote.ts";
 import { HACK_COPY, HACK_PATHS, type HackPageCopy } from "./hack-copy.ts";
+import { parseIntent } from "./intent.ts";
 import { QUOTE_TOOL_NAME } from "./mcp-server.ts";
 import { TESTNET_READONLY_NOTE } from "./testnet-note.ts";
 
@@ -186,14 +187,23 @@ describe("hackathon page copy", () => {
     assert.equal(english.console.consoleTitle, "Talk to the DarkSwap agent");
     assert.equal(chinese.console.consoleTitle, "和 DarkSwap 智能体对话");
     assert.match(english.console.consoleExplainer, /refuses anything over its limits/);
-    assert.equal(english.console.inputPlaceholder, chinese.console.inputPlaceholder);
+    assert.equal(english.console.inputPlaceholder, "swap 0.04 bnb to rNOTE privately");
+    assert.equal(chinese.console.inputPlaceholder, "请用英文：swap 0.04 bnb to rNOTE privately");
+    const pastedPlaceholder = parseIntent(chinese.console.inputPlaceholder);
+    assert.equal(pastedPlaceholder.ok, true);
+    assert.equal(pastedPlaceholder.ok && pastedPlaceholder.intent.assetOut, "rNOTE");
+    assert.equal(pastedPlaceholder.ok && pastedPlaceholder.intent.amountWei, 40_000_000_000_000_000n);
+    assert.equal(pastedPlaceholder.ok && pastedPlaceholder.intent.privateRequested, true);
+    assert.match(chinese.console.idleHint, /只识别英文指令/);
+    assert.match(chinese.console.idleHint, /swap 0\.04 bnb to rNOTE privately/);
     assert.equal(english.console.tryLabel, "Try:");
     assert.equal(chinese.console.tryLabel, "试试：");
     assert.equal(
       english.console.promptCaption,
       'Type your swap in plain words, e.g. "Swap 0.04 BNB to rNOTE privately". The agent quotes it and refuses anything over the cap.',
     );
-    assert.match(chinese.console.promptCaption, /Swap 0\.04 BNB to rNOTE privately/);
+    assert.match(chinese.console.promptCaption, /只识别英文指令/);
+    assert.match(chinese.console.promptCaption, /swap 0\.04 bnb to rNOTE privately/);
     assert.match(chinese.console.promptCaption, /超过上限/);
     assert.notEqual(chinese.console.promptCaption, english.console.promptCaption);
     assert.equal(english.agents.title, "An AI swap agent, and an API for yours");

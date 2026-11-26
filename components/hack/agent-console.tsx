@@ -132,7 +132,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
         <div className="hack-console-row">
           <div className="hack-prompt">
             <Sparkles size={18} aria-hidden />
-            {/* The sentence itself is always English, whatever the page language. */}
+            {/* Chinese hints that an English command is required. The command itself stays English. */}
             <textarea
               id={inputId}
               lang="en"
