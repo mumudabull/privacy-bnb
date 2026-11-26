@@ -43,10 +43,6 @@
 
 Small, split pools mean thin anonymity sets, and every hop between them leaks.
 
-**Live.** The private swap step is one atomicCall on New L1, about 1.01m gas against a mock DEX ([BNB forum](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481)). The preview pool is native BNB, so the funnel lands assets as BNB notes.
-
-**Roadmap.** DarkSwap's ERC-8004 agent (id 2930) becomes the relayer for user intents into one New L1 pool.
-
 **Roadmap, for LPs.** Move liquidity into DarkSwap dark pools on BNB for higher yield and arbitrage flow from private order routing. Not live.
 
 Funnel: any chain, intent, one pool, agent. That funnel is the roadmap. No type 0x77 proof in this repo yet. Deposits are public today.
