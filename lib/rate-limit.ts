@@ -18,8 +18,14 @@ export type RateLimitDecision = RateLimitAllowed | RateLimitBlocked;
 
 const hitsByAddress = new Map<string, number[]>();
 
-/** Drop addresses whose last minute has gone quiet, so the map cannot grow without bound. */
-const MAX_TRACKED_ADDRESSES = 5000;
+/**
+ * Hard cap on remembered addresses. A new address is refused once this many
+ * buckets are still inside the window, so the map cannot grow without bound.
+ */
+export const MAX_TRACKED_ADDRESSES = 5000;
+
+/** Earliest time a full table might have a free slot. Avoids scanning on every request. */
+let nextCapacitySweepAt = 0;
 
 function firstAddress(header: string | null): string | null {
   if (header === null) return null;
@@ -45,17 +51,41 @@ export function clientAddress(headers: Headers): string {
 
 function sweepExpired(now: number): void {
   const windowStart = now - MCP_WINDOW_MS;
+  let oldestRemaining = Number.POSITIVE_INFINITY;
   for (const [address, hits] of hitsByAddress) {
-    if (hits.every((hit) => hit <= windowStart)) hitsByAddress.delete(address);
+    // Hits are appended in time order, so the first entry is the oldest.
+    let oldest = hits[0];
+    if (oldest === undefined || oldest <= windowStart) {
+      const recent = hits.filter((hit) => hit > windowStart);
+      if (recent.length === 0) {
+        hitsByAddress.delete(address);
+        continue;
+      }
+      hitsByAddress.set(address, recent);
+      oldest = recent[0];
+    }
+    if (oldest !== undefined && oldest < oldestRemaining) oldestRemaining = oldest;
   }
+  nextCapacitySweepAt =
+    oldestRemaining === Number.POSITIVE_INFINITY ? now : oldestRemaining + MCP_WINDOW_MS;
+}
+
+function hasRoomForNewAddress(now: number): boolean {
+  if (hitsByAddress.size < MAX_TRACKED_ADDRESSES) return true;
+  if (now >= nextCapacitySweepAt) sweepExpired(now);
+  return hitsByAddress.size < MAX_TRACKED_ADDRESSES;
 }
 
 /**
  * Records one request in a sliding window of MCP_WINDOW_MS. A blocked call
  * does not add a hit. `now` is injectable so tests can move the window.
+ * A brand-new address is refused, and not stored, when the table is already
+ * full of addresses that are still inside the window.
  */
 export function consumeRateLimit(address: string, now = Date.now()): RateLimitDecision {
-  if (hitsByAddress.size > MAX_TRACKED_ADDRESSES) sweepExpired(now);
+  if (!hitsByAddress.has(address) && !hasRoomForNewAddress(now)) {
+    return { allowed: false, retryAfterSeconds: Math.ceil(MCP_WINDOW_MS / 1000) };
+  }
   const windowStart = now - MCP_WINDOW_MS;
   const recent = (hitsByAddress.get(address) ?? []).filter((hit) => hit > windowStart);
   if (recent.length >= MCP_REQUESTS_PER_WINDOW) {
@@ -72,6 +102,7 @@ export function consumeRateLimit(address: string, now = Date.now()): RateLimitDe
 /** Clears in-memory buckets. Tests use this so files do not share a full window. */
 export function resetRateLimits(): void {
   hitsByAddress.clear();
+  nextCapacitySweepAt = 0;
 }
 
 export function readJsonRpcId(message: unknown): string | number | null {

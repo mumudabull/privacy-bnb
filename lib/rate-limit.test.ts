@@ -7,6 +7,7 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
 import {
+  MAX_TRACKED_ADDRESSES,
   MCP_REQUESTS_PER_WINDOW,
   MCP_WINDOW_MS,
   RATE_LIMIT_JSON_RPC_CODE,
@@ -53,6 +54,19 @@ describe("consumeRateLimit", () => {
     if (!blocked.allowed) assert.equal(blocked.retryAfterSeconds, 59);
     const reopened = consumeRateLimit("203.0.113.8", START + MCP_WINDOW_MS);
     assert.equal(reopened.allowed, true);
+  });
+
+  it("refuses a new address instead of growing past the table", () => {
+    for (let index = 0; index < MAX_TRACKED_ADDRESSES; index += 1) {
+      assert.equal(consumeRateLimit(`addr-${index}`, START).allowed, true);
+    }
+    const overflow = consumeRateLimit("addr-overflow", START);
+    assert.equal(overflow.allowed, false);
+    if (!overflow.allowed) assert.equal(overflow.retryAfterSeconds, MCP_WINDOW_MS / 1000);
+    // A stored overflow would count as its first hit and then be allowed.
+    assert.equal(consumeRateLimit("addr-overflow", START).allowed, false);
+    assert.equal(consumeRateLimit("addr-0", START).allowed, true);
+    assert.equal(consumeRateLimit("addr-overflow", START + MCP_WINDOW_MS).allowed, true);
   });
 
   it("does not count a blocked request toward the next window", () => {
