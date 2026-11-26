@@ -3,6 +3,7 @@ import { SwapDemo } from "@/components/swap-demo";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { readDevnet } from "@/lib/devnet";
+import { readDemoPool } from "@/lib/pool";
 import { formatBnb, formatInteger } from "@/lib/format";
 import { NETWORK } from "@/lib/network";
 
@@ -16,6 +17,7 @@ export const revalidate = 15;
 
 export default async function SwapPage() {
   const status = await readDevnet();
+  const demo = await readDemoPool();
   const pool = status.pool;
   const chain = status.chain;
 
@@ -55,7 +57,10 @@ export default async function SwapPage() {
               <em>no testnet key in this environment</em>
             </article>
           </div>
-          <SwapDemo />
+          <SwapDemo
+            reserveBnb={demo.ok ? demo.reserveBnb.toString() : null}
+            reserveToken={demo.ok ? demo.reserveToken.toString() : null}
+          />
           <p className="fine">
             Run it: <code>forge test</code> in <code>contracts/</code>, or the anvil script
             in that folder’s README. A BSC testnet or New L1 deploy needs{" "}

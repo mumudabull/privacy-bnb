@@ -2,18 +2,24 @@
 
 import { useMemo, useState } from "react";
 import { formatBnb } from "@/lib/format";
-import {
-  DEMO_RESERVE_BNB,
-  DEMO_RESERVE_TOKEN,
-  EXECUTION_CAP_WEI,
-  parseBnbInput,
-  quoteExactIn,
-} from "@/lib/quote";
+import { DEMO_AMM_ADDRESS } from "@/lib/pool";
+import { EXECUTION_CAP_WEI, parseBnbInput, priceImpactBps, quoteExactIn } from "@/lib/quote";
 
-export function SwapDemo() {
-  const [raw, setRaw] = useState("0.1");
+export function SwapDemo({
+  reserveBnb,
+  reserveToken,
+}: {
+  reserveBnb: string | null;
+  reserveToken: string | null;
+}) {
+  const [raw, setRaw] = useState("0.01");
   const amount = useMemo(() => parseBnbInput(raw), [raw]);
-  const quoted = amount === null ? null : quoteExactIn(amount, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN);
+  const reserves =
+    reserveBnb && reserveToken ? { bnb: BigInt(reserveBnb), token: BigInt(reserveToken) } : null;
+  const quoted =
+    amount === null || !reserves ? null : quoteExactIn(amount, reserves.bnb, reserves.token);
+  const impact =
+    amount === null || !reserves ? null : priceImpactBps(amount, reserves.bnb, reserves.token);
   const overCap = amount !== null && amount > EXECUTION_CAP_WEI;
   const empty = amount === 0n;
 
@@ -23,8 +29,8 @@ export function SwapDemo() {
         <p className="section-index">Public rehearsal</p>
         <h2>Quote a BNB to rNOTE swap.</h2>
         <p className="section-lead">
-          The number is the same 0.30% constant-product quote the demo AMM uses, seeded
-          with 10 BNB and 5,550 rNOTE (about 555 rNOTE per BNB). Nothing is sent from this page.
+          The quote uses the live reserves of DemoAMM {DEMO_AMM_ADDRESS} on BSC testnet.
+          Nothing is sent from this page. Default size is 0.01 BNB. The agent cap is 0.05 BNB.
         </p>
         <label className="field" style={{ marginTop: 18 }}>
           Amount in BNB
@@ -40,7 +46,9 @@ export function SwapDemo() {
             ? "Use a decimal BNB amount, up to 18 places."
             : empty
               ? "Enter an amount above zero."
-              : `Quote: ${formatBnb(quoted ?? 0n, 6)} rNOTE.`}
+              : reserves
+                ? `Quote: ${formatBnb(quoted ?? 0n, 6)} rNOTE. Price impact ${impact ?? "unread"} bps.`
+                : "DemoAMM reserves were not read."}
         </p>
         {overCap ? (
           <p className="banner">

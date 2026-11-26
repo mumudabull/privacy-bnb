@@ -12,8 +12,8 @@ import type { MarketDecision } from "./market.ts";
 import {
   DEMO_RESERVE_BNB,
   DEMO_RESERVE_TOKEN,
-  DEMO_RNOTE_PER_BNB,
   EXECUTION_CAP_WEI,
+  priceImpactBps,
   quoteExactIn,
 } from "./quote.ts";
 
@@ -33,6 +33,14 @@ export type MarketSummary = {
   deviationBps: string | null;
   maxDeviationBps: number;
   detail: string;
+  reserveBnbWei?: string | null;
+  reserveTokenWei?: string | null;
+  capWei?: string;
+  cmcHttpStatus?: number | null;
+  cmcFetchedAt?: string | null;
+  cmcSha256?: string | null;
+  riskScore?: number | null;
+  riskTier?: string | null;
   atlas: {
     status: "pass" | "refuse" | "stale" | "unavailable";
     priceUsd: string | null;
@@ -58,6 +66,7 @@ export type AgentQuote = {
   privateRequested?: boolean;
   quoteRnote?: string;
   quoteRnoteWei?: string;
+  priceImpactBps?: string | null;
   executionCapBnb?: string;
   pool?: string;
   market?: MarketSummary;
@@ -79,7 +88,18 @@ export function buildAgentQuote(
     return { status: "rejected", reason: parsed.reason, privacy: PRIVACY_LINE };
   }
   const { intent } = parsed;
-  const quotedWei = quoteExactIn(intent.amountWei, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN);
+  const reserves = reservesOf(market);
+  if (!reserves) {
+    return {
+      status: "rejected",
+      reason: "The BSC testnet DemoAMM reserves could not be read.",
+      privacy: PRIVACY_LINE,
+      market,
+    };
+  }
+  const capWei = market.capWei ? BigInt(market.capWei) : executionCapWei;
+  const quotedWei = quoteExactIn(intent.amountWei, reserves.bnb, reserves.token);
+  const impact = priceImpactBps(intent.amountWei, reserves.bnb, reserves.token);
 
   const quote: AgentQuote = {
     status: "quoted",
@@ -90,17 +110,21 @@ export function buildAgentQuote(
     privateRequested: intent.privateRequested,
     quoteRnote: formatBnb(quotedWei, 6),
     quoteRnoteWei: quotedWei.toString(),
-    executionCapBnb: formatBnb(executionCapWei, 6),
-    pool: `seed quote, 10 BNB / ${DEMO_RNOTE_PER_BNB * 10n} rNOTE, 0.30% fee`,
+    priceImpactBps: impact === null ? null : impact.toString(),
+    executionCapBnb: formatBnb(capWei, 6),
+    pool: `DemoAMM ${formatBnb(reserves.bnb, 6)} BNB / ${formatBnb(reserves.token, 6)} rNOTE`,
     market,
   };
 
   if (!EXECUTABLE_ASSETS.has(intent.assetOut.toLowerCase())) {
     quote.assetNote = `${intent.assetOut} is not executable. This rehearsal only swaps BNB for rNOTE.`;
   }
-  if (intent.amountWei > executionCapWei) {
+  if (intent.amountWei > capWei) {
     quote.status = "refused";
-    quote.reason = `Above the ${formatBnb(executionCapWei, 6)} BNB execution cap. Quote only.`;
+    quote.reason =
+      capWei === 0n
+        ? "Risk tier is quote-only. The quote is shown and nothing is executed."
+        : `Above the ${formatBnb(capWei, 6)} BNB execution cap. Quote only.`;
     return quote;
   }
   if (market.decision === "refuse") {
@@ -108,4 +132,12 @@ export function buildAgentQuote(
     quote.reason = market.detail;
   }
   return quote;
+}
+
+function reservesOf(market: MarketSummary): { bnb: bigint; token: bigint } | null {
+  if (market.reserveBnbWei === undefined && market.reserveTokenWei === undefined) {
+    return { bnb: DEMO_RESERVE_BNB, token: DEMO_RESERVE_TOKEN };
+  }
+  if (!market.reserveBnbWei || !market.reserveTokenWei) return null;
+  return { bnb: BigInt(market.reserveBnbWei), token: BigInt(market.reserveTokenWei) };
 }

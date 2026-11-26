@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts lib/atlas.test.ts lib/mcp-server.test.ts lib/hack-copy.test.ts"
+    "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts lib/atlas.test.ts lib/risk.test.ts lib/mcp-server.test.ts lib/hack-copy.test.ts"
   },
   "dependencies": {
     "lucide-react": "^1.81.0",

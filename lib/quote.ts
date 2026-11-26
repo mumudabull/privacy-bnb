@@ -17,6 +17,16 @@ export function quoteExactIn(amountIn: bigint, reserveIn: bigint, reserveOut: bi
   return (inWithFee * reserveOut) / (reserveIn * BPS + inWithFee);
 }
 
+/** How far the execution price sits from the pool spot, in bps. Spot is reserveOut / reserveIn. */
+export function priceImpactBps(amountIn: bigint, reserveIn: bigint, reserveOut: bigint): bigint | null {
+  const out = quoteExactIn(amountIn, reserveIn, reserveOut);
+  const spot = amountIn * reserveOut;
+  if (out === 0n || spot === 0n) return null;
+  const executed = out * reserveIn;
+  const diff = spot > executed ? spot - executed : executed - spot;
+  return (diff * BPS) / spot;
+}
+
 export function parseBnbInput(raw: string): bigint | null {
   const trimmed = raw.trim();
   if (!/^\d+(\.\d{0,18})?$/.test(trimmed)) return null;

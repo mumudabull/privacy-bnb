@@ -7,6 +7,8 @@ never reaches the model; and that the cap still decides after a model reading.
 
 import os
 import unittest
+
+os.environ["DARKSWAP_POOL_SOURCE"] = "seed"
 from types import SimpleNamespace
 from unittest import mock
 
