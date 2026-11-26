@@ -140,7 +140,7 @@ const ENGLISH: HackPageCopy = {
     "Tokens other than native BNB inside the shielded pool.",
     "A relayer, so the sender does not pay gas from a public address.",
     "For LPs: dark pools on BNB, for higher yield and arbitrage flow from private order routing. Roadmap, not live.",
-    "An audit of the circuits. The devnet pool is unaudited.",
+    "This is a devnet pool.",
   ],
   pathTitle: "The path onto BNB",
   path: [
@@ -271,7 +271,7 @@ const CHINESE: HackPageCopy = {
     "屏蔽池内除原生 BNB 以外的代币。",
     "中继器，让发送方不必从公开地址支付 gas。",
     "面向 LP：把流动性放进 BNB 上的 DarkSwap 暗池，以获得更高收益，并承接隐私订单路由的套利流。路线图，尚未上线。",
-    "电路审计。开发网的屏蔽池尚未经过审计。",
+    "这是一个开发网屏蔽池。",
   ],
   pathTitle: "通往 BNB 的路线",
   path: [

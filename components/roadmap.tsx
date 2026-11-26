@@ -3,7 +3,7 @@ import { LINKS } from "@/lib/network";
 const ITEMS = [
   {
     when: "Now",
-    text: "Multi-validator devnet, chain id 1105, real block production. Public testnet and mainnet have not launched. The shielded pool is native BNB only, unaudited, and may change.",
+    text: "Multi-validator devnet, chain id 1105, real block production. Public testnet and mainnet have not launched. The shielded pool is native BNB only. This is a devnet pool, and it may change.",
   },
   {
     when: "Q1 2027",
@@ -11,7 +11,7 @@ const ITEMS = [
   },
   {
     when: "H2 2027",
-    text: "Mainnet, the same FAQ target, with the same caveat. A New L1 trusted-setup ceremony and a third-party circuit audit are still open before mainnet.",
+    text: "Mainnet, the same FAQ target, with the same caveat. A New L1 trusted-setup ceremony is still open before mainnet.",
   },
   {
     when: "After",

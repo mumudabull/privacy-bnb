@@ -9,6 +9,7 @@
 
 import { buildAgentQuote, type AgentQuote, type MarketSummary } from "./agent-quote.ts";
 import { MAXIMUM_INTENT_LENGTH } from "./intent.ts";
+import { stringifyJson } from "./json.ts";
 
 export const SERVER_NAME = "darkswap-bnb";
 export const SERVER_VERSION = "0.2.0";
@@ -79,7 +80,8 @@ function toolCallResult(quote: AgentQuote) {
   return {
     // Text content is the form every protocol version understands. A rejected
     // sentence is a tool-level error, so the calling model can correct itself.
-    content: [{ type: "text", text: JSON.stringify(quote) }],
+    // stringifyJson writes bigint reserves as decimal strings. JSON.stringify throws.
+    content: [{ type: "text", text: stringifyJson(quote) }],
     isError: quote.status === "rejected",
   };
 }

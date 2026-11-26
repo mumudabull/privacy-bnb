@@ -78,7 +78,7 @@ Fund the `PRIVATE_KEY` address with **0.2 tBNB** before that command.
 
 `PRIVATE_KEY` is the only signer variable. BSC testnet is chain id 97. Get tBNB from the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). RPC name in `foundry.toml`: `bsc_testnet`.
 
-New L1 devnet (chain id 1105) has no faucet. Bridge that same tBNB from BSC testnet, then use `--rpc-url newl1_devnet`. The devnet may reset. The pool and the bridge are unaudited.
+New L1 devnet (chain id 1105) has no faucet. Bridge that same tBNB from BSC testnet, then use `--rpc-url newl1_devnet`. The devnet may reset. This is a devnet pool, and the bridge is on devnet.
 
 `DemoFlow` quotes the AMM and passes that amount as `minOut`. A worse fill reverts. `MIN_OUT_WEI` overrides the quote.
 

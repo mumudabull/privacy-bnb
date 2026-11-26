@@ -17,7 +17,7 @@ export function SiteFooter() {
         </div>
         <p className="legal">
           Hackathon build. It is separate from the production app at darkswap.app. The New
-          L1 shielded pool hides what its proofs hide, on an unaudited devnet. This
+          L1 shielded pool hides what its proofs hide, on the devnet demo. This
           interface adds no privacy the chain does not already provide. Do not send real
           funds.
         </p>

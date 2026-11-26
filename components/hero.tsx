@@ -50,7 +50,7 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
         <ul className="pills">
           <li>Opt-in shielded pool</li>
           <li>Native BNB only</li>
-          <li>Unaudited devnet</li>
+          <li>Devnet demo</li>
           <li>No real funds</li>
         </ul>
       </div>
@@ -82,7 +82,7 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
         </dl>
         <footer>
           System contract {NETWORK.shieldedPool}. Devnet BNB, bridged from BSC testnet.
-          The pool is unaudited.
+          This is a devnet pool.
         </footer>
       </aside>
     </section>
