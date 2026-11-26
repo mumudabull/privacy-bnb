@@ -28,13 +28,13 @@ export const metadata: Metadata = {
     description: "One deep shielded pool instead of fifty shallow ones. Devnet and testnet only.",
     type: "website",
     url: siteUrl,
-    images: [{ url: "/brand/og.png", width: 1200, height: 630, alt: "DarkSwap on BNB" }],
+    images: [{ url: "/og-1280x720.png", width: 1280, height: 720, alt: "DarkSwap on BNB" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "DarkSwap on BNB",
     description: "One deep shielded pool instead of fifty shallow ones.",
-    images: ["/brand/og.png"],
+    images: ["/og-1280x720.png"],
   },
 };
 

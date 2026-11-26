@@ -27,7 +27,7 @@ export function Bangkok() {
   return (
     <section className="section" id="bangkok">
       <div className="stamp">Built at BNB Bangkok</div>
-      <h2>Submitted on HackQuest.</h2>
+      <h2>Built for BNB Bangkok on HackQuest.</h2>
       <p className="section-lead">
         Deadline Friday 27 November 2026, 09:00 Asia/Bangkok. The build is testnet and
         devnet only. Production DarkSwap at darkswap.app is a separate app; this repo does

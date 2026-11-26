@@ -1,4 +1,4 @@
-# DarkSwap on BNB — CMC x Atlas
+# DarkSwap on BNB: CMC x Atlas
 
 Oracle-guarded public rehearsal of a private swap. Built for BNB Bangkok, Developer Track and the CMC x Atlas bounty. The swap is not a New L1 type `0x77` proof.
 
@@ -21,9 +21,11 @@ CoinMarketCap Pro, server-side only:
 
 The key is the `X-CMC_PRO_API_KEY` header from `CMC_API_KEY`. It is not committed, not logged, and not put in the query string. Each call appends one line to `agent/logs/cmc-requests.jsonl` with timestamp, endpoint, query, HTTP status, price, and sha256 of the body.
 
-The agent compares that price with the AMM. One rNOTE is treated as one USD, so rNOTE out per BNB is an implied BNB/USD. Default band is 500 bps (`CMC_MAX_DEVIATION_BPS`). Outside the band, `quote_swap` returns `market_refused` and does not broadcast. The seed pool implies about 987 USD per BNB, so a live print will usually refuse. That refusal is the decision.
+The agent compares that price with the AMM. One rNOTE is treated as one USD, so rNOTE out per BNB is an implied BNB/USD. Default band is 500 bps (`CMC_MAX_DEVIATION_BPS`). Outside the band, `quote_swap` returns `market_refused` and does not broadcast. The seed pool implies about 555 USD per BNB. On 26 Nov 2026 a live print of 553.71 USD was 23 bps away, inside the band, so 0.04 BNB was quoted. A print more than 5% away returns `market_refused`.
 
 The same check is rendered on the landing page. With no key, the page says the request was not sent.
+
+Live evidence, 26 Nov 2026: three CoinMarketCap Pro calls (14:12 and 16:14 Bangkok, all HTTP 200, 554.81 and 553.71 USD). 0.10 BNB was refused by the 0.05 cap. 0.04 BNB quoted 22.045482 rNOTE, a 23 bps gap inside the 500 bps band.
 
 ## On-chain guard
 
@@ -31,7 +33,7 @@ The same check is rendered on the landing page. With no key, the page says the r
 
 - Round 0, a zero update time, a future update time, or age above `MAX_STALE_SECONDS` reverts `StaleOracle`.
 - A non-positive answer reverts `BadOraclePrice`.
-- Spot BNB/USD (`reserveToken / reserveBnb`, 1 rNOTE = 1 USD) versus the scaled oracle answer, above `MAX_DEVIATION_BPS`, reverts `OracleDeviation`. The note stays unspent. Trade slippage is the separate `minOut` check, so a 0.01 BNB swap on a 0.05 BNB / 50 rNOTE pool still passes when the feed matches the 1000 USD spot.
+- Spot BNB/USD (`reserveToken / reserveBnb`, 1 rNOTE = 1 USD) versus the scaled oracle answer, above `MAX_DEVIATION_BPS`, reverts `OracleDeviation`. The note stays unspent. Trade slippage is the separate `minOut` check, so a 0.01 BNB swap on a 0.05 BNB / 27.75 rNOTE pool still passes when the feed matches the 555 USD spot.
 
 `forge test` covers the aligned pass (the existing swap), the deviation revert, and the stale revert.
 
