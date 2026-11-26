@@ -56,8 +56,7 @@ export function WhyDarkswap() {
       </p>
       <div className="why-lines">
         <p>
-          <strong>Roadmap, for LPs.</strong> Move liquidity into DarkSwap dark pools on BNB for
-          higher yield and arbitrage flow from private order routing. Not live.
+          Dark pools on BNB: limited access, on the roadmap.
         </p>
       </div>
       <ol className="flow-grid why-funnel">
