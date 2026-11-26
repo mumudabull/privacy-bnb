@@ -7,6 +7,7 @@
 
 import { ArrowRight, Check, Clock } from "lucide-react";
 import { AgentConsole } from "@/components/hack/agent-console";
+import { AgentPlatform } from "@/components/hack/agent-platform";
 import { HACK_COPY, HACK_LANGUAGE_TAGS, HACK_PATHS, type HackLocale } from "@/lib/hack-copy";
 import { LINKS } from "@/lib/network";
 
@@ -63,12 +64,16 @@ export function HackPageView({ locale, className }: HackPageViewProps) {
               <source src="/brand/warp.mp4" type="video/mp4" />
             </video>
             <img className="hack-warp-still" src="/brand/final-v3-512.png" alt="DarkSwap on BNB" />
+            <p className="hack-eyebrow">{copy.heroEyebrow}</p>
             <h1>{copy.heroTitle}</h1>
+            <p className="hack-hero-subline">{copy.heroSubline}</p>
             <p>{copy.heroBody}</p>
             <p className="hack-hero-note">{copy.heroNote}</p>
           </div>
           <AgentConsole locale={locale} />
         </section>
+
+        <AgentPlatform copy={copy.agents} />
 
         <section className="hack-lineage" aria-labelledby="hack-lineage-title">
           <h2 id="hack-lineage-title">{copy.lineageTitle}</h2>

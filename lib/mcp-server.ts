@@ -51,7 +51,8 @@ export function quoteToolDefinition() {
       "Quote a DarkSwap rehearsal from a sentence such as 'swap 0.04 bnb to rNOTE privately'. " +
       "Public math against the seed pool, checked against the Atlas BNB/USD feed on BSC testnet " +
       "and against CoinMarketCap when a key is configured. " +
-      "Refuses amounts above the 0.05 BNB execution cap. Read-only: it does not sign, broadcast, " +
+      "Refuses amounts above the 0.05 BNB execution cap, any output other than rNOTE, " +
+      "and a stale or unreadable Atlas oracle. Read-only: it does not sign, broadcast, " +
       "take payment, or claim privacy.",
     inputSchema: {
       type: "object",

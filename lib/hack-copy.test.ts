@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { AgentQuote, MarketSummary } from "./agent-quote.ts";
 import { HACK_COPY, HACK_PATHS, type HackPageCopy } from "./hack-copy.ts";
+import { QUOTE_TOOL_NAME } from "./mcp-server.ts";
 import { TESTNET_READONLY_NOTE } from "./testnet-note.ts";
 
 const english = HACK_COPY.en;
@@ -50,6 +51,8 @@ describe("hackathon page copy", () => {
     }
     assert.deepEqual(Object.keys(chinese).sort(), Object.keys(english).sort());
     assert.deepEqual(Object.keys(chinese.console).sort(), Object.keys(english.console).sort());
+    assert.deepEqual(Object.keys(chinese.agents).sort(), Object.keys(english.agents).sort());
+    assert.equal(chinese.agents.chains.length, english.agents.chains.length);
     assert.deepEqual(
       Object.keys(chinese.console.simulation).sort(),
       Object.keys(english.console.simulation).sort(),
@@ -174,6 +177,53 @@ describe("hackathon page copy", () => {
     assert.doesNotMatch(spoken, /guaranteed anonymity|not live/i);
   });
 
+  it("frames the AI agent and the MCP API without calling other chains live", () => {
+    assert.equal(english.heroEyebrow, "AI swap agent");
+    assert.equal(chinese.heroEyebrow, "AI 兑换智能体");
+    assert.equal(english.console.consoleTitle, "Talk to the DarkSwap agent");
+    assert.equal(chinese.console.consoleTitle, "和 DarkSwap 智能体对话");
+    assert.match(english.console.consoleExplainer, /refuses anything over its limits/);
+    assert.equal(english.console.inputPlaceholder, chinese.console.inputPlaceholder);
+    assert.equal(english.console.tryLabel, "Try:");
+    assert.equal(chinese.console.tryLabel, "试试：");
+    assert.equal(english.agents.title, "An AI swap agent, and an API for yours");
+    assert.match(english.agents.intro, /public rehearsal/);
+    assert.match(chinese.agents.intro, /公开演练/);
+    assert.equal(english.agents.mcpUrl, "https://hack.darkswap.app/api/mcp");
+    assert.equal(chinese.agents.mcpUrl, english.agents.mcpUrl);
+    assert.equal(english.agents.mcpTool, QUOTE_TOOL_NAME);
+    assert.equal(chinese.agents.mcpTool, QUOTE_TOOL_NAME);
+    assert.equal(english.agents.mcpMethod, "POST");
+    assert.equal(chinese.agents.mcpMethod, "POST");
+    assert.match(english.agents.mcpBody, /POST https:\/\/hack\.darkswap\.app\/api\/mcp, tool quote_swap/);
+    assert.deepEqual(
+      english.agents.chains.map((chain) => chain.status),
+      ["Live (testnet)", "Launching soon", "Launching soon"],
+    );
+    assert.deepEqual(
+      chinese.agents.chains.map((chain) => chain.status),
+      ["已上线（测试网）", "即将上线", "即将上线"],
+    );
+    assert.deepEqual(
+      english.agents.chains.map((chain) => chain.state),
+      ["live", "soon", "soon"],
+    );
+    assert.deepEqual(
+      chinese.agents.chains.map((chain) => chain.state),
+      english.agents.chains.map((chain) => chain.state),
+    );
+    const framing = [
+      english.heroSubline,
+      chinese.heroSubline,
+      english.agents.intro,
+      chinese.agents.intro,
+      ...english.agents.chains.map((chain) => chain.status),
+      ...chinese.agents.chains.map((chain) => chain.status),
+    ].join(" ");
+    assert.doesNotMatch(framing, /not live/i);
+    assert.doesNotMatch(framing, /尚未上线/);
+  });
+
   it("links each language to the other", () => {
     assert.equal(HACK_PATHS[english.otherLanguage.locale], "/hack/zh");
     assert.equal(HACK_PATHS[chinese.otherLanguage.locale], "/hack");
@@ -191,6 +241,23 @@ describe("hackathon page copy", () => {
     assert.ok(chinese.console.describeReason({ ...base, status: "market_refused" }));
     assert.ok(chinese.console.describeReason({ ...base, status: "rejected" }));
     assert.equal(chinese.console.describeReason({ ...base, status: "quoted" }), undefined);
+    const staleAtlas = chinese.console.describeReason({
+      ...base,
+      status: "market_refused",
+      market: { ...MARKET, atlas: { ...MARKET.atlas, status: "stale" } },
+    });
+    assert.match(staleAtlas ?? "", /预言机已过期/);
+    assert.doesNotMatch(staleAtlas ?? "", /CoinMarketCap/);
+    assert.equal(
+      chinese.console.describeReason({
+        ...base,
+        status: "rejected",
+        reason: "Only BNB to rNOTE is supported on testnet.",
+      }),
+      "测试网目前只支持 BNB 兑换 rNOTE。",
+    );
+    assert.equal(english.console.atlasRefusedHeadline, "Refused: oracle check");
+    assert.equal(chinese.console.atlasRefusedHeadline, "已拒绝：预言机检查");
     for (const decision of ["pass", "refuse", "unavailable", "skipped"] as const) {
       assert.ok(chinese.console.describeMarket({ ...MARKET, decision }).length > 0);
       assert.ok(english.console.describeMarket({ ...MARKET, decision }).length > 0);

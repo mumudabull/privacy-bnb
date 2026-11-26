@@ -22,8 +22,8 @@ const SKIPPED_MARKET: MarketSummary = {
   maxDeviationBps: 500,
   detail: "CMC_API_KEY is unset. No request was sent.",
   atlas: {
-    status: "unavailable",
-    priceUsd: null,
+    status: "pass",
+    priceUsd: "555.00",
     deviationBps: null,
     decimals: 18,
     updatedAt: null,
@@ -68,11 +68,48 @@ describe("buildAgentQuote", () => {
     assert.equal(quote.quoteRnoteWei, "54787270909036902086");
   });
 
-  it("quotes under the cap and flags an asset the rehearsal cannot execute", () => {
-    const quote = buildAgentQuote("swap 0.04 bnb to USDT", SKIPPED_MARKET);
-    assert.equal(quote.status, "quoted");
-    assert.equal(quote.quoteRnote, "22.045482");
-    assert.match(quote.assetNote ?? "", /not executable/);
+  it("rejects an output asset other than rNOTE without quoting rNOTE", () => {
+    const quote = buildAgentQuote("swap 0.04 bnb to SOL", SKIPPED_MARKET);
+    assert.equal(quote.status, "rejected");
+    assert.equal(quote.reason, "Only BNB to rNOTE is supported on testnet.");
+    assert.equal(quote.quoteRnote, undefined);
+    assert.equal(quote.quoteRnoteWei, undefined);
+    assert.equal(quote.assetOut, "SOL");
+  });
+
+  it("blocks a quote when Atlas is stale, unread, or older than 3600s", () => {
+    const stale = buildAgentQuote("swap 0.04 bnb to rNOTE", {
+      ...SKIPPED_MARKET,
+      atlas: { ...SKIPPED_MARKET.atlas, status: "stale", updatedAt: Math.floor(Date.now() / 1000) },
+    });
+    assert.equal(stale.status, "market_refused");
+    assert.match(stale.reason ?? "", /stale/);
+    assert.equal(stale.quoteRnote, undefined);
+
+    const unread = buildAgentQuote("swap 0.04 bnb to rNOTE", {
+      ...SKIPPED_MARKET,
+      atlas: { ...SKIPPED_MARKET.atlas, status: "unavailable", priceUsd: null, updatedAt: null },
+    });
+    assert.equal(unread.status, "market_refused");
+    assert.match(unread.reason ?? "", /could not be read/);
+    assert.equal(unread.quoteRnote, undefined);
+
+    const old = buildAgentQuote("swap 0.04 bnb to rNOTE", {
+      ...SKIPPED_MARKET,
+      atlas: { ...SKIPPED_MARKET.atlas, status: "pass", updatedAt: Math.floor(Date.now() / 1000) - 3601 },
+    });
+    assert.equal(old.status, "market_refused");
+    assert.match(old.reason ?? "", /3600s/);
+    assert.equal(old.market?.atlas.status, "stale");
+    assert.notEqual(old.status, "quoted");
+
+    const overCapWhileStale = buildAgentQuote("swap 0.1 bnb to rNOTE", {
+      ...SKIPPED_MARKET,
+      atlas: { ...SKIPPED_MARKET.atlas, status: "unavailable", priceUsd: null, updatedAt: null },
+    });
+    assert.equal(overCapWhileStale.status, "refused");
+    assert.match(overCapWhileStale.reason ?? "", /execution cap/);
+    assert.equal(overCapWhileStale.quoteRnoteWei, "54787270909036902086");
   });
 
   it("turns an in-cap quote into a market refusal when the band is breached", () => {
@@ -133,10 +170,11 @@ describe("handleMcpMessage", () => {
     );
     assert.ok(called && "result" in called);
     const result = called.result as { content: { text: string }[]; isError: boolean };
-    const body = JSON.parse(result.content[0].text) as { status: string; assetOut: string };
-    assert.equal(body.status, "refused");
+    const body = JSON.parse(result.content[0].text) as { status: string; assetOut: string; quoteRnote?: string };
+    assert.equal(body.status, "rejected");
     assert.equal(body.assetOut, "X");
-    assert.equal(result.isError, false);
+    assert.equal(body.quoteRnote, undefined);
+    assert.equal(result.isError, true);
   });
 
   it("marks an unparseable sentence as a tool error and rejects bad requests", async () => {

@@ -8,7 +8,7 @@
 
 "use client";
 
-import { ArrowRight, Check, LoaderCircle, X } from "lucide-react";
+import { ArrowRight, Bot, Check, LoaderCircle, Sparkles, X } from "lucide-react";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { SwapSimulation } from "@/components/hack/swap-simulation";
 import { TestnetReadonlyNote } from "@/components/testnet-readonly-note";
@@ -60,7 +60,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
   // Copy is looked up here because functions cannot cross the server-to-client boundary as props.
   const copy = HACK_COPY[locale].console;
   const inputId = useId();
-  const [sentence, setSentence] = useState<string>(copy.examples[0].sentence);
+  const [sentence, setSentence] = useState<string>("");
   const [consoleState, setConsoleState] = useState<ConsoleState>({ phase: "idle" });
   const answerSeq = useRef(0);
 
@@ -92,25 +92,42 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
 
   return (
     <div className="hack-console">
-      <TestnetReadonlyNote text={copy.readonlyNote} />
-      <form onSubmit={handleSubmit} className="hack-console-form">
-        <div className="hack-console-label-row">
-          <label htmlFor={inputId}>{copy.inputLabel}</label>
-          <span className="hack-demo-badge">{copy.demoBadge}</span>
+      <div className="hack-console-head">
+        <span className="hack-agent-avatar" aria-hidden>
+          <Bot size={22} />
+        </span>
+        <div className="hack-console-head-copy">
+          <div className="hack-console-title-row">
+            <h2 className="hack-console-title" id={`${inputId}-title`}>
+              {copy.consoleTitle}
+            </h2>
+            <span className="hack-demo-badge">{copy.demoBadge}</span>
+          </div>
+          <p id={`${inputId}-explainer`}>{copy.consoleExplainer}</p>
         </div>
+      </div>
+      <form onSubmit={handleSubmit} className="hack-console-form">
+        <label className="hack-visually-hidden" htmlFor={inputId}>
+          {copy.inputLabel}
+        </label>
         <div className="hack-console-row">
-          {/* The sentence itself is always English, whatever the page language. */}
-          <input
-            id={inputId}
-            type="text"
-            lang="en"
-            value={sentence}
-            maxLength={MAXIMUM_INTENT_LENGTH}
-            onChange={(event) => setSentence(event.target.value)}
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <button type="submit" disabled={isLoading}>
+          <div className="hack-prompt">
+            <Sparkles size={18} aria-hidden />
+            {/* The sentence itself is always English, whatever the page language. */}
+            <input
+              id={inputId}
+              type="text"
+              lang="en"
+              value={sentence}
+              placeholder={copy.inputPlaceholder}
+              aria-describedby={`${inputId}-explainer`}
+              maxLength={MAXIMUM_INTENT_LENGTH}
+              onChange={(event) => setSentence(event.target.value)}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+          <button type="submit" className="hack-button hack-quote-submit" disabled={isLoading}>
             {isLoading ? (
               <LoaderCircle size={18} aria-hidden className="hack-spin" />
             ) : (
@@ -121,15 +138,21 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
         </div>
       </form>
 
-      <ul className="hack-console-examples" aria-label={copy.examplesLabel}>
-        {copy.examples.map((example) => (
-          <li key={example.sentence}>
-            <button type="button" onClick={() => runExample(example.sentence)} disabled={isLoading}>
-              {example.label}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="hack-try">
+        <p className="hack-try-label" id={`${inputId}-try`}>
+          {copy.tryLabel}
+        </p>
+        <ul className="hack-console-examples" aria-labelledby={`${inputId}-try`}>
+          {copy.examples.map((example) => (
+            <li key={example.sentence}>
+              <button type="button" onClick={() => runExample(example.sentence)} disabled={isLoading}>
+                {example.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <TestnetReadonlyNote text={copy.readonlyNote} />
 
       {/* Announced politely so screen readers hear the answer without losing focus. */}
       <div className="hack-console-answer" aria-live="polite">
@@ -145,17 +168,26 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
   );
 }
 
+function atlasBlockedQuote(quote: AgentQuote): boolean {
+  const atlasStatus = quote.market?.atlas.status;
+  return atlasStatus === "stale" || atlasStatus === "unavailable";
+}
+
 export function QuoteAnswer({ quote, copy }: { quote: AgentQuote; copy: HackConsoleCopy }) {
   const wasAccepted = quote.status === "quoted";
   const reason = copy.describeReason(quote);
+  const headline =
+    quote.status === "market_refused" && atlasBlockedQuote(quote)
+      ? copy.atlasRefusedHeadline
+      : copy.statusHeadlines[quote.status];
   return (
     <div className="hack-answer" data-accepted={wasAccepted}>
       <p className="hack-answer-status">
         {wasAccepted ? <Check size={18} aria-hidden /> : <X size={18} aria-hidden />}
-        {copy.statusHeadlines[quote.status]}
+        {headline}
       </p>
       {reason && <p className="hack-answer-reason">{reason}</p>}
-      {quote.amountBnb !== undefined && (
+      {quote.quoteRnote !== undefined && quote.amountBnb !== undefined && (
         <dl>
           <div>
             <dt>{copy.fieldSell}</dt>
