@@ -6,6 +6,8 @@
 
 **A trading interface for BNB Chain’s native privacy layer.** DarkSwap brings its intent-based swap experience to BNB Chain New L1. The Bangkok build reads the live shielded pool and lets judges walk through a public swap rehearsal with a capped quoting agent.
 
+**Live demo:** [privacy-bnb.vercel.app/hack](https://privacy-bnb.vercel.app/hack) · [简体中文](https://privacy-bnb.vercel.app/hack/zh) · [technical page](https://privacy-bnb.vercel.app/)
+
 [Run the demo](#run-the-demo) · [What stays public](#what-stays-public) · [HackQuest submission notes](./docs/hackquest-submission.md) · [CoinMarketCap × Atlas write-up](./docs/cmc-atlas-writeup.md)
 
 > **BNB Bangkok hackathon preview.** Pool data comes from New L1 devnet. The rehearsal runs with public amounts and cleartext notes on a local chain. Proof-backed swap settlement is the next milestone.
@@ -24,7 +26,7 @@
 | Capability | Network or environment | Status |
 | --- | --- | --- |
 | ShieldedPool reads | BNB Chain New L1 devnet · `1105` | Live read-only RPC integration. Pool at `0x0000000000000000000000000000000000005000`. |
-| Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp` when the site is running. The Python agent supports optional Claude parsing for free-form requests. |
+| Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://privacy-bnb.vercel.app/api/mcp`. The Python agent supports optional Claude parsing for free-form requests. |
 | Swap rehearsal and oracle guard | Local Anvil · `31337` | Executable public flow with a demo AMM, cleartext notes, and a mock AggregatorV3 feed. |
 | CoinMarketCap BNB/USD | CoinMarketCap Pro API | The quote checks market deviation when `CMC_API_KEY` is set. With the key unset, the market check is skipped. |
 | ERC-8004 agent identity | BNB Smart Chain testnet · `97` | Registration script is ready. Registration requires a public MCP URL and testnet signer. |
