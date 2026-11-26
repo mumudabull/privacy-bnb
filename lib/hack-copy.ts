@@ -231,7 +231,8 @@ const ENGLISH: HackPageCopy = {
         },
         {
           title: "Reshield",
-          body: (quote) => `The output, about ${quote.quoteRnote} rNOTE, goes back into a new note.`,
+          body: (quote) =>
+            `The output goes back into a new note. For this quote that is about ${quote.quoteRnote} rNOTE. The devnet pool reshields native BNB only, so this rNOTE note is the public rehearsal record, not a shielded balance.`,
         },
         {
           title: "Receipt",
@@ -394,7 +395,8 @@ const CHINESE: HackPageCopy = {
         },
         {
           title: "重新屏蔽",
-          body: (quote) => `输出回到一张新票据。这笔报价的输出约为 ${quote.quoteRnote} rNOTE。`,
+          body: (quote) =>
+            `输出回到一张新票据。这笔报价的输出约为 ${quote.quoteRnote} rNOTE。开发网屏蔽池目前只重新屏蔽原生 BNB，因此这张 rNOTE 票据是公开演练记录，不是屏蔽余额。`,
         },
         {
           title: "回执",

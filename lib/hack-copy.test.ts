@@ -138,7 +138,13 @@ describe("hackathon page copy", () => {
     assert.match(englishSteps[1], /0\.04 BNB enters the New L1 shielded pool as a note/);
     assert.match(englishSteps[2], /admitted public EVM swap of 0\.04 BNB/);
     assert.match(englishSteps[2], /BNB New L1 litepaper/);
-    assert.match(englishSteps[3], /about 22\.045482 rNOTE, goes back into a new note/);
+    assert.match(englishSteps[3], /goes back into a new note/);
+    assert.match(englishSteps[3], /about 22\.045482 rNOTE/);
+    assert.match(englishSteps[3], /devnet pool reshields native BNB only/);
+    assert.match(englishSteps[3], /not a shielded balance/);
+    assert.match(chineseSteps[3], /输出回到一张新票据/);
+    assert.match(chineseSteps[3], /只重新屏蔽原生 BNB/);
+    assert.match(chineseSteps[3], /不是屏蔽余额/);
     assert.match(englishSteps[4], /recorded run on PublicRehearsal: unshield, swap, and reshield/);
     assert.match(englishSteps[4], /not a receipt for this quote/);
     assert.match(chineseSteps[0], /卖出 0\.04 BNB/);
