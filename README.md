@@ -15,7 +15,7 @@
 | Time | Show | What to look for |
 | --- | --- | --- |
 | 0:00 | **Read the live pool.** Open the homepage and find the New L1 devnet receipt. | Chain ID `1105`, the latest block, and the balance of the native ShieldedPool at `0x…5000`. |
-| 0:40 | **Ask the agent for a quote.** Open `/swap` or use the CLI below. Enter `0.10 BNB`, then `0.04 BNB`. | The first quote hits the **0.05 BNB** cap. The second lets you inspect the quote and any configured market decision. |
+| 0:40 | **Ask the agent for a quote.** Open the console at `/hack` or use the CLI below. Enter `0.10 BNB`, then `0.04 BNB`. | The first quote hits the **0.05 BNB** cap. The second lets you inspect the quote and any configured market decision. |
 | 1:30 | **Show the market check.** With CoinMarketCap configured, compare its BNB/USD print with the demo price. | The agent can refuse a quote outside the price band. The [sponsor write-up](./docs/cmc-atlas-writeup.md) explains the API log and the local oracle tests. |
 | 2:15 | **Run the public rehearsal.** Walk through shield → swap → reshield on Anvil. | Cleartext notes show the sequence. The contract guard can reject stale or divergent oracle data before spending the note. |
 
@@ -43,7 +43,7 @@ npm install
 npm run dev
 ```
 
-Open [the local homepage](http://localhost:3000) for the devnet receipt or [the swap rehearsal quote](http://localhost:3000/swap). The pool read and demo quote require no wallet. See [the environment template](./.env.example) for optional RPC and market-data settings. The site can be deployed to Vercel with the repo root and Next.js preset.
+Open the hackathon console in [English](http://localhost:3000/hack) or [简体中文](http://localhost:3000/hack/zh). The [technical homepage](http://localhost:3000) shows the devnet receipt, and [the swap page](http://localhost:3000/swap) provides a stand-alone rehearsal quote. The pool read and demo quote require no wallet. See [the environment template](./.env.example) for optional RPC and market-data settings. The site can be deployed to Vercel with the repo root and Next.js preset.
 
 **Agent.** Try an over-cap request and an under-cap quote.
 
