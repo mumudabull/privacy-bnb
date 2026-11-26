@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="520" viewBox="0 0 1440 520" role="img" aria-labelledby="title desc">
+  <title id="title">DarkSwap on BNB. Go Dark on BNB.</title>
+  <desc id="desc">A gold signal passes through a layered graphite aperture. BNB Chain New L1 preview, built at BNB Bangkok.</desc>
+  <defs>
+    <radialGradient id="glow" cx=".75" cy=".47" r=".57">
+      <stop stop-color="#29220e"/><stop offset=".65" stop-color="#111318"/><stop offset="1" stop-color="#0b0e11"/>
+    </radialGradient>
+    <linearGradient id="fade" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop stop-color="#0b0e11"/><stop offset=".33" stop-color="#0b0e11"/><stop offset=".66" stop-color="#0b0e11" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="metal" x1=".1" y1="0" x2=".85" y2="1">
+      <stop stop-color="#48453b"/><stop offset=".27" stop-color="#21252b"/><stop offset=".66" stop-color="#13161b"/><stop offset="1" stop-color="#30291a"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f0b90b"/><stop offset=".26" stop-color="#8f7025"/><stop offset=".56" stop-color="#302c23"/><stop offset="1" stop-color="#bf931c"/>
+    </linearGradient>
+    <linearGradient id="signal" gradientUnits="userSpaceOnUse" x1="751" x2="1374" y1="376" y2="157">
+      <stop stop-color="#f0b90b" stop-opacity="0"/><stop offset=".26" stop-color="#f0b90b"/><stop offset=".67" stop-color="#ffdc68"/><stop offset="1" stop-color="#f0b90b" stop-opacity=".12"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#b6ac8a" stroke-opacity=".12"/>
+    </pattern>
+    <path id="shell" fill-rule="evenodd" d="M42 0H200Q215 0 226 11L270 55V192Q270 207 259 218L223 254H55Q41 254 30 243L0 213V47Q0 32 11 21ZM72 54 55 71V182L72 200H193L215 178V80L189 54Z"/>
+  </defs>
+  <path fill="url(#glow)" d="M0 0h1440v520H0z"/>
+  <path fill="url(#grid)" d="M650 0h790v520H650z"/>
+  <path fill="url(#fade)" d="M0 0h1440v520H0z"/>
+  <path d="M716 337 1201 164l182 65-484 173zM690 398l510-182 199 70-509 182z" stroke="#a98224" stroke-opacity=".21" fill="none"/>
+  <path d="M750 377 1375 155" stroke="url(#signal)" stroke-width="2" fill="none"/>
+  <g transform="translate(1062 134) matrix(1 -.28 .22 .87 0 0)">
+    <use href="#shell" fill="#111419" stroke="#6d5622" stroke-width="2"/>
+  </g>
+  <g transform="translate(1015 149) matrix(1 -.28 .22 .87 0 0)">
+    <use href="#shell" fill="#181b20" stroke="#795d21" stroke-width="2"/>
+  </g>
+  <g transform="translate(968 164) matrix(1 -.28 .22 .87 0 0)">
+    <use href="#shell" fill="#1f2124" stroke="#8e6c23" stroke-width="2"/>
+  </g>
+  <g transform="translate(921 179) matrix(1 -.28 .22 .87 0 0)">
+    <use href="#shell" fill="url(#metal)" stroke="url(#edge)" stroke-width="2"/>
+    <path d="M27 50 48 29H190l50 47v106l-31 34H62l-35-35z" fill="none" stroke="#d3a23a" stroke-opacity=".36"/>
+    <path d="M19 122V52L46 25h59M185 235h29l34-34" fill="none" stroke="#ffcf48" stroke-width="2"/>
+  </g>
+  <path d="M750 377 1033 276" stroke="url(#signal)" stroke-width="2" fill="none"/>
+  <circle cx="826" cy="350" r="4" fill="#f0b90b"/><circle cx="1033" cy="276" r="5" fill="#ffdc68"/>
+  <path d="M80 74h1280M80 446h1280" stroke="#888170" stroke-opacity=".34"/>
+  <path d="M80 74h52M1308 446h52" stroke="#f0b90b" stroke-width="2"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="82" y="134" fill="#f0b90b" font-size="19" font-weight="700" letter-spacing="4">DARKSWAP ON BNB</text>
+    <text x="75" y="250" fill="#f6f4ef" font-size="107" font-weight="900" letter-spacing="-6">GO DARK</text>
+    <text x="75" y="350" fill="#f0b90b" font-size="107" font-weight="900" letter-spacing="-6">ON BNB.</text>
+    <text x="82" y="409" fill="#f6f4ef" font-size="20" font-weight="700" letter-spacing="2">BNB CHAIN NEW L1 PREVIEW</text>
+  </g>
+  <text x="82" y="481" fill="#b8b2a5" font-family="monospace" font-size="15" letter-spacing="2">BUILT AT BNB BANGKOK</text>
+</svg>
