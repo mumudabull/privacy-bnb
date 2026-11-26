@@ -21,7 +21,7 @@ CoinMarketCap Pro, server-side only:
 
 The key is the `X-CMC_PRO_API_KEY` header from `CMC_API_KEY`. It is not committed, not logged, and not put in the query string. Each call appends one line to `agent/logs/cmc-requests.jsonl` with timestamp, endpoint, query, HTTP status, price, and sha256 of the body.
 
-The agent compares that price with the AMM. One rNOTE is treated as one USD, so rNOTE out per BNB is an implied BNB/USD. Default band is 500 bps (`CMC_MAX_DEVIATION_BPS`). Outside the band, `quote_swap` returns `market_refused` and does not broadcast. The seed pool implies about 987 USD per BNB, so a live print will usually refuse. That refusal is the decision.
+The agent compares that price with the AMM. One rNOTE is treated as one USD, so rNOTE out per BNB is an implied BNB/USD. Default band is 500 bps (`CMC_MAX_DEVIATION_BPS`). Outside the band, `quote_swap` returns `market_refused` and does not broadcast. The seed pool spot is 555 USD per BNB (`DEMO_RNOTE_PER_BNB`, default 555), set near the market, so a live print passes when BNB trades within the band of 555 and refuses when it does not. Either outcome is the decision, and it is recorded with the request in the log.
 
 The same check is rendered on the landing page. With no key, the page says the request was not sent.
 
