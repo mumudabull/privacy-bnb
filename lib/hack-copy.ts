@@ -46,6 +46,10 @@ export type HackConsoleCopy = {
   privacyLine: string;
   /** Same fact as TESTNET_READONLY_NOTE, in this page's language. */
   readonlyNote: string;
+  /** Small label on the quote control. The live feed is not connected yet. */
+  demoBadge: string;
+  /** Shown when /api/mcp fails. No price is invented. */
+  demoFallback: string;
   errorEndpointStatus: (httpStatus: number) => string;
   errorNoAnswer: string;
   errorGeneric: string;
@@ -177,6 +181,8 @@ const ENGLISH: HackPageCopy = {
     ],
     idleHint: "The answer comes from this site’s public agent endpoint. Nothing is signed or sent.",
     readonlyNote: TESTNET_READONLY_NOTE,
+    demoBadge: "Demo until live",
+    demoFallback: "Live quote is in demo mode until the market data feed is connected.",
     statusHeadlines: {
       quoted: "Quoted",
       refused: "Refused: above the cap",
@@ -305,6 +311,8 @@ const CHINESE: HackPageCopy = {
     ],
     idleHint: `回答来自本站公开的智能体端点，不会签名，也不会发送任何交易。目前只识别英文指令，例如：${CANONICAL_SENTENCE}`,
     readonlyNote: "测试网演示：兑换在 BNB 测试网上是只读的，不会转移真实资金。",
+    demoBadge: "演示，上线前",
+    demoFallback: "在市场数据源接通之前，实时报价处于演示模式。",
     statusHeadlines: {
       quoted: "已报价",
       refused: "已拒绝：超过上限",

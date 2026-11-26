@@ -22,18 +22,18 @@ type ConsoleState =
   | { phase: "idle" }
   | { phase: "loading" }
   | { phase: "answered"; quote: AgentQuote }
-  | { phase: "failed"; message: string };
+  | { phase: "failed" };
 
 type McpToolCallResponse = {
   result?: { content?: { type: string; text?: string }[] };
   error?: { message?: string };
 };
 
-/** Raised for failures that already carry a message in the reader's language. */
+/** The quote endpoint failed. The console shows a fixed demo line, not the raw error. */
 class QuoteRequestError extends Error {}
 
 /** Calls quote_swap over MCP and returns the agent's structured answer. */
-async function requestQuote(sentence: string, copy: HackConsoleCopy): Promise<AgentQuote> {
+async function requestQuote(sentence: string): Promise<AgentQuote> {
   const response = await fetch(MCP_ENDPOINT_PATH, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -45,12 +45,12 @@ async function requestQuote(sentence: string, copy: HackConsoleCopy): Promise<Ag
     }),
   });
   if (!response.ok) {
-    throw new QuoteRequestError(copy.errorEndpointStatus(response.status));
+    throw new QuoteRequestError();
   }
   const payload = (await response.json()) as McpToolCallResponse;
   const quoteText = payload.result?.content?.find((block) => block.type === "text")?.text;
   if (payload.error || quoteText === undefined) {
-    throw new QuoteRequestError(copy.errorNoAnswer);
+    throw new QuoteRequestError();
   }
   return JSON.parse(quoteText) as AgentQuote;
 }
@@ -67,14 +67,11 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
     if (trimmedSentence.length === 0) return;
     setConsoleState({ phase: "loading" });
     try {
-      setConsoleState({ phase: "answered", quote: await requestQuote(trimmedSentence, copy) });
-    } catch (error) {
-      // Network and parsing failures carry English runtime messages, so only
-      // our own errors are shown verbatim.
-      setConsoleState({
-        phase: "failed",
-        message: error instanceof QuoteRequestError ? error.message : copy.errorGeneric,
-      });
+      setConsoleState({ phase: "answered", quote: await requestQuote(trimmedSentence) });
+    } catch {
+      // /api/mcp can fail before the market feed is connected. Show the demo
+      // line only. Do not surface the status code or invent a price.
+      setConsoleState({ phase: "failed" });
     }
   }
 
@@ -94,7 +91,10 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
     <div className="hack-console">
       <TestnetReadonlyNote text={copy.readonlyNote} />
       <form onSubmit={handleSubmit} className="hack-console-form">
-        <label htmlFor={inputId}>{copy.inputLabel}</label>
+        <div className="hack-console-label-row">
+          <label htmlFor={inputId}>{copy.inputLabel}</label>
+          <span className="hack-demo-badge">{copy.demoBadge}</span>
+        </div>
         <div className="hack-console-row">
           {/* The sentence itself is always English, whatever the page language. */}
           <input
@@ -132,7 +132,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
       <div className="hack-console-answer" aria-live="polite">
         {consoleState.phase === "idle" && <p className="hack-console-hint">{copy.idleHint}</p>}
         {consoleState.phase === "failed" && (
-          <p className="hack-console-error">{consoleState.message}</p>
+          <p className="hack-console-demo">{copy.demoFallback}</p>
         )}
         {consoleState.phase === "answered" && <QuoteAnswer quote={consoleState.quote} copy={copy} />}
       </div>

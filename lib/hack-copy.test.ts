@@ -74,6 +74,18 @@ describe("hackathon page copy", () => {
     );
   });
 
+  it("labels the quote as a demo and explains a feed failure without a price", () => {
+    assert.equal(english.console.demoBadge, "Demo until live");
+    assert.equal(chinese.console.demoBadge, "演示，上线前");
+    assert.equal(
+      english.console.demoFallback,
+      "Live quote is in demo mode until the market data feed is connected.",
+    );
+    assert.equal(chinese.console.demoFallback, "在市场数据源接通之前，实时报价处于演示模式。");
+    assert.doesNotMatch(english.console.demoFallback, /\d/);
+    assert.doesNotMatch(chinese.console.demoFallback, /\d/);
+  });
+
   it("links each language to the other", () => {
     assert.equal(HACK_PATHS[english.otherLanguage.locale], "/hack/zh");
     assert.equal(HACK_PATHS[chinese.otherLanguage.locale], "/hack");
