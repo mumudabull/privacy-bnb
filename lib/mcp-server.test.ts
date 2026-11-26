@@ -186,9 +186,7 @@ type LiveMarket = MarketSummary & {
 };
 
 type SerializedQuote = AgentQuote & {
-  market: MarketSummary & {
-    pool: { reserveBnb: string; reserveToken: string };
-  };
+  market: MarketSummary;
 };
 
 function liveMarket(overrides: Partial<MarketSummary> = {}): LiveMarket {
@@ -222,10 +220,10 @@ async function callQuote(intent: string, market: LiveMarket): Promise<Serialized
 }
 
 function assertLiveReserves(quote: SerializedQuote): void {
-  assert.equal(typeof quote.market.pool.reserveBnb, "string");
-  assert.equal(typeof quote.market.pool.reserveToken, "string");
-  assert.equal(quote.market.pool.reserveBnb, LIVE_RESERVE_BNB.toString());
-  assert.equal(quote.market.pool.reserveToken, LIVE_RESERVE_TOKEN.toString());
+  // The pool snapshot's bigint reserves stay off the answer. The declared wei strings remain.
+  assert.equal("pool" in quote.market, false);
+  assert.equal(quote.market.reserveBnbWei, LIVE_RESERVE_BNB.toString());
+  assert.equal(quote.market.reserveTokenWei, LIVE_RESERVE_TOKEN.toString());
   // 27.75 rNOTE happens to be an exact float. One extra wei, which a live reserve can hold, is not.
   const oddWei = LIVE_RESERVE_TOKEN + 1n;
   assert.notEqual(BigInt(Number(oddWei)), oddWei);
@@ -237,11 +235,11 @@ describe("quote serialization with live reserves", () => {
   it("serializes a quote that carries live-style BigInt pool reserves", async () => {
     const market = liveMarket({ decision: "pass" });
     const quote = buildAgentQuote("swap 0.005 bnb to rNOTE", market);
-    assert.throws(() => JSON.stringify(quote), /BigInt/);
+    assert.doesNotThrow(() => JSON.stringify(quote));
 
     const amountWei = 5n * 10n ** 15n;
     const quotedWei = quoteExactIn(amountWei, LIVE_RESERVE_BNB, LIVE_RESERVE_TOKEN);
-    const serialized = stringifyJson(quote);
+    const serialized = JSON.stringify(quote);
     const parsed = JSON.parse(serialized) as SerializedQuote;
     assert.equal(parsed.status, "quoted");
     assert.equal(parsed.quoteRnoteWei, quotedWei.toString());
@@ -293,5 +291,50 @@ describe("quote serialization with live reserves", () => {
     assert.equal(marketRefused.status, "market_refused");
     assert.equal(marketRefused.reason, "Outside the band.");
     assert.equal(marketRefused.market.decision, "refuse");
+    assert.equal("pool" in marketRefused.market, false);
+  });
+});
+
+describe("quote_swap with the production market shape", () => {
+  // readQuoteMarket returns more than MarketSummary declares: a `pool` snapshot
+  // with bigint reserves. The answer must still serialize, or /api/mcp throws.
+  const marketAsReadQuoteMarketReturnsIt = {
+    ...SKIPPED_MARKET,
+    decision: "pass",
+    reserveBnbWei: "10000000000000000000",
+    reserveTokenWei: "5550000000000000000000",
+    capWei: "50000000000000000",
+    pool: {
+      ok: true,
+      address: "0x7C5Cd03B1e554675b146844B7C8Ff3DE20F0Db2E",
+      reserveBnb: 10n ** 19n,
+      reserveToken: 555n * 10n ** 19n,
+    },
+  } as MarketSummary;
+
+  const callQuoteSwap = (intent: string) =>
+    handleMcpMessage(
+      {
+        jsonrpc: "2.0",
+        id: 1,
+        method: "tools/call",
+        params: { name: QUOTE_TOOL_NAME, arguments: { intent } },
+      },
+      async () => marketAsReadQuoteMarketReturnsIt,
+    );
+
+  it("serializes a quote under the cap", async () => {
+    const response = await callQuoteSwap("swap 0.04 bnb to rNOTE privately");
+    const answer = JSON.parse(JSON.parse(JSON.stringify(response)).result.content[0].text);
+    assert.equal(answer.status, "quoted");
+    assert.equal(answer.market.reserveBnbWei, "10000000000000000000");
+    assert.equal("pool" in answer.market, false);
+  });
+
+  it("serializes a refusal above the cap", async () => {
+    const response = await callQuoteSwap("swap 0.1 bnb to rNOTE privately");
+    const answer = JSON.parse(JSON.parse(JSON.stringify(response)).result.content[0].text);
+    assert.equal(answer.status, "refused");
+    assert.equal(answer.reason, "Above the 0.05 BNB execution cap. Quote only.");
   });
 });
