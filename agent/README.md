@@ -28,10 +28,11 @@ PYTHONPATH=. python3 -m darkswap_agent execute "swap 0.01 bnb to rNOTE privately
 pip install -r requirements.txt
 export PRIVATE_KEY=0x...          # throwaway BSC testnet key, not committed
 export WALLET_PASSWORD='...'      # encrypts the SDK keystore
+export AGENT_PUBLIC_URL=https://<your-deployment>   # the deployed site
 PYTHONPATH=. python3 -m darkswap_agent register
 ```
 
-Registration uses `bnbagent` 0.5.1 on `bsc-testnet` (chain 97). The SDK preset registry is `0x8004A818BFB912233c491871b3d84c89A494BD9e`. Docs say MegaFuel sponsors this transaction, so the key does not need tBNB to register. This environment had no `PRIVATE_KEY`, so no agent id was minted.
+Registration uses `bnbagent` 0.5.1 on `bsc-testnet` (chain 97). The SDK preset registry is `0x8004A818BFB912233c491871b3d84c89A494BD9e`. Docs say MegaFuel sponsors this transaction, so the key does not need tBNB to register. The registration publishes `<AGENT_PUBLIC_URL>/api/mcp`, the hosted `quote_swap` endpoint, because the SDK only accepts an `http(s)` endpoint. Running it again reuses the existing identity. This environment had no `PRIVATE_KEY`, so no agent id was minted.
 
 ## MCP
 

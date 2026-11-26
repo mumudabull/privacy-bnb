@@ -12,7 +12,7 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
   return (
     <section className="hero" id="top">
       <div>
-        <p className="kicker">BNB Bangkok · New L1 devnet</p>
+        <p className="kicker">Solana roots · NEAR routes · BNB shield</p>
         <h1>
           Private swaps,
           <br />
