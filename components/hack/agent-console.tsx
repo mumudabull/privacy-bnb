@@ -9,7 +9,7 @@
 "use client";
 
 import { ArrowRight, Bot, Check, LoaderCircle, Sparkles, X } from "lucide-react";
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { SwapSimulation } from "@/components/hack/swap-simulation";
 import { TestnetReadonlyNote } from "@/components/testnet-readonly-note";
 import type { AgentQuote } from "@/lib/agent-quote";
@@ -78,17 +78,24 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
     }
   }
 
+  const isLoading = consoleState.phase === "loading";
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isLoading) return;
     void submitSentence(sentence);
+  }
+
+  function handlePromptKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing || isLoading) return;
+    event.preventDefault();
+    event.currentTarget.form?.requestSubmit();
   }
 
   function runExample(exampleSentence: string) {
     setSentence(exampleSentence);
     void submitSentence(exampleSentence);
   }
-
-  const isLoading = consoleState.phase === "loading";
 
   return (
     <div className="hack-console">
@@ -114,18 +121,27 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
           <div className="hack-prompt">
             <Sparkles size={18} aria-hidden />
             {/* The sentence itself is always English, whatever the page language. */}
-            <input
+            <textarea
               id={inputId}
-              type="text"
               lang="en"
+              rows={5}
               value={sentence}
               placeholder={copy.inputPlaceholder}
-              aria-describedby={`${inputId}-explainer`}
+              aria-describedby={`${inputId}-explainer ${inputId}-caption`}
               maxLength={MAXIMUM_INTENT_LENGTH}
               onChange={(event) => setSentence(event.target.value)}
+              onKeyDown={handlePromptKeyDown}
               autoComplete="off"
               spellCheck={false}
             />
+          </div>
+          <div className="hack-prompt-meta">
+            <p className="hack-prompt-caption" id={`${inputId}-caption`}>
+              {copy.promptCaption}
+            </p>
+            <p className="hack-prompt-count">
+              {sentence.length}/{MAXIMUM_INTENT_LENGTH}
+            </p>
           </div>
           <button type="submit" className="hack-button hack-quote-submit" disabled={isLoading}>
             {isLoading ? (

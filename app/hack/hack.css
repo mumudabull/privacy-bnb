@@ -300,52 +300,77 @@
 }
 .hack-console-row {
   display: flex;
+  flex-direction: column;
   gap: 10px;
   align-items: stretch;
 }
 /*
- * Near-white prompt. The dark page is the contrast; placeholder and caret stay
- * dark enough to read on this fill. The focus ring sits outside the field.
+ * Near-white paragraph prompt. About five rows stay visible. The border and
+ * the focus ring sit on the white field so they read on the dark console.
  */
 .hack-prompt {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 58px;
-  padding: 0 14px;
+  padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid #e4ddd2;
+  border: 1px solid #b7aea3;
   background: #f7f4ee;
   color: #1a140c;
 }
-.hack-prompt svg { color: #5b3a9e; flex: 0 0 auto; }
-.hack-prompt input {
+.hack-prompt svg { color: #5b3a9e; flex: 0 0 auto; margin-top: 3px; }
+.hack-prompt textarea {
   flex: 1 1 auto;
   min-width: 0;
   width: 100%;
-  min-height: 54px;
+  min-height: 7.6rem;
   padding: 0;
   border: 0;
   border-radius: 0;
+  resize: vertical;
   background: transparent;
   color: #1a140c;
   font-family: var(--mono);
   font-size: 17px;
+  line-height: 1.45;
   caret-color: #1a140c;
 }
-.hack-prompt input::placeholder {
+.hack-prompt textarea::placeholder {
   color: #4e463e;
   opacity: 1;
 }
 .hack-prompt:focus-within {
-  outline: 2px solid #8b50e8;
-  outline-offset: 3px;
+  outline: 3px solid #8b50e8;
+  outline-offset: 2px;
+  border-color: #5b3a9e;
 }
-.hack-prompt input:focus,
-.hack-prompt input:focus-visible {
+.hack-prompt textarea:focus,
+.hack-prompt textarea:focus-visible {
   outline: none;
+}
+.hack-prompt-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hack-prompt-caption {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.hack-prompt-count {
+  margin: 0;
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+}
+.hack-console-row .hack-quote-submit {
+  width: 100%;
 }
 /*
  * Filled controls use a literal lavender, not --hack-accent. That mix depends
