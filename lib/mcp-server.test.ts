@@ -51,6 +51,17 @@ describe("parseIntent", () => {
     assert.equal(parsed.intent.privateRequested, true);
   });
 
+  it("keeps an asset that is written on the next line", () => {
+    const parsed = parseIntent("swap 0.04 bnb to USDT\nprivately");
+    assert.ok(parsed.ok);
+    assert.equal(parsed.intent.assetOut, "USDT");
+    assert.equal(parsed.intent.privateRequested, true);
+    const quote = buildAgentQuote("swap 0.04 bnb to USDT\nprivately", SKIPPED_MARKET);
+    assert.equal(quote.status, "rejected");
+    assert.equal(quote.assetOut, "USDT");
+    assert.equal(quote.quoteRnote, undefined);
+  });
+
   it("defaults the asset and rejects non-swaps, zero, and oversized input", () => {
     const defaulted = parseIntent("swap 0.04 bnb");
     assert.ok(defaulted.ok);
