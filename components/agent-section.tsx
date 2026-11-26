@@ -1,3 +1,4 @@
+import { TestnetReadonlyNote } from "@/components/testnet-readonly-note";
 import { LINKS } from "@/lib/network";
 
 export function AgentSection() {
@@ -12,8 +13,8 @@ export function AgentSection() {
             the interface: an agent with an ERC-8004 identity on BSC testnet reads it,
             quotes the pool, and refuses anything over a hard cap. Registration on BSC
             testnet is gas-free through MegaFuel. ERC-8183 can escrow a job. This
-            hackathon build quotes and can execute the capped rehearsal. It does not take
-            a fee. Other agents can call the quote tool over MCP at{" "}
+            hackathon build only quotes the capped rehearsal. It does not send a swap
+            or move funds. It does not take a fee. Other agents can call the quote tool over MCP at{" "}
             <code>/api/mcp</code> on this site. That endpoint is read-only and holds no
             key.
           </p>
@@ -32,6 +33,7 @@ export function AgentSection() {
           </p>
         </div>
         <aside className="quote-card" aria-label="Example intent">
+          <TestnetReadonlyNote />
           <div className="bubble user">
             <div className="who">You</div>
             <p>swap 0.1 bnb to the demo token, privately</p>
@@ -39,9 +41,8 @@ export function AgentSection() {
           <div className="bubble agent">
             <div className="who">DarkSwap agent</div>
             <p>
-              Quote on the rehearsal AMM. Cap is 0.05 BNB until a funded testnet wallet
-              is configured. Execution is labeled public rehearsal unless a real 0x77
-              proof is attached.
+              Quote on the rehearsal AMM. The cap is 0.05 BNB. This page does not
+              execute the swap or move funds.
             </p>
           </div>
           <p className="note">

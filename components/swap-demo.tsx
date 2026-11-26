@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { TestnetReadonlyNote } from "@/components/testnet-readonly-note";
 import { formatBnb } from "@/lib/format";
 import { DEMO_AMM_ADDRESS } from "@/lib/pool";
 import { EXECUTION_CAP_WEI, parseBnbInput, priceImpactBps, quoteExactIn } from "@/lib/quote";
@@ -29,9 +30,10 @@ export function SwapDemo({
         <p className="section-index">Public rehearsal</p>
         <h2>Quote a BNB to rNOTE swap.</h2>
         <p className="section-lead">
-          The quote uses the live reserves of DemoAMM {DEMO_AMM_ADDRESS} on BSC testnet.
+          The quote reads the reserves of DemoAMM {DEMO_AMM_ADDRESS} on BNB testnet.
           Nothing is sent from this page. Default size is 0.01 BNB. The agent cap is 0.05 BNB.
         </p>
+        <TestnetReadonlyNote />
         <label className="field" style={{ marginTop: 18 }}>
           Amount in BNB
           <input
@@ -52,8 +54,8 @@ export function SwapDemo({
         </p>
         {overCap ? (
           <p className="banner">
-            Above the 0.05 BNB agent cap. A quote can still be shown. The agent will not
-            execute it until a funded testnet wallet is configured.
+            Above the 0.05 BNB agent cap. A quote can still be shown. This page does not
+            execute it or move funds.
           </p>
         ) : null}
       </form>

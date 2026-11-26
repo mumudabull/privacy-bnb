@@ -176,11 +176,34 @@
   background: linear-gradient(180deg, var(--hack-accent-wash), rgba(18, 16, 24, 0.92));
   padding: 22px;
 }
+.hack-console-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
 .hack-console-form label {
   display: block;
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+}
+.hack-demo-badge {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border: 1px dashed var(--hack-accent-line);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hack-accent);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 .hack-console-row {
   display: flex;
@@ -274,6 +297,13 @@
   color: var(--faint);
 }
 .hack-console-error { color: var(--warn); }
+.hack-console-demo {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--muted);
+  overflow-wrap: break-word;
+}
 .hack-answer-status {
   display: flex;
   align-items: center;
@@ -501,6 +531,12 @@
 .hack-page:lang(zh-Hans) h3 {
   letter-spacing: 0;
   line-height: 1.25;
+}
+.hack-page:lang(zh-Hans) .hack-demo-badge {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: inherit;
+  font-size: 13px;
 }
 .hack-page:lang(zh-Hans) .hack-hero h1 {
   font-size: clamp(38px, 5.2vw, 68px);

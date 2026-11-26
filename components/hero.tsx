@@ -30,13 +30,14 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
         <h1>
           Private swaps,
           <br />
-          settled on New L1.
+          designed for New L1.
         </h1>
         <p className="lede">
           darkswap.app: live private swaps (private routing) and Multi Exchange, with real
-          users. This build brings that path to BNB Chain: shield native BNB into the New L1 pool,
-          swap inside one atomic call, and reshield the result. An agent can take the
-          intent as a sentence.
+          users. This build is a read-only quote of that path on BNB testnet. The New L1
+          design is to shield native BNB into the pool, swap inside one atomic call, and
+          reshield the result. An agent can take the intent as a sentence. This page does
+          not move funds.
         </p>
         <div className="actions">
           <a className="btn primary" href="#flow">

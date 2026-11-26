@@ -29,11 +29,12 @@ export default async function SwapPage() {
           <p className="kicker">Not private · devnet reads are real</p>
           <h1 style={{ fontSize: "clamp(40px, 6vw, 68px)" }}>The swap demo is a rehearsal.</h1>
           <p className="lede">
-            ShieldedPool at {NETWORK.shieldedPool} is live on devnet, and this page reads
+            ShieldedPool at {NETWORK.shieldedPool} is on devnet, and this page reads
             it. Spending a note needs two PLONK proofs from the unpublished newl1-shield
-            CLI. Until that exists, DarkSwap on BNB runs the same three hops in a public
-            contract: shield, swap on a demo AMM, record the output. Owners and amounts
-            stay visible. That is a simulation of the shape, not a privacy guarantee.
+            CLI. Until that exists, this page only quotes the same three hops against a
+            public contract: shield, swap on a demo AMM, record the output. Owners and amounts
+            stay visible. That is a simulation of the shape, not a privacy guarantee. Nothing
+            on this page is sent.
           </p>
           <div className="stats">
             <article className="stat-card">

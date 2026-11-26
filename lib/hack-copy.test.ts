@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { AgentQuote, MarketSummary } from "./agent-quote.ts";
 import { HACK_COPY, HACK_PATHS, type HackPageCopy } from "./hack-copy.ts";
+import { TESTNET_READONLY_NOTE } from "./testnet-note.ts";
 
 const english = HACK_COPY.en;
 const chinese = HACK_COPY.zh;
@@ -63,6 +64,26 @@ describe("hackathon page copy", () => {
       chinese.console.examples.map((example) => example.sentence),
       english.console.examples.map((example) => example.sentence),
     );
+  });
+
+  it("states the read-only testnet status in each language", () => {
+    assert.equal(english.console.readonlyNote, TESTNET_READONLY_NOTE);
+    assert.equal(
+      chinese.console.readonlyNote,
+      "测试网演示：兑换在 BNB 测试网上是只读的，不会转移真实资金。",
+    );
+  });
+
+  it("labels the quote as a demo and explains a feed failure without a price", () => {
+    assert.equal(english.console.demoBadge, "Demo until live");
+    assert.equal(chinese.console.demoBadge, "演示，上线前");
+    assert.equal(
+      english.console.demoFallback,
+      "Live quote is in demo mode until the market data feed is connected.",
+    );
+    assert.equal(chinese.console.demoFallback, "在市场数据源接通之前，实时报价处于演示模式。");
+    assert.doesNotMatch(english.console.demoFallback, /\d/);
+    assert.doesNotMatch(chinese.console.demoFallback, /\d/);
   });
 
   it("links each language to the other", () => {

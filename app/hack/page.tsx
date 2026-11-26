@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: copy.metadataDescription,
   openGraph: {
     title: "DarkSwap on BNB: the hackathon build",
-    description: "A guarded swap agent on BNB Smart Chain today, built for the New L1 shielded pool.",
+    description: "A guarded, read-only swap quote on BNB testnet, built for the New L1 shielded pool.",
     type: "website",
   },
 };
