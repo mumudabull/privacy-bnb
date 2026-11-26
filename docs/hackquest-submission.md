@@ -18,6 +18,8 @@ An agent takes a sentence such as “swap 0.04 bnb to rNOTE privately”. Free-f
 
 The agent's `quote_swap` tool is public over MCP at `/api/mcp` on the deployed site, and that URL is what the ERC-8004 registration on BSC testnet publishes. It is read-only and holds no key.
 
+The next step is for DarkSwap’s agent to relay user-authorized swaps. It would submit the proof from its own address, pay the gas and receive a private fee note. On New L1, `atomicCall` unshields into a public DeFi call and reshields the return in one transaction. BNB Chain’s July 2026 forum post measured about **1.01 million gas** for this flow against a mock DEX on the earlier Groth16 design. The devnet shielded pool currently accepts native BNB. Our planned cross-chain route converts supported assets into BNB before bridging and shielding. [New L1 docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/) · [Forum benchmark](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481)
+
 The production app at darkswap.app is unchanged. This repository is the new code.
 
 ## Tracks
