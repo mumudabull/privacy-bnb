@@ -455,3 +455,53 @@
   .hack-console-row { flex-direction: column; }
   .hack-answer dl div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
+
+/* Language switch in the header. */
+.hack-header nav .hack-language-switch {
+  color: var(--text);
+  border: 1px solid var(--hack-accent-line);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+.hack-header nav .hack-language-switch:hover { border-color: var(--hack-accent); }
+
+/*
+ * Simplified Chinese typography.
+ * Latin faces stay first in the stack so "BNB", numbers and code keep the
+ * site's own letterforms; Chinese characters fall through to Noto Sans SC,
+ * then to the reader's system Chinese font if the web font has not loaded.
+ * The tight negative tracking and short line-height tuned for Latin headlines
+ * make Chinese characters collide, so both are reset here.
+ */
+.hack-page:lang(zh-Hans) {
+  font-family: var(--font-sans), var(--font-chinese), "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  line-height: 1.7;
+}
+.hack-page:lang(zh-Hans) h1,
+.hack-page:lang(zh-Hans) h2,
+.hack-page:lang(zh-Hans) h3 {
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+.hack-page:lang(zh-Hans) .hack-hero h1 {
+  font-size: clamp(38px, 5.2vw, 68px);
+  max-width: 9em;
+  /* Chinese has no spaces to break on. Keep phrases whole where the browser can. */
+  word-break: keep-all;
+  line-break: strict;
+}
+.hack-page:lang(zh-Hans) .hack-lineage li p,
+.hack-page:lang(zh-Hans) .hack-path li p:last-child {
+  /* A Chinese character is about two Latin characters wide, so the measure is halved. */
+  max-width: 17em;
+}
+
+/* Header links never break mid-label; on narrow screens the navigation drops to its own row. */
+.hack-header { flex-wrap: wrap; row-gap: 12px; align-items: center; }
+.hack-brand,
+.hack-header nav a { white-space: nowrap; }
+.hack-header nav { align-items: center; }
+@media (max-width: 480px) {
+  .hack-header nav { gap: 16px; }
+}
