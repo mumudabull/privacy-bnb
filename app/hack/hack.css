@@ -9,14 +9,20 @@
  * the reader scrolls.
  */
 
-/* Registered so the browser can interpolate it as a percentage. */
+/*
+ * Registered so the browser can interpolate it as a percentage.
+ * The initial value cannot be 0%. Production CSS minification rewrites that
+ * to a unitless 0, the @property rule is dropped, and color-mix() for
+ * --hack-accent never resolves. Buttons then keep dark ink on no fill.
+ */
 @property --hack-charge {
   syntax: "<percentage>";
   inherits: true;
-  initial-value: 0%;
+  initial-value: 0.01%;
 }
 
 .hack-page {
+  --hack-charge: 0.01%;
   --hack-lavender: #cdaef8;
   --hack-violet: #8b50e8;
   --hack-gold: #f0b90b;
@@ -64,14 +70,14 @@
  * section carries a fixed charge so the page still ends in gold.
  */
 @supports not (animation-timeline: scroll()) {
-  .hack-hero { --hack-charge: 0%; }
+  .hack-hero { --hack-charge: 0.01%; }
   .hack-lineage { --hack-charge: 35%; }
   .hack-ledger { --hack-charge: 65%; }
   .hack-path { --hack-charge: 85%; }
   .hack-close { --hack-charge: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hack-hero { --hack-charge: 0%; }
+  .hack-hero { --hack-charge: 0.01%; }
   .hack-lineage { --hack-charge: 35%; }
   .hack-ledger { --hack-charge: 65%; }
   .hack-path { --hack-charge: 85%; }
@@ -592,6 +598,23 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 14px;
+}
+/* Same fill and ink as the quote submit button. Quiet matches the outline buttons. */
+.hack-page .hack-simulation .hack-button {
+  background: var(--hack-accent);
+  color: var(--hack-ink);
+}
+.hack-page .hack-simulation .hack-button:hover {
+  background: color-mix(in oklab, var(--hack-accent), white 18%);
+}
+.hack-page .hack-simulation .hack-button-quiet,
+.hack-page .hack-simulation .hack-button-quiet:hover {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.hack-page .hack-simulation .hack-button-quiet:hover {
+  border-color: var(--hack-accent);
 }
 .hack-page .hack-simulation-actions .hack-button {
   min-height: 40px;
