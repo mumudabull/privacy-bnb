@@ -9,7 +9,13 @@
 import { formatBnb } from "./format.ts";
 import { parseIntent } from "./intent.ts";
 import type { MarketDecision } from "./market.ts";
-import { DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN, EXECUTION_CAP_WEI, quoteExactIn } from "./quote.ts";
+import {
+  DEMO_RESERVE_BNB,
+  DEMO_RESERVE_TOKEN,
+  DEMO_RNOTE_PER_BNB,
+  EXECUTION_CAP_WEI,
+  quoteExactIn,
+} from "./quote.ts";
 
 /** Identical to PRIVACY_LINE in agent/darkswap_agent/rehearsal.py. */
 export const PRIVACY_LINE =
@@ -74,7 +80,7 @@ export function buildAgentQuote(
     quoteRnote: formatBnb(quotedWei, 6),
     quoteRnoteWei: quotedWei.toString(),
     executionCapBnb: formatBnb(executionCapWei, 6),
-    pool: "seed quote, 10 BNB / 10000 rNOTE, 0.30% fee",
+    pool: `seed quote, 10 BNB / ${DEMO_RNOTE_PER_BNB * 10n} rNOTE, 0.30% fee`,
     market,
   };
 

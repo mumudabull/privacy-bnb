@@ -9,6 +9,7 @@
   --faint: #8d849c;
   --accent: #cdaef8;
   --accent-deep: #8b50e8;
+  --gold: #f0b90b;
   --accent-ink: #1a1024;
   --warn: #ef9fa7;
   --ok: #c9ecd4;
@@ -79,11 +80,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .brand {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   text-decoration: none;
   flex: 0 0 auto;
 }
+.brand img { display: block; border-radius: 8px; }
 .brand strong {
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -123,10 +125,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
 main { position: relative; }
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
-  gap: 48px;
+  grid-template-columns: 168px minmax(0, 1.35fr) minmax(280px, 0.8fr);
+  gap: 36px;
   padding: 72px 0 36px;
   align-items: end;
+}
+.hero-mark { width: 168px; height: 168px; justify-self: start; position: relative; }
+.hero-mark video, .hero-mark img { width: 100%; height: 100%; display: block; border-radius: 28px; }
+.warp-still { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .warp { display: none; }
+  .warp-still { display: block; }
 }
 .kicker, .section-index, .meta-label {
   font-family: var(--mono);
@@ -166,8 +175,11 @@ h1 {
   font-size: 16px;
   font-weight: 600;
 }
-.btn.primary { background: var(--accent); color: var(--accent-ink); }
-.btn.primary:hover { background: #ddc6fb; }
+.btn.primary {
+  background: linear-gradient(135deg, #a463fc, var(--gold));
+  color: #07060b;
+}
+.btn.primary:hover { filter: brightness(1.08); }
 .btn.ghost { border: 1px solid var(--line-strong); color: var(--text); }
 .btn.ghost:hover { border-color: var(--accent); }
 .pills {
@@ -269,6 +281,10 @@ h1 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
+.why-funnel { grid-template-columns: repeat(4, minmax(0, 1fr)); list-style: none; padding: 0; }
+.why-sources { margin-top: 18px; display: grid; gap: 10px; }
+.why-sources p { margin: 0; color: var(--muted); font-size: 15px; }
+.why-sources a { color: var(--gold); }
 .step {
   background: rgba(18, 16, 24, 0.72);
   border: 1px solid var(--line);
@@ -509,11 +525,12 @@ h1 {
 }
 
 @media (max-width: 900px) {
-  .hero, .split, .flow-grid, .stats, .public-grid, .criteria { grid-template-columns: 1fr; }
+  .hero, .split, .flow-grid, .why-funnel, .stats, .public-grid, .criteria { grid-template-columns: 1fr; }
   .arch-list li, .timeline li { grid-template-columns: 1fr; gap: 6px; }
   .header-inner { flex-wrap: wrap; padding: 10px 0; }
   .nav { margin-left: 0; width: 100%; }
   h1 { font-size: 46px; }
+  .hero-mark { width: 112px; height: 112px; }
   .section h2 { max-width: none; }
   .wrap { width: min(var(--max), calc(100% - 28px)); }
 }

@@ -9,6 +9,7 @@ import { MarketCheck } from "@/components/market-check";
 import { Roadmap } from "@/components/roadmap";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { WhyDarkswap } from "@/components/why-darkswap";
 import { readDevnet } from "@/lib/devnet";
 
 export const revalidate = 15;
@@ -22,6 +23,7 @@ export default async function HomePage() {
         <div className="wrap">
           <FunnelStrip />
           <Hero status={status} />
+          <WhyDarkswap />
           <Flow />
           <AgentSection />
           <Architecture />

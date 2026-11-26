@@ -41,21 +41,29 @@ def mcp_endpoint_url(public_url: str) -> str:
     return f"https://{parts.netloc}{base_path}{MCP_ENDPOINT_PATH}"
 
 
+BSC_TESTNET_RPC = "https://bsc-testnet-dataseed.bnbchain.org"
+PUBLIC_ENDPOINT = "https://hack.darkswap.app"
+
+
 def register_agent() -> int:
+    os.environ.setdefault("RPC_URL_BSC_TESTNET", BSC_TESTNET_RPC)
     private_key = os.environ.get("PRIVATE_KEY", "").strip()
     password = os.environ.get("WALLET_PASSWORD", "").strip()
-    public_url = os.environ.get("AGENT_PUBLIC_URL", "").strip()
-    if not private_key or not password or not public_url:
+    public_url = os.environ.get("AGENT_PUBLIC_URL", PUBLIC_ENDPOINT).strip()
+    if not private_key or not password:
         print(
-            "ERC-8004 registration needs PRIVATE_KEY, WALLET_PASSWORD, and AGENT_PUBLIC_URL.\n"
-            "AGENT_PUBLIC_URL is the deployed site, for example https://your-app.vercel.app.\n"
-            "Its /api/mcp endpoint is published in the registration.\n"
+            "ERC-8004 registration needs PRIVATE_KEY and WALLET_PASSWORD.\n"
+            "AGENT_PUBLIC_URL defaults to https://hack.darkswap.app and its /api/mcp\n"
+            "endpoint is published in the registration. Override it for another host.\n"
             "The SDK signs with the key and encrypts a keystore under the password.\n"
             "On BSC testnet (chain 97) registration is gas-free via MegaFuel, so the\n"
             "address does not need tBNB for this call. Do not commit the key.\n"
             "This command will not generate one.\n"
+            "Default RPC is https://bsc-testnet-dataseed.bnbchain.org "
+            "(override with RPC_URL_BSC_TESTNET).\n"
             "Registry preset in bnbagent 0.5.1: "
-            "0x8004A818BFB912233c491871b3d84c89A494BD9e on bsc-testnet.",
+            "0x8004A818BFB912233c491871b3d84c89A494BD9e on bsc-testnet.\n"
+            "An agent is already registered: id 2930.",
             file=sys.stderr,
         )
         return 2

@@ -6,7 +6,7 @@ import unittest
 import urllib.request
 
 from darkswap_agent.intent import IntentError, parse_intent
-from darkswap_agent.quote import quote_exact_in
+from darkswap_agent.quote import DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN, quote_exact_in
 from darkswap_agent.rehearsal import atomic_swap_calldata, plan_calls, shield_calldata
 from darkswap_agent.service import handle_intent
 
@@ -36,13 +36,13 @@ class IntentTests(unittest.TestCase):
 
 class QuoteTests(unittest.TestCase):
     def test_matches_foundry_vector(self) -> None:
-        quoted = quote_exact_in(10**17, 10 * 10**18, 10_000 * 10**18)
-        self.assertEqual(quoted, 98_715803439706129885)
+        quoted = quote_exact_in(10**17, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
+        self.assertEqual(quoted, 54_787270909036902086)
 
     def test_cap_refuses_a_tenth_and_quotes_four_hundredths(self) -> None:
         refused = handle_intent("swap 0.1 bnb to rNOTE privately")
         self.assertEqual(refused["status"], "refused")
-        self.assertEqual(refused["quote_rnote_wei"], 98_715803439706129885)
+        self.assertEqual(refused["quote_rnote_wei"], 54_787270909036902086)
 
         saved = {key: os.environ.get(key) for key in ("RPC_URL", "REHEARSAL", "SENDER")}
         for key in saved:

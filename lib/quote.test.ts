@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { EXECUTION_CAP_WEI, parseBnbInput, quoteExactIn } from "./quote.ts";
+import { DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN, EXECUTION_CAP_WEI, parseBnbInput, quoteExactIn } from "./quote.ts";
 
 describe("quoteExactIn", () => {
-  it("matches the Foundry vector for 0.1 BNB", () => {
-    const out = quoteExactIn(10n ** 17n, 10n * 10n ** 18n, 10_000n * 10n ** 18n);
-    assert.equal(out, 98_715803439706129885n);
+  it("matches the Foundry vector for 0.1 BNB on the 555 rNOTE seed", () => {
+    const out = quoteExactIn(10n ** 17n, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN);
+    assert.equal(out, 54_787270909036902086n);
   });
 });
 

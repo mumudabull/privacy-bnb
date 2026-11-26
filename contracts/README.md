@@ -17,7 +17,7 @@ A Foundry demo of shield → swap → reshield. It is public on purpose.
 forge test
 ```
 
-The 0.1 BNB quote against 10 BNB / 10,000 rNOTE is `98715803439706129885` wei of rNOTE (`98.715…`). The Next.js quote uses the same integer math.
+The 0.1 BNB quote against 10 BNB / 5,550 rNOTE (555 rNOTE per BNB) is `54787270909036902086` wei of rNOTE (`54.787…`). The Next.js quote uses the same integer math. `DEMO_RNOTE_PER_BNB` changes the default seed.
 
 ## Probe the real pool
 
@@ -50,7 +50,8 @@ Stop here unless you already have a throwaway key and testnet funds. This repo d
 ```bash
 export PRIVATE_KEY=0x...   # not committed
 export AMM_BNB_LIQUIDITY=50000000000000000      # 0.05 tBNB seeded into the AMM
-export AMM_TOKEN_LIQUIDITY=50000000000000000000 # 50 rNOTE, same 1:1000 price as the 10 / 10,000 seed
+export DEMO_RNOTE_PER_BNB=555
+# token liquidity defaults to BNB liquidity times 555, so 0.05 BNB seeds 27.75 rNOTE
 forge script script/Deploy.s.sol --rpc-url bsc_testnet --broadcast
 ```
 

@@ -8,7 +8,7 @@ Oracle-guarded public rehearsal of a private swap. Built for BNB Bangkok, Develo
 | --- | --- | --- |
 | ShieldedPool, read-only | New L1 devnet, chain 1105 | `0x0000000000000000000000000000000000005000` |
 | Auth verifier, documented | New L1 devnet | `0x0000000000000000000000000000000000005003` |
-| ERC-8004 registry preset, not written | BSC testnet, chain 97 | `0x8004A818BFB912233c491871b3d84c89A494BD9e` |
+| ERC-8004 agent id 2930 | BSC testnet, chain 97 | registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`, owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`, [tx](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00) |
 | Public rehearsal | Not deployed | Needs `PRIVATE_KEY`, `ORACLE_FEED`, and 0.2 tBNB |
 
 No BNB/USD Atlas SingleFeed on BSC testnet was in the public catalog at https://atlasoracle.io/feeds on 25 Nov 2026. The listed BNB Chain feeds are other pairs and share `0xeace519ebb14fb8404fa6ddd23c3b34abade44aa`. That address is not used as a BNB/USD aggregator. `ORACLE_FEED` is required configuration. Tests use `MockAggregator`.

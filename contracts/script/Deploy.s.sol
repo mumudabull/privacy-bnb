@@ -13,7 +13,8 @@ import {PublicRehearsal} from "../src/PublicRehearsal.sol";
 contract Deploy is Script {
     function run() external {
         uint256 bnbLiquidity = vm.envOr("AMM_BNB_LIQUIDITY", uint256(10 ether));
-        uint256 tokenLiquidity = vm.envOr("AMM_TOKEN_LIQUIDITY", uint256(10_000 ether));
+        uint256 rnotePerBnb = vm.envOr("DEMO_RNOTE_PER_BNB", uint256(555));
+        uint256 tokenLiquidity = vm.envOr("AMM_TOKEN_LIQUIDITY", bnbLiquidity * rnotePerBnb / 1 ether);
         address oracle = vm.envOr("ORACLE_FEED", address(0));
         uint16 maxDeviationBps = uint16(vm.envOr("MAX_DEVIATION_BPS", uint256(500)));
         uint32 maxStaleSeconds = uint32(vm.envOr("MAX_STALE_SECONDS", uint256(3600)));

@@ -6,7 +6,7 @@
 
 **A trading interface for BNB Chain’s native privacy layer.** DarkSwap brings its intent-based swap experience to BNB Chain New L1. The Bangkok build reads the live shielded pool and lets judges walk through a public swap rehearsal with a capped quoting agent.
 
-**Live demo:** [privacy-bnb.vercel.app/hack](https://privacy-bnb.vercel.app/hack) · [简体中文](https://privacy-bnb.vercel.app/hack/zh) · [technical page](https://privacy-bnb.vercel.app/)
+**Live demo:** [hack.darkswap.app](https://hack.darkswap.app) · [简体中文](https://hack.darkswap.app/hack/zh) · [technical page](https://hack.darkswap.app/)
 
 [Run the demo](#run-the-demo) · [What stays public](#what-stays-public) · [HackQuest submission notes](./docs/hackquest-submission.md) · [CoinMarketCap × Atlas write-up](./docs/cmc-atlas-writeup.md)
 
@@ -29,8 +29,20 @@
 | Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://privacy-bnb.vercel.app/api/mcp`. The Python agent supports optional Claude parsing for free-form requests. |
 | Swap rehearsal and oracle guard | Local Anvil · `31337` | Executable public flow with a demo AMM, cleartext notes, and a mock AggregatorV3 feed. |
 | CoinMarketCap BNB/USD | CoinMarketCap Pro API | The quote checks market deviation when `CMC_API_KEY` is set. With the key unset, the market check is skipped. |
-| ERC-8004 agent identity | BNB Smart Chain testnet · `97` | Registration script is ready. Registration requires a public MCP URL and testnet signer. |
+| ERC-8004 agent identity | BNB Smart Chain testnet · `97` | Registered. Agent id **2930**. Registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`. Owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`. [Transaction](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00). Default RPC is `https://bsc-testnet-dataseed.bnbchain.org`. |
 | Proof-backed swap | BNB Chain New L1 devnet | Documented integration path. End-to-end proof generation and settlement are pending. |
+
+## Why DarkSwap
+
+Shielded liquidity is fragmented across small pools, so anonymity sets stay thin and moving between them leaks.
+
+[DefiLlama](https://defillama.com/protocols/privacy) tracks 55 privacy protocols with $763.5m TVL, about 98% in Tornado Cash, Railgun, and Zama. Zcash shielded supply is split across four pools ([Atlas ZEC](https://www.atlaszec.com/shielded.html)). On Solana, Privacy Cash is about $1.18m ([DefiLlama](https://defillama.com/protocol/privacy-cash)), and Elusiv shut down on 29 Feb 2024 ([Elusiv](https://medium.com/elusiv-privacy/sunsetting-elusiv-transitioning-towards-the-future-of-privacy-and-confidentiality-0b078e9bcfac)). 17.65% of Railgun withdrawals are linkable ([arXiv 2606.25926](https://arxiv.org/abs/2606.25926)). 95.81% of bridge withdrawals were matched from public logs ([arXiv 2409.04937](https://arxiv.org/abs/2409.04937)).
+
+NEAR Intents has routed $41.25B across 39 chains, including BNB ([NEAR Stats](https://nearstats.org/)). New L1 says atomicCall privacy comes from "the set of other users doing the same kind of operation" ([BNB Chain docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)).
+
+DarkSwap funnels assets from any chain, through an intent, into one BNB New L1 shielded pool, where the ERC-8004 agent swaps with atomicCall without leaving that pool. **One deep shielded pool instead of fifty shallow ones.**
+
+That funnel is the roadmap. Deposits into the pool are public today. This repository does not submit a type 0x77 proof yet. The seed pool is about 555 rNOTE per BNB so a live CoinMarketCap print can sit inside the 500 bps band. Set `DEMO_RNOTE_PER_BNB` to change it.
 
 ## What stays public
 

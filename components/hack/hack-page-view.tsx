@@ -29,7 +29,10 @@ export function HackPageView({ locale, className }: HackPageViewProps) {
 
       <header className="hack-header">
         <a className="hack-brand" href="/" lang="en">
-          DarkSwap <span>on BNB</span>
+          <img src="/brand/logo.svg" width={40} height={40} alt="" />
+          <span>
+            DarkSwap <span>on BNB</span>
+          </span>
         </a>
         <nav aria-label={copy.navigationLabel}>
           <a href="/">{copy.navigationTechnicalPage}</a>
@@ -48,6 +51,18 @@ export function HackPageView({ locale, className }: HackPageViewProps) {
       <main id="content">
         <section className="hack-hero">
           <div className="hack-hero-copy">
+            <video
+              className="hack-warp"
+              autoPlay
+              muted
+              playsInline
+              poster="/brand/final-v3-512.png"
+              aria-label="DarkSwap mark warping into the BNB logo"
+            >
+              <source src="/brand/warp.webm" type="video/webm" />
+              <source src="/brand/warp.mp4" type="video/mp4" />
+            </video>
+            <img className="hack-warp-still" src="/brand/logo.svg" alt="DarkSwap on BNB" />
             <h1>{copy.heroTitle}</h1>
             <p>{copy.heroBody}</p>
             <p className="hack-hero-note">{copy.heroNote}</p>

@@ -24,7 +24,7 @@ export function SwapDemo() {
         <h2>Quote a BNB to rNOTE swap.</h2>
         <p className="section-lead">
           The number is the same 0.30% constant-product quote the demo AMM uses, seeded
-          with 10 BNB and 10,000 rNOTE. Nothing is sent from this page.
+          with 10 BNB and 5,550 rNOTE (about 555 rNOTE per BNB). Nothing is sent from this page.
         </p>
         <label className="field" style={{ marginTop: 18 }}>
           Amount in BNB

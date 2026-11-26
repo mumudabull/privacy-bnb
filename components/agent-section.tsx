@@ -18,9 +18,17 @@ export function AgentSection() {
             key.
           </p>
           <p className="fine">
-            SDK: <a href={LINKS.agentSdk}>BNB Agent SDK</a> ·{" "}
-            <a href={LINKS.agentRepo}>bnbagent-sdk</a>. The page itself sends no
-            transaction. A key stays in the environment, never in the repo.
+            Registered on BSC testnet as agent id 2930. Registry{" "}
+            <a href="https://testnet.bscscan.com/address/0x8004A818BFB912233c491871b3d84c89A494BD9e">
+              0x8004A818BFB912233c491871b3d84c89A494BD9e
+            </a>
+            .{" "}
+            <a href="https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00">
+              Registration transaction
+            </a>
+            . Owner 0x57f37b891980616e76ED2f650e7e38BeAFd59084. SDK:{" "}
+            <a href={LINKS.agentSdk}>BNB Agent SDK</a>. The page itself sends no
+            transaction.
           </p>
         </div>
         <aside className="quote-card" aria-label="Example intent">

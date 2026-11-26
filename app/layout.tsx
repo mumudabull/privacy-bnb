@@ -15,20 +15,26 @@ const mono = Space_Mono({
   display: "swap",
 });
 
+const siteUrl = "https://hack.darkswap.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "DarkSwap on BNB",
   description:
     "Private swaps on BNB Chain New L1. Shield native BNB, swap through atomicCall, reshield. Built at BNB Bangkok.",
+  alternates: { canonical: "/" },
   openGraph: {
     title: "DarkSwap on BNB",
-    description:
-      "Shield, atomicCall swap, reshield — DarkSwap’s private route, on New L1. Devnet only.",
+    description: "One deep shielded pool instead of fifty shallow ones. Devnet and testnet only.",
     type: "website",
+    url: siteUrl,
+    images: [{ url: "/brand/og.png", width: 1200, height: 630, alt: "DarkSwap on BNB" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "DarkSwap on BNB",
-    description: "Private swaps on New L1’s shielded pool. Built at BNB Bangkok.",
+    description: "One deep shielded pool instead of fifty shallow ones.",
+    images: ["/brand/og.png"],
   },
 };
 

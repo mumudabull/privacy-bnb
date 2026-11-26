@@ -32,7 +32,9 @@ export AGENT_PUBLIC_URL=https://<your-deployment>   # the deployed site
 PYTHONPATH=. python3 -m darkswap_agent register
 ```
 
-Registration uses `bnbagent` 0.5.1 on `bsc-testnet` (chain 97). The SDK preset registry is `0x8004A818BFB912233c491871b3d84c89A494BD9e`. Docs say MegaFuel sponsors this transaction, so the key does not need tBNB to register. The registration publishes `<AGENT_PUBLIC_URL>/api/mcp`, the hosted `quote_swap` endpoint, because the SDK only accepts an `http(s)` endpoint. Running it again reuses the existing identity. This environment had no `PRIVATE_KEY`, so no agent id was minted.
+Registered on BSC testnet as agent id **2930**. Registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`. Owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`. [Transaction](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00).
+
+`bnbagent` 0.5.1 only accepts an `http://` or `https://` endpoint, so the script publishes `https://hack.darkswap.app/api/mcp` unless `AGENT_PUBLIC_URL` is set. The SDK default RPC `data-seed-prebsc-2-s2.binance.org:8545` is unreachable. The script sets `RPC_URL_BSC_TESTNET` to `https://bsc-testnet-dataseed.bnbchain.org` when that variable is empty. MegaFuel sponsors registration, so the call does not need tBNB. A second registration from a new wallet mints another identity.
 
 ## MCP
 

@@ -7,6 +7,7 @@ const NAV = [
   ["Architecture", "/#architecture"],
   ["Devnet", "/#devnet"],
   ["Market", "/#market"],
+  ["Why", "/#why"],
   ["Roadmap", "/#roadmap"],
   ["Bangkok", "/#bangkok"],
   ["Hackathon build", "/hack"],
@@ -20,6 +21,7 @@ export function SiteHeader() {
       </a>
       <div className="wrap header-inner">
         <a className="brand" href="/">
+          <img src="/brand/logo.svg" width={36} height={36} alt="" />
           <strong>DarkSwap</strong>
           <span>on BNB</span>
         </a>

@@ -3,9 +3,10 @@
 export const FEE_BPS = 30n;
 export const BPS = 10_000n;
 
-/** Seed used by Deploy.s.sol when AMM_*_LIQUIDITY is unset. */
+/** Seed used by Deploy.s.sol when AMM_*_LIQUIDITY is unset. About 555 rNOTE per BNB. */
+export const DEMO_RNOTE_PER_BNB = 555n;
 export const DEMO_RESERVE_BNB = 10n * 10n ** 18n;
-export const DEMO_RESERVE_TOKEN = 10_000n * 10n ** 18n;
+export const DEMO_RESERVE_TOKEN = DEMO_RNOTE_PER_BNB * DEMO_RESERVE_BNB;
 
 /** Agent execution cap until a funded testnet deployer is configured. */
 export const EXECUTION_CAP_WEI = 5n * 10n ** 16n;

@@ -51,13 +51,13 @@ describe("buildAgentQuote", () => {
   it("refuses a tenth of a BNB above the cap and keeps the Foundry quote", () => {
     const quote = buildAgentQuote("swap 0.1 bnb to rNOTE privately", SKIPPED_MARKET);
     assert.equal(quote.status, "refused");
-    assert.equal(quote.quoteRnoteWei, "98715803439706129885");
+    assert.equal(quote.quoteRnoteWei, "54787270909036902086");
   });
 
   it("quotes under the cap and flags an asset the rehearsal cannot execute", () => {
     const quote = buildAgentQuote("swap 0.04 bnb to USDT", SKIPPED_MARKET);
     assert.equal(quote.status, "quoted");
-    assert.equal(quote.quoteRnote, "39.72159");
+    assert.equal(quote.quoteRnote, "22.045482");
     assert.match(quote.assetNote ?? "", /not executable/);
   });
 

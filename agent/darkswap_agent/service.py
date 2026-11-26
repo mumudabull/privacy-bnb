@@ -6,6 +6,7 @@ from darkswap_agent.market import describe_market, fetch_cmc, implied_bnb_usd_we
 from darkswap_agent.quote import (
     DEMO_RESERVE_BNB,
     DEMO_RESERVE_TOKEN,
+    DEMO_RNOTE_PER_BNB,
     EXECUTION_CAP_WEI,
     format_units,
     quote_exact_in,
@@ -36,7 +37,7 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         "quote_rnote": format_units(quoted),
         "quote_rnote_wei": quoted,
         "execution_cap_bnb": format_units(cap),
-        "pool": "seed quote, 10 BNB / 10000 rNOTE, 0.30% fee",
+        "pool": f"seed quote, 10 BNB / {DEMO_RNOTE_PER_BNB * 10} rNOTE, 0.30% fee",
         "privacy": PRIVACY_LINE,
         "example_calls_for_note_0": plan_calls(0, quoted),
     }

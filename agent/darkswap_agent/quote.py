@@ -1,9 +1,23 @@
 """Integer quote shared with contracts/src/SwapMath.sol and lib/quote.ts."""
 
+import os
+
 FEE_BPS = 30
 BPS = 10_000
+
+
+def _rnote_per_bnb() -> int:
+    raw = os.environ.get("DEMO_RNOTE_PER_BNB", "555").strip()
+    try:
+        value = int(raw, 10)
+    except ValueError:
+        return 555
+    return value if value > 0 else 555
+
+
+DEMO_RNOTE_PER_BNB = _rnote_per_bnb()
 DEMO_RESERVE_BNB = 10 * 10**18
-DEMO_RESERVE_TOKEN = 10_000 * 10**18
+DEMO_RESERVE_TOKEN = DEMO_RNOTE_PER_BNB * DEMO_RESERVE_BNB
 # 0.05 BNB. Raised only by setting DARKSWAP_CAP_WEI in the environment.
 EXECUTION_CAP_WEI = 5 * 10**16
 

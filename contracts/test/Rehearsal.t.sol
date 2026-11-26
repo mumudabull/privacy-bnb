@@ -11,11 +11,11 @@ import {SwapMath} from "../src/SwapMath.sol";
 
 contract RehearsalTest is Test {
     uint256 internal constant BNB_LIQ = 10 ether;
-    uint256 internal constant TOKEN_LIQ = 10_000 ether;
-    /// @dev quote(0.1 ether, 10 ether, 10_000 ether) with a 30 bps fee.
-    uint256 internal constant QUOTE_POINT_ONE = 98_715803439706129885;
-    /// @dev Spot price of the seed pool: 10_000 rNOTE / 10 BNB, 1 rNOTE = 1 USD.
-    uint256 internal constant SPOT_USD_WAD = 1000 ether;
+    uint256 internal constant TOKEN_LIQ = 5550 ether;
+    /// @dev quote(0.1 ether, 10 ether, 5550 ether) with a 30 bps fee.
+    uint256 internal constant QUOTE_POINT_ONE = 54_787270909036902086;
+    /// @dev Spot price of the seed pool: 5550 rNOTE / 10 BNB, 1 rNOTE = 1 USD.
+    uint256 internal constant SPOT_USD_WAD = 555 ether;
 
     DemoAMM internal amm;
     PublicRehearsal internal rehearsal;
@@ -113,9 +113,9 @@ contract RehearsalTest is Test {
     }
 
     function test_documentedDemoSizePassesWhenOracleMatchesSpot() public {
-        DemoAMM thin = new DemoAMM{value: 0.05 ether}(50 ether);
+        DemoAMM thin = new DemoAMM{value: 0.05 ether}(27.75 ether);
         MockAggregator feed = new MockAggregator(18);
-        uint256 spot = 50 ether * 1e18 / (0.05 ether);
+        uint256 spot = 27.75 ether * 1e18 / (0.05 ether);
         feed.setAnswer(int256(spot));
         PublicRehearsal guarded = new PublicRehearsal(thin, IAggregatorV3(address(feed)), 500, 1 hours);
         vm.startPrank(alice);

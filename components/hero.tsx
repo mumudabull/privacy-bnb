@@ -11,6 +11,20 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
 
   return (
     <section className="hero" id="top">
+      <div className="hero-mark">
+        <video
+          className="warp"
+          autoPlay
+          muted
+          playsInline
+          poster="/brand/final-v3-512.png"
+          aria-label="DarkSwap mark warping into the BNB logo"
+        >
+          <source src="/brand/warp.webm" type="video/webm" />
+          <source src="/brand/warp.mp4" type="video/mp4" />
+        </video>
+        <img className="warp-still" src="/brand/logo.svg" alt="DarkSwap on BNB" />
+      </div>
       <div>
         <p className="kicker">Solana roots · NEAR routes · BNB shield</p>
         <h1>
