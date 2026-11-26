@@ -75,8 +75,9 @@ export type AgentQuote = {
 
 /**
  * Decision order matches the Python agent: a malformed sentence is rejected,
- * an amount above the cap is refused (with the quote still attached), and
- * only then can the market band turn a quote into a market refusal.
+ * an unsupported output asset is rejected with no pool quote, an amount above
+ * the cap is refused with the public quote attached, and only then can a stale
+ * Atlas read or the market band turn an in-cap quote into a market refusal.
  * Wei values are strings because JSON has no 256-bit integer.
  */
 export function buildAgentQuote(
@@ -104,22 +105,6 @@ export function buildAgentQuote(
       status: "rejected",
       reason: "Only BNB to rNOTE is supported on testnet.",
       privacy: PRIVACY_LINE,
-      amountBnb: formatBnb(intent.amountWei, 6),
-      amountWei: intent.amountWei.toString(),
-      assetOut: intent.assetOut,
-      privateRequested: intent.privateRequested,
-      executionCapBnb: formatBnb(capWei, 6),
-      market: toSerializableMarketSummary(market),
-    };
-  }
-  const atlasBlock = atlasBlockReason(market);
-  if (atlasBlock) {
-    return {
-      status: "market_refused",
-      reason: atlasBlock,
-      privacy: PRIVACY_LINE,
-      amountBnb: formatBnb(intent.amountWei, 6),
-      amountWei: intent.amountWei.toString(),
       assetOut: intent.assetOut,
       privateRequested: intent.privateRequested,
       executionCapBnb: formatBnb(capWei, 6),
@@ -151,6 +136,18 @@ export function buildAgentQuote(
         ? "Risk tier is quote-only. The quote is shown and nothing is executed."
         : `Above the ${formatBnb(capWei, 6)} BNB execution cap. Quote only.`;
     return quote;
+  }
+  const atlasBlock = atlasBlockReason(market);
+  if (atlasBlock) {
+    return {
+      status: "market_refused",
+      reason: atlasBlock,
+      privacy: PRIVACY_LINE,
+      assetOut: intent.assetOut,
+      privateRequested: intent.privateRequested,
+      executionCapBnb: formatBnb(capWei, 6),
+      market: marketAfterAtlasBlock(market),
+    };
   }
   if (market.decision === "refuse") {
     quote.status = "market_refused";
@@ -196,6 +193,15 @@ export function toSerializableMarketSummary(market: MarketSummary): MarketSummar
       explorer: market.atlas.explorer,
     },
   };
+}
+
+/** Marks an age failure as stale so the page does not describe it as a price-band breach. */
+function marketAfterAtlasBlock(market: MarketSummary): MarketSummary {
+  const summary = toSerializableMarketSummary(market);
+  if (summary.atlas.status === "pass") {
+    summary.atlas = { ...summary.atlas, status: "stale" };
+  }
+  return summary;
 }
 
 /** A stale print or a failed read must not become a quote. Age uses the 3600s oracle window. */

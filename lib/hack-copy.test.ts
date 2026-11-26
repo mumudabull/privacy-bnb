@@ -241,6 +241,23 @@ describe("hackathon page copy", () => {
     assert.ok(chinese.console.describeReason({ ...base, status: "market_refused" }));
     assert.ok(chinese.console.describeReason({ ...base, status: "rejected" }));
     assert.equal(chinese.console.describeReason({ ...base, status: "quoted" }), undefined);
+    const staleAtlas = chinese.console.describeReason({
+      ...base,
+      status: "market_refused",
+      market: { ...MARKET, atlas: { ...MARKET.atlas, status: "stale" } },
+    });
+    assert.match(staleAtlas ?? "", /预言机已过期/);
+    assert.doesNotMatch(staleAtlas ?? "", /CoinMarketCap/);
+    assert.equal(
+      chinese.console.describeReason({
+        ...base,
+        status: "rejected",
+        reason: "Only BNB to rNOTE is supported on testnet.",
+      }),
+      "测试网目前只支持 BNB 兑换 rNOTE。",
+    );
+    assert.equal(english.console.atlasRefusedHeadline, "Refused: oracle check");
+    assert.equal(chinese.console.atlasRefusedHeadline, "已拒绝：预言机检查");
     for (const decision of ["pass", "refuse", "unavailable", "skipped"] as const) {
       assert.ok(chinese.console.describeMarket({ ...MARKET, decision }).length > 0);
       assert.ok(english.console.describeMarket({ ...MARKET, decision }).length > 0);

@@ -6,6 +6,7 @@
  */
 
 import type { AgentQuote, AgentQuoteStatus, MarketSummary } from "./agent-quote.ts";
+import { ORACLE_MAX_STALE_SECONDS } from "./risk.ts";
 import { TESTNET_READONLY_NOTE } from "./testnet-note.ts";
 
 export type HackLocale = "en" | "zh";
@@ -96,6 +97,8 @@ export type HackConsoleCopy = {
   examples: readonly { label: string; sentence: string }[];
   idleHint: string;
   statusHeadlines: Record<AgentQuoteStatus, string>;
+  /** Headline when market_refused comes from a stale or unreadable Atlas feed. */
+  atlasRefusedHeadline: string;
   fieldSell: string;
   fieldPoolQuote: string;
   fieldExecutionCap: string;
@@ -319,6 +322,7 @@ const ENGLISH: HackPageCopy = {
       market_refused: "Refused: outside the market band",
       rejected: "Not a swap this agent accepts",
     },
+    atlasRefusedHeadline: "Refused: oracle check",
     fieldSell: "You sell",
     fieldPoolQuote: "Pool quote",
     fieldExecutionCap: "Execution cap",
@@ -513,6 +517,7 @@ const CHINESE: HackPageCopy = {
       market_refused: "已拒绝：超出市场价区间",
       rejected: "智能体不接受这条指令",
     },
+    atlasRefusedHeadline: "已拒绝：预言机检查",
     fieldSell: "卖出",
     fieldPoolQuote: "资金池报价",
     fieldExecutionCap: "执行上限",
@@ -523,8 +528,17 @@ const CHINESE: HackPageCopy = {
         case "refused":
           return `超过 ${quote.executionCapBnb} BNB 的执行上限，仅提供报价。`;
         case "market_refused":
+          if (quote.market?.atlas.status === "stale") {
+            return `Atlas 预言机已过期（超过 ${ORACLE_MAX_STALE_SECONDS} 秒）。报价被拒绝。`;
+          }
+          if (quote.market?.atlas.status === "unavailable") {
+            return "未能读取 Atlas 预言机。报价被拒绝。";
+          }
           return "资金池隐含的 BNB 价格超出了 CoinMarketCap 的允许区间。";
         case "rejected":
+          if (quote.reason === "Only BNB to rNOTE is supported on testnet.") {
+            return "测试网目前只支持 BNB 兑换 rNOTE。";
+          }
           return `请用英文这样说：${CANONICAL_SENTENCE}`;
         case "quoted":
           return undefined;

@@ -168,17 +168,26 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
   );
 }
 
+function atlasBlockedQuote(quote: AgentQuote): boolean {
+  const atlasStatus = quote.market?.atlas.status;
+  return atlasStatus === "stale" || atlasStatus === "unavailable";
+}
+
 export function QuoteAnswer({ quote, copy }: { quote: AgentQuote; copy: HackConsoleCopy }) {
   const wasAccepted = quote.status === "quoted";
   const reason = copy.describeReason(quote);
+  const headline =
+    quote.status === "market_refused" && atlasBlockedQuote(quote)
+      ? copy.atlasRefusedHeadline
+      : copy.statusHeadlines[quote.status];
   return (
     <div className="hack-answer" data-accepted={wasAccepted}>
       <p className="hack-answer-status">
         {wasAccepted ? <Check size={18} aria-hidden /> : <X size={18} aria-hidden />}
-        {copy.statusHeadlines[quote.status]}
+        {headline}
       </p>
       {reason && <p className="hack-answer-reason">{reason}</p>}
-      {quote.amountBnb !== undefined && (
+      {quote.quoteRnote !== undefined && quote.amountBnb !== undefined && (
         <dl>
           <div>
             <dt>{copy.fieldSell}</dt>

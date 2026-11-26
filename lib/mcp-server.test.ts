@@ -100,7 +100,16 @@ describe("buildAgentQuote", () => {
     });
     assert.equal(old.status, "market_refused");
     assert.match(old.reason ?? "", /3600s/);
+    assert.equal(old.market?.atlas.status, "stale");
     assert.notEqual(old.status, "quoted");
+
+    const overCapWhileStale = buildAgentQuote("swap 0.1 bnb to rNOTE", {
+      ...SKIPPED_MARKET,
+      atlas: { ...SKIPPED_MARKET.atlas, status: "unavailable", priceUsd: null, updatedAt: null },
+    });
+    assert.equal(overCapWhileStale.status, "refused");
+    assert.match(overCapWhileStale.reason ?? "", /execution cap/);
+    assert.equal(overCapWhileStale.quoteRnoteWei, "54787270909036902086");
   });
 
   it("turns an in-cap quote into a market refusal when the band is breached", () => {
