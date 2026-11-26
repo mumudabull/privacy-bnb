@@ -186,6 +186,13 @@ describe("hackathon page copy", () => {
     assert.equal(english.console.inputPlaceholder, chinese.console.inputPlaceholder);
     assert.equal(english.console.tryLabel, "Try:");
     assert.equal(chinese.console.tryLabel, "试试：");
+    assert.equal(
+      english.console.promptCaption,
+      'Type your swap in plain words, e.g. "Swap 0.04 BNB to rNOTE privately". The agent quotes it and refuses anything over the cap.',
+    );
+    assert.match(chinese.console.promptCaption, /Swap 0\.04 BNB to rNOTE privately/);
+    assert.match(chinese.console.promptCaption, /超过上限/);
+    assert.notEqual(chinese.console.promptCaption, english.console.promptCaption);
     assert.equal(english.agents.title, "An AI swap agent, and an API for yours");
     assert.match(english.agents.intro, /public rehearsal/);
     assert.match(chinese.agents.intro, /公开演练/);

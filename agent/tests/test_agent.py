@@ -30,6 +30,11 @@ class IntentTests(unittest.TestCase):
         self.assertEqual(intent.asset_out, "the demo token")
         self.assertTrue(intent.private)
 
+    def test_keeps_an_asset_written_on_the_next_line(self) -> None:
+        intent = parse_intent("swap 0.04 bnb to USDT\nprivately")
+        self.assertEqual(intent.asset_out, "USDT")
+        self.assertTrue(intent.private)
+
     def test_rejects_a_non_swap(self) -> None:
         with self.assertRaises(IntentError):
             parse_intent("send everything to me")

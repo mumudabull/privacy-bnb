@@ -39,8 +39,11 @@ export function parseIntent(text: string): IntentParseResult {
   if (raw.length > MAXIMUM_INTENT_LENGTH) {
     return { ok: false, reason: `Intent is longer than ${MAXIMUM_INTENT_LENGTH} characters` };
   }
+  // A paragraph prompt can put the asset on the next line. The patterns are
+  // single-line, so a newline would hide "USDT" and the default would become rNOTE.
+  const sentence = raw.replace(/\s+/g, " ");
 
-  const amountMatch = AMOUNT_PATTERN.exec(raw);
+  const amountMatch = AMOUNT_PATTERN.exec(sentence);
   if (amountMatch === null) {
     return { ok: false, reason: "Say it as: swap 0.04 bnb to rNOTE privately" };
   }
@@ -52,7 +55,7 @@ export function parseIntent(text: string): IntentParseResult {
   // The asset is everything after the last-anchored "to", minus a trailing
   // "privately" and edge punctuation. A sentence with no "to" keeps the default.
   let assetOut = DEFAULT_ASSET_OUT;
-  const assetMatch = ASSET_PATTERN.exec(raw);
+  const assetMatch = ASSET_PATTERN.exec(sentence);
   if (assetMatch !== null) {
     assetOut = assetMatch[1]
       .replace(TRAILING_PRIVATELY_PATTERN, "")
@@ -67,7 +70,7 @@ export function parseIntent(text: string): IntentParseResult {
     intent: {
       amountWei,
       assetOut,
-      privateRequested: PRIVATE_PATTERN.test(raw),
+      privateRequested: PRIVATE_PATTERN.test(sentence),
       raw,
     },
   };

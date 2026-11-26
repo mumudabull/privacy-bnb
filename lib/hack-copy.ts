@@ -90,6 +90,8 @@ export type HackConsoleCopy = {
   consoleTitle: string;
   consoleExplainer: string;
   inputPlaceholder: string;
+  /** Shown under the prompt. The example sentence stays in English. */
+  promptCaption: string;
   tryLabel: string;
   submit: string;
   submitting: string;
@@ -269,6 +271,8 @@ const ENGLISH: HackPageCopy = {
     consoleExplainer:
       "Type a swap in plain words. The agent quotes it, checks the market, and refuses anything over its limits.",
     inputPlaceholder: CANONICAL_SENTENCE,
+    promptCaption:
+      'Type your swap in plain words, e.g. "Swap 0.04 BNB to rNOTE privately". The agent quotes it and refuses anything over the cap.',
     tryLabel: "Try:",
     submit: "Get a quote",
     submitting: "Quoting",
@@ -464,6 +468,8 @@ const CHINESE: HackPageCopy = {
     consoleTitle: "和 DarkSwap 智能体对话",
     consoleExplainer: "用普通的话写出一笔兑换。智能体会报价、检查市场，并拒绝任何超出限制的请求。",
     inputPlaceholder: CANONICAL_SENTENCE,
+    promptCaption:
+      "用普通的话写出兑换，例如 “Swap 0.04 BNB to rNOTE privately”。智能体会报价，并拒绝任何超过上限的请求。",
     tryLabel: "试试：",
     submit: "获取报价",
     submitting: "报价中",

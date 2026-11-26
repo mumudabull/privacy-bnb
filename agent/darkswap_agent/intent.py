@@ -28,14 +28,16 @@ def decimal_to_wei(amount: str) -> int:
 
 def parse_intent(text: str) -> SwapIntent:
     raw = text.strip()
-    amount_match = _AMOUNT.search(raw)
+    # Match the TypeScript parser: a newline must not hide the asset after "to".
+    sentence = re.sub(r"\s+", " ", raw)
+    amount_match = _AMOUNT.search(sentence)
     if amount_match is None:
         raise IntentError("Say it as: swap 0.04 bnb to rNOTE privately")
     amount_wei = decimal_to_wei(amount_match.group(1))
     if amount_wei == 0:
         raise IntentError("Amount must be above zero")
     asset = "rNOTE"
-    asset_match = _ASSET.search(raw)
+    asset_match = _ASSET.search(sentence)
     if asset_match is not None:
         asset = _TRAILING_PRIVATELY.sub("", asset_match.group(1)).strip(" .,")
     if not asset:
@@ -43,6 +45,6 @@ def parse_intent(text: str) -> SwapIntent:
     return SwapIntent(
         amount_wei=amount_wei,
         asset_out=asset,
-        private=bool(_PRIVATE.search(raw)),
+        private=bool(_PRIVATE.search(sentence)),
         raw=raw,
     )
