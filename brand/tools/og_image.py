@@ -24,8 +24,11 @@ GOLD = np.array([240, 185, 11], np.float32)
 PURPLE = np.array([164, 99, 252], np.float32)
 TITLE = "DarkSwap × BNB Hackathon"
 SUBTITLE = "Private AI agent swaps on BNB Chain"
-TITLE_FONT = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
-BODY_FONT = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+# Bundled so the card can be regenerated without a system font package.
+# License: brand/fonts/OFL.txt (SIL Open Font License 1.1).
+FONTS = ROOT / "fonts"
+TITLE_FONT = FONTS / "LiberationSans-Bold.ttf"
+BODY_FONT = FONTS / "LiberationSans-Regular.ttf"
 
 
 def gradient(width: int, height: int) -> Image.Image:
