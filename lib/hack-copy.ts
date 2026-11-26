@@ -89,10 +89,7 @@ export type HackConsoleCopy = {
   inputLabel: string;
   consoleTitle: string;
   consoleExplainer: string;
-  /**
-   * Hint inside the empty field. Chinese prefixes the English command so the
-   * example stays usable exactly as written.
-   */
+  /** Empty-field hint. Always the English command, including on the Chinese page. */
   inputPlaceholder: string;
   /** Shown under the prompt. The example sentence stays in English. */
   promptCaption: string;
@@ -474,7 +471,7 @@ const CHINESE: HackPageCopy = {
     inputLabel: "说出你的兑换",
     consoleTitle: "和 DarkSwap 智能体对话",
     consoleExplainer: "用普通的话写出一笔兑换。智能体会报价、检查市场，并拒绝任何超出限制的请求。",
-    inputPlaceholder: `请用英文：${CANONICAL_SENTENCE}`,
+    inputPlaceholder: CANONICAL_SENTENCE,
     promptCaption:
       `只识别英文指令，请原样输入：${CANONICAL_SENTENCE}。智能体会报价，并拒绝任何超过上限的请求。`,
     tryLabel: "试试：",

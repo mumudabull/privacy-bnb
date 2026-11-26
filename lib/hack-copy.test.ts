@@ -187,8 +187,8 @@ describe("hackathon page copy", () => {
     assert.equal(english.console.consoleTitle, "Talk to the DarkSwap agent");
     assert.equal(chinese.console.consoleTitle, "和 DarkSwap 智能体对话");
     assert.match(english.console.consoleExplainer, /refuses anything over its limits/);
-    assert.equal(english.console.inputPlaceholder, "swap 0.04 bnb to rNOTE privately");
-    assert.equal(chinese.console.inputPlaceholder, "请用英文：swap 0.04 bnb to rNOTE privately");
+    assert.equal(english.console.inputPlaceholder, chinese.console.inputPlaceholder);
+    assert.equal(chinese.console.inputPlaceholder, "swap 0.04 bnb to rNOTE privately");
     const pastedPlaceholder = parseIntent(chinese.console.inputPlaceholder);
     assert.equal(pastedPlaceholder.ok, true);
     assert.equal(pastedPlaceholder.ok && pastedPlaceholder.intent.assetOut, "rNOTE");
