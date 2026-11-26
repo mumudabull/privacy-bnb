@@ -1,7 +1,15 @@
 import os
 import unittest
 
-from darkswap_agent.market import deviation_bps, describe_market, implied_bnb_usd_wei, parse_bnb_usd, usd_to_wei
+from darkswap_agent.market import (
+    assess_feed,
+    deviation_bps,
+    describe_market,
+    implied_bnb_usd_wei,
+    parse_bnb_usd,
+    scale_feed_answer,
+    usd_to_wei,
+)
 
 
 class MarketMathTests(unittest.TestCase):
@@ -27,6 +35,18 @@ class MarketMathTests(unittest.TestCase):
             {"ok": True, "status": 200, "price_usd": "600", "price_wei": reference, "response_sha256": "abc"},
         )
         self.assertEqual(decision["status"], "refuse")
+
+    def test_eighteen_decimal_feed_and_round_one(self) -> None:
+        answer = 553084174049970300000
+        self.assertEqual(scale_feed_answer(answer, 18), answer)
+        self.assertEqual(scale_feed_answer(55308417405, 8), 553084174050000000000)
+        now = 1_795_658_900
+        ok, reason = assess_feed(1, answer, now - 40, 0, 18, now, 3600)
+        self.assertTrue(ok)
+        self.assertEqual(reason, "ok")
+        stale, why = assess_feed(1, answer, now - 3601, 1, 18, now, 3600)
+        self.assertFalse(stale)
+        self.assertEqual(why, "stale")
 
     def test_missing_key_skips_without_a_request(self) -> None:
         decision = describe_market(10**18, None)

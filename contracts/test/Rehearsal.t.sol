@@ -126,6 +126,31 @@ contract RehearsalTest is Test {
         assertEq(tokensOut, quoted);
     }
 
+    function test_eighteenDecimalsStayUnscaledAndRoundIdOnePasses() public {
+        int256 near = 553084174049970300000;
+        oracle.setAnswer(int256(near));
+        oracle.setRound(1, 0);
+        PublicRehearsal wide = new PublicRehearsal(amm, IAggregatorV3(address(oracle)), 500, 1 hours);
+        vm.prank(alice);
+        uint256 id = wide.shield{value: 0.01 ether}();
+        uint256 quoted = amm.quoteBnbToToken(0.01 ether);
+        vm.prank(alice);
+        (, uint256 tokensOut) = wide.atomicSwap(id, quoted);
+        assertEq(tokensOut, quoted);
+    }
+
+    function test_eightDecimalFeedScalesToWad() public {
+        MockAggregator eight = new MockAggregator(8);
+        eight.setAnswer(int256(555 * 1e8));
+        PublicRehearsal scaled = new PublicRehearsal(amm, IAggregatorV3(address(eight)), 500, 1 hours);
+        vm.prank(alice);
+        uint256 id = scaled.shield{value: 0.01 ether}();
+        uint256 quoted = amm.quoteBnbToToken(0.01 ether);
+        vm.prank(alice);
+        (, uint256 tokensOut) = scaled.atomicSwap(id, quoted);
+        assertEq(tokensOut, quoted);
+    }
+
     function test_guardRevertsWhenOracleIsStale() public {
         vm.warp(1_000_000);
         uint256 staleAt = block.timestamp - 2 hours;

@@ -6,7 +6,7 @@
  * ERC-8004 registration, so other agents and explorers can call quote_swap.
  */
 
-import { readMarketCheck } from "@/lib/cmc";
+import { readQuoteMarket } from "@/lib/quote-market";
 import { handleMcpMessage, parseErrorResponse } from "@/lib/mcp-server";
 
 // readMarketCheck uses node:crypto and node:fs, so this cannot run on the edge runtime.
@@ -70,7 +70,7 @@ export async function POST(request: Request): Promise<Response> {
     return jsonResponse(parseErrorResponse(), 400);
   }
 
-  const mcpResponse = await handleMcpMessage(message, readMarketCheck);
+  const mcpResponse = await handleMcpMessage(message, readQuoteMarket);
   if (mcpResponse === null) {
     // A notification was accepted. The transport specifies 202 with no body.
     return new Response(null, { status: 202 });

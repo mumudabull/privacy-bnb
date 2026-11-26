@@ -59,7 +59,8 @@ class QuoteTests(unittest.TestCase):
         self.assertIn("RPC_URL", str(quoted["reason"]))
         market = quoted["market"]
         assert isinstance(market, dict)
-        self.assertEqual(market["status"], "skipped")
+        self.assertEqual(market["cmc_status"], "skipped")
+        self.assertIn(market["atlas"]["status"], ("pass", "refuse", "stale", "unavailable"))
 
     def test_plan_uses_the_rehearsal_selectors(self) -> None:
         self.assertTrue(shield_calldata().startswith("0x70d39cff"))
@@ -164,6 +165,8 @@ class AnvilRehearsalTests(unittest.TestCase):
                     os.environ.pop(key, None)
                 else:
                     os.environ[key] = value
+        if result["status"] == "market_refused":
+            self.skipTest("the anvil pool spot is outside the live Atlas band")
         self.assertEqual(result["status"], "rehearsed", result.get("reason"))
         settlement = result["settlement"]
         assert isinstance(settlement, dict)

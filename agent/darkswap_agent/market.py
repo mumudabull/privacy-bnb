@@ -158,3 +158,151 @@ def _max_bps() -> int:
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+ATLAS_BNB_USD_FEED = "0x3957d289ee9C38272377786787ea34F9dd29788D"
+DEFAULT_BSC_TESTNET_RPC = "https://bsc-testnet-dataseed.bnbchain.org"
+ATLAS_EXPLORER = f"https://testnet.bscscan.com/address/{ATLAS_BNB_USD_FEED}"
+_DECIMALS = "0x313ce567"
+_LATEST_ROUND = "0xfeaf968c"
+
+
+def scale_feed_answer(answer: int, decimals: int) -> int:
+    if decimals == 18:
+        return answer
+    if decimals < 18:
+        return answer * 10 ** (18 - decimals)
+    return answer // 10 ** (decimals - 18)
+
+
+def assess_feed(round_id: int, answer: int, updated_at: int, answered_in_round: int, decimals: int, now: int, max_stale: int) -> tuple[bool, str]:
+    if round_id == 0 or updated_at == 0 or updated_at > now or now - updated_at > max_stale:
+        return False, "stale"
+    if answered_in_round != 0 and answered_in_round < round_id:
+        return False, "stale"
+    if answer <= 0 or decimals < 0 or decimals > 36:
+        return False, "bad-price"
+    if scale_feed_answer(answer, decimals) <= 0:
+        return False, "bad-price"
+    return True, "ok"
+
+
+def atlas_log_path() -> Path:
+    configured = os.environ.get("ATLAS_LOG_PATH", "").strip()
+    if configured:
+        return Path(configured)
+    return Path(__file__).resolve().parents[1] / "logs" / "atlas-requests.jsonl"
+
+
+def fetch_atlas(amm_price_wei: int) -> dict[str, object]:
+    """Read Atlas BNB/USD with eth_call. No API key. Logs the round, never a secret."""
+    feed = os.environ.get("ORACLE_FEED", ATLAS_BNB_USD_FEED).strip() or ATLAS_BNB_USD_FEED
+    rpc = os.environ.get("RPC_URL_BSC_TESTNET", DEFAULT_BSC_TESTNET_RPC).strip() or DEFAULT_BSC_TESTNET_RPC
+    base: dict[str, object] = {
+        "status": "unavailable",
+        "feed": feed,
+        "explorer": f"https://testnet.bscscan.com/address/{feed}",
+        "price_usd": None,
+        "deviation_bps": None,
+        "decimals": None,
+        "updated_at": None,
+        "round_id": None,
+    }
+    payload = json.dumps(
+        [
+            {"jsonrpc": "2.0", "id": 1, "method": "eth_call", "params": [{"to": feed, "data": _DECIMALS}, "latest"]},
+            {"jsonrpc": "2.0", "id": 2, "method": "eth_call", "params": [{"to": feed, "data": _LATEST_ROUND}, "latest"]},
+        ]
+    ).encode()
+    try:
+        request = urllib.request.Request(rpc, data=payload, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(request, timeout=8) as response:
+            body = json.loads(response.read().decode())
+    except (OSError, urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+        _append_atlas(base)
+        return base
+    if not isinstance(body, list):
+        _append_atlas(base)
+        return base
+    decoded = _decode_round(body)
+    if decoded is None:
+        _append_atlas(base)
+        return base
+    round_id, answer, updated_at, answered_in_round, decimals = decoded
+    now = int(datetime.now(timezone.utc).timestamp())
+    ok, reason = assess_feed(round_id, answer, updated_at, answered_in_round, decimals, now, _stale_seconds())
+    price_wei = scale_feed_answer(answer, decimals) if ok else 0
+    bps = deviation_bps(amm_price_wei, price_wei) if ok else None
+    status = "pass" if ok and bps is not None and bps <= _max_bps() else "refuse" if ok else ("stale" if reason == "stale" else "unavailable")
+    base.update(
+        {
+            "status": status,
+            "price_usd": _usd(price_wei) if ok else None,
+            "price_wei": str(price_wei) if ok else None,
+            "deviation_bps": bps,
+            "decimals": decimals,
+            "updated_at": updated_at,
+            "round_id": round_id,
+        }
+    )
+    _append_atlas(base)
+    return base
+
+
+def quote_market(amm_price_wei: int, cmc: dict[str, object] | None, atlas: dict[str, object]) -> dict[str, object]:
+    market = describe_market(amm_price_wei, cmc)
+    market["cmc_status"] = market["status"]
+    market["atlas"] = atlas
+    atlas_status = atlas.get("status")
+    cmc_status = market["cmc_status"]
+    if atlas_status == "refuse" or cmc_status == "refuse":
+        market["status"] = "refuse"
+    elif atlas_status == "pass" and cmc_status in ("pass", "skipped"):
+        market["status"] = "pass"
+    elif atlas_status in ("stale", "unavailable"):
+        market["status"] = "unavailable"
+    return market
+
+
+def _decode_round(body: list[object]) -> tuple[int, int, int, int, int] | None:
+    decimals_hex = _result(body, 1)
+    round_hex = _result(body, 2)
+    if decimals_hex is None or round_hex is None or len(round_hex) < 2 + 64 * 5:
+        return None
+    try:
+        decimals = int(decimals_hex, 16)
+        words = [int(round_hex[2 + i * 64 : 2 + (i + 1) * 64], 16) for i in range(5)]
+    except ValueError:
+        return None
+    answer = words[1]
+    if answer >= 1 << 255:
+        answer -= 1 << 256
+    return words[0], answer, words[3], words[4], decimals
+
+
+def _result(body: list[object], wanted: int) -> str | None:
+    for item in body:
+        if isinstance(item, dict) and item.get("id") == wanted and isinstance(item.get("result"), str):
+            return item["result"]
+    return None
+
+
+def _stale_seconds() -> int:
+    raw = os.environ.get("MAX_STALE_SECONDS", "3600").strip()
+    try:
+        value = int(raw, 10)
+    except ValueError:
+        return 3600
+    return value if value >= 0 else 3600
+
+
+def _usd(wei: int) -> str:
+    return f"{wei / 10**18}.{wei % 10**18:018d}"[:len(str(wei // 10**18)) + 3]
+
+
+def _append_atlas(record: dict[str, object]) -> None:
+    path = atlas_log_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    line = {"timestamp": _now(), "source": "atlas", **record}
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(line, separators=(",", ":")) + "\n")

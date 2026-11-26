@@ -12,11 +12,22 @@ import { handleMcpMessage, LATEST_PROTOCOL_VERSION, QUOTE_TOOL_NAME } from "./mc
 
 const SKIPPED_MARKET: MarketSummary = {
   decision: "skipped",
-  ammImpliedUsd: "1000.00",
+  cmcDecision: "skipped",
+  ammImpliedUsd: "555.00",
   cmcUsd: null,
   deviationBps: null,
   maxDeviationBps: 500,
   detail: "CMC_API_KEY is unset. No request was sent.",
+  atlas: {
+    status: "unavailable",
+    priceUsd: null,
+    deviationBps: null,
+    decimals: 18,
+    updatedAt: null,
+    roundId: "1",
+    feed: "0x3957d289ee9C38272377786787ea34F9dd29788D",
+    explorer: "https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D",
+  },
 };
 
 const REFUSING_MARKET: MarketSummary = {

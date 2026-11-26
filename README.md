@@ -18,7 +18,7 @@
 | --- | --- | --- |
 | 0:00 | **Read the live pool.** Open the homepage and find the New L1 devnet receipt. | Chain ID `1105`, the latest block, and the balance of the native ShieldedPool at `0x…5000`. |
 | 0:40 | **Ask the agent for a quote.** Open the console at `/hack` or use the CLI below. Enter `0.10 BNB`, then `0.04 BNB`. | The first quote hits the **0.05 BNB** cap. The second lets you inspect the quote and any configured market decision. |
-| 1:30 | **Show the market check.** With CoinMarketCap configured, compare its BNB/USD print with the demo price. | The agent can refuse a quote outside the price band. The [sponsor write-up](./docs/cmc-atlas-writeup.md) explains the API log and the local oracle tests. |
+| 1:30 | **Show the market check.** The homepage reads Atlas BNB/USD on BSC testnet with no key. CoinMarketCap appears when `CMC_API_KEY` is set. | The quote shows the Atlas price, the pool price, the bps gap, and pass or refuse. The [sponsor write-up](./docs/cmc-atlas-writeup.md) has the feed address. |
 | 2:15 | **Run the public rehearsal.** Walk through shield → swap → reshield on Anvil. | Cleartext notes show the sequence. The contract guard can reject stale or divergent oracle data before spending the note. |
 
 ## What runs where
@@ -28,7 +28,8 @@
 | ShieldedPool reads | BNB Chain New L1 devnet · `1105` | Live read-only RPC integration. Pool at `0x0000000000000000000000000000000000005000`. |
 | Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://privacy-bnb.vercel.app/api/mcp`. The Python agent supports optional Claude parsing for free-form requests. |
 | Swap rehearsal and oracle guard | Local Anvil · `31337` | Executable public flow with a demo AMM, cleartext notes, and a mock AggregatorV3 feed. |
-| CoinMarketCap BNB/USD | CoinMarketCap Pro API | The quote checks market deviation when `CMC_API_KEY` is set. With the key unset, the market check is skipped. |
+| Atlas BNB/USD | BSC testnet · `97` | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D). Confirmed by the Atlas team, read on chain. 18 decimals. The quote uses it with no key. |
+| CoinMarketCap BNB/USD | CoinMarketCap Pro API | Compared as well when `CMC_API_KEY` is set. With the key unset, that half of the check is skipped. |
 | ERC-8004 agent identity | BNB Smart Chain testnet · `97` | Registered. Agent id **2930**. Registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`. Owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`. [Transaction](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00). Default RPC is `https://bsc-testnet-dataseed.bnbchain.org`. |
 | Proof-backed swap | BNB Chain New L1 devnet | Documented integration path. End-to-end proof generation and settlement are pending. |
 

@@ -2,7 +2,7 @@ import os
 
 from darkswap_agent.intent import IntentError, SwapIntent
 from darkswap_agent.interpreter import interpret_intent
-from darkswap_agent.market import describe_market, fetch_cmc, implied_bnb_usd_wei
+from darkswap_agent.market import fetch_atlas, fetch_cmc, implied_bnb_usd_wei, quote_market
 from darkswap_agent.quote import (
     DEMO_RESERVE_BNB,
     DEMO_RESERVE_TOKEN,
@@ -43,7 +43,8 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
     }
     seed_implied = implied_bnb_usd_wei(DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
     cmc = fetch_cmc()
-    result["market"] = describe_market(seed_implied, cmc)
+    atlas = fetch_atlas(seed_implied)
+    result["market"] = quote_market(seed_implied, cmc, atlas)
     if intent.asset_out.lower() not in EXECUTABLE_ASSETS:
         result["asset_note"] = (
             f"{intent.asset_out} is not executable. This rehearsal only swaps BNB for rNOTE."
@@ -62,7 +63,7 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
     if not execute:
         if _market_refuses(result):
             result["status"] = "market_refused"
-            result["reason"] = "AMM implied BNB price is outside the CoinMarketCap band."
+            result["reason"] = "Pool price is outside the Atlas or CoinMarketCap band."
         return result
 
     rpc_url = os.environ.get("RPC_URL", "").strip()
@@ -84,10 +85,10 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         result["quote_rnote"] = format_units(live_quote)
         result["pool"] = "live DemoAMM reserves, minimum output equals this quote"
         live_implied = implied_bnb_usd_wei(reserve_bnb, reserve_token)
-        result["market"] = describe_market(live_implied, cmc)
+        result["market"] = quote_market(live_implied, cmc, fetch_atlas(live_implied))
         if _market_refuses(result):
             result["status"] = "market_refused"
-            result["reason"] = "Live AMM spot is outside the CoinMarketCap band. Not broadcast."
+            result["reason"] = "Live AMM spot is outside the Atlas or CoinMarketCap band. Not broadcast."
             return result
         settled = run_rehearsal(rpc_url, rehearsal, sender, intent.amount_wei, live_quote)
     except (RehearsalError, OSError, TimeoutError) as error:

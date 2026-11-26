@@ -14,11 +14,22 @@ const chinese = HACK_COPY.zh;
 
 const MARKET: MarketSummary = {
   decision: "pass",
-  ammImpliedUsd: "1000.00",
-  cmcUsd: "990",
-  deviationBps: "101",
+  cmcDecision: "skipped",
+  ammImpliedUsd: "555.00",
+  cmcUsd: null,
+  deviationBps: "35",
   maxDeviationBps: 500,
-  detail: "",
+  detail: "Atlas check",
+  atlas: {
+    status: "pass",
+    priceUsd: "553.08",
+    deviationBps: "35",
+    decimals: 18,
+    updatedAt: 1795658900,
+    roundId: "1",
+    feed: "0x3957d289ee9C38272377786787ea34F9dd29788D",
+    explorer: "https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D",
+  },
 };
 
 function collectStrings(value: unknown, found: string[] = []): string[] {

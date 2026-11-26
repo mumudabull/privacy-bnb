@@ -24,14 +24,25 @@ export const PRIVACY_LINE =
 
 const EXECUTABLE_ASSETS = new Set(["rnote", "the demo token"]);
 
-/** The subset of the CoinMarketCap check this module needs. */
+/** CoinMarketCap plus the on-chain Atlas print used by a quote. */
 export type MarketSummary = {
   decision: MarketDecision;
+  cmcDecision: MarketDecision;
   ammImpliedUsd: string;
   cmcUsd: string | null;
   deviationBps: string | null;
   maxDeviationBps: number;
   detail: string;
+  atlas: {
+    status: "pass" | "refuse" | "stale" | "unavailable";
+    priceUsd: string | null;
+    deviationBps: string | null;
+    decimals: number | null;
+    updatedAt: number | null;
+    roundId: string | null;
+    feed: string;
+    explorer: string;
+  };
 };
 
 export type AgentQuoteStatus = "quoted" | "refused" | "market_refused" | "rejected";
@@ -94,7 +105,7 @@ export function buildAgentQuote(
   }
   if (market.decision === "refuse") {
     quote.status = "market_refused";
-    quote.reason = "AMM implied BNB price is outside the CoinMarketCap band.";
+    quote.reason = market.detail;
   }
   return quote;
 }

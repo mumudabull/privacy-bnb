@@ -9,4 +9,4 @@ fs_permissions = [{ access = "read", path = "./" }]
 
 [rpc_endpoints]
 newl1_devnet = "https://newl1-devnet-rpc.bnbchain.org/"
-bsc_testnet = "https://bsc-testnet.bnbchain.org"
+bsc_testnet = "https://bsc-testnet-dataseed.bnbchain.org"

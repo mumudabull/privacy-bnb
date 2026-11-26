@@ -11,6 +11,9 @@ import {PublicRehearsal} from "../src/PublicRehearsal.sol";
 ///         Local anvil: set DEPLOY_SENDER to an unlocked account and pass --unlocked.
 ///         BSC testnet or New L1 devnet: set PRIVATE_KEY and fund that address.
 contract Deploy is Script {
+    /// @dev Atlas SingleFeed BNB/USD on BSC testnet. Confirmed by the Atlas team. 18 decimals.
+    address internal constant ATLAS_BNB_USD_BSC_TESTNET = 0x3957d289ee9C38272377786787ea34F9dd29788D;
+
     function run() external {
         uint256 bnbLiquidity = vm.envOr("AMM_BNB_LIQUIDITY", uint256(10 ether));
         uint256 rnotePerBnb = vm.envOr("DEMO_RNOTE_PER_BNB", uint256(555));
@@ -18,12 +21,15 @@ contract Deploy is Script {
         address oracle = vm.envOr("ORACLE_FEED", address(0));
         uint16 maxDeviationBps = uint16(vm.envOr("MAX_DEVIATION_BPS", uint256(500)));
         uint32 maxStaleSeconds = uint32(vm.envOr("MAX_STALE_SECONDS", uint256(3600)));
+        if (oracle == address(0) && block.chainid == 97) {
+            oracle = ATLAS_BNB_USD_BSC_TESTNET;
+            console2.log("ORACLE_FEED default, Atlas BNB/USD on BSC testnet, confirmed by the Atlas team, read on chain");
+            console2.log(oracle);
+        }
         bool deployMock = oracle == address(0) && block.chainid == 31337;
         if (oracle == address(0) && !deployMock) {
-            console2.log("Refusing to deploy. ORACLE_FEED is unset.");
-            console2.log("The public Atlas catalog checked on 25 Nov 2026 has no BNB/USD SingleFeed on BSC testnet.");
-            console2.log("Do not reuse 0xeace519ebb14fb8404fa6ddd23c3b34abade44aa; that address is shared by other BNB Chain pairs and is not a verified testnet BNB/USD aggregator.");
-            console2.log("Set ORACLE_FEED to an AggregatorV3 you have verified, plus MAX_DEVIATION_BPS and MAX_STALE_SECONDS.");
+            console2.log("Refusing to deploy. ORACLE_FEED is unset and this chain has no default feed.");
+            console2.log("BSC testnet (chain 97) defaults to the Atlas BNB/USD feed.");
             console2.log("Chain 31337 deploys a MockAggregator at the pool spot instead. That mock is not an Atlas feed.");
             revert("ORACLE_FEED missing");
         }

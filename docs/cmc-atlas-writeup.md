@@ -9,9 +9,10 @@ Oracle-guarded public rehearsal of a private swap. Built for BNB Bangkok, Develo
 | ShieldedPool, read-only | New L1 devnet, chain 1105 | `0x0000000000000000000000000000000000005000` |
 | Auth verifier, documented | New L1 devnet | `0x0000000000000000000000000000000000005003` |
 | ERC-8004 agent id 2930 | BSC testnet, chain 97 | registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`, owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`, [tx](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00) |
-| Public rehearsal | Not deployed | Needs `PRIVATE_KEY`, `ORACLE_FEED`, and 0.2 tBNB |
+| Public rehearsal | Not deployed | Needs `PRIVATE_KEY` and 0.2 tBNB. `ORACLE_FEED` defaults on chain 97 |
+| Atlas BNB/USD | BSC testnet, chain 97 | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D). Confirmed by the Atlas team, read on chain. 18 decimals. Upgradeable proxy. |
 
-No BNB/USD Atlas SingleFeed on BSC testnet was in the public catalog at https://atlasoracle.io/feeds on 25 Nov 2026. The listed BNB Chain feeds are other pairs and share `0xeace519ebb14fb8404fa6ddd23c3b34abade44aa`. That address is not used as a BNB/USD aggregator. `ORACLE_FEED` is required configuration. Tests use `MockAggregator`.
+The BSC testnet deploy script uses that feed when `ORACLE_FEED` is unset. Local Anvil still deploys a `MockAggregator` at the pool spot. The guard reads `decimals()` from the feed, so an 18 decimal answer is not treated as an 8 decimal one. `roundId` 1 is a normal round. A round older than `MAX_STALE_SECONDS` (default 1 hour) reverts.
 
 ## API calls
 
@@ -23,7 +24,7 @@ The key is the `X-CMC_PRO_API_KEY` header from `CMC_API_KEY`. It is not committe
 
 The agent compares that price with the AMM. One rNOTE is treated as one USD, so rNOTE out per BNB is an implied BNB/USD. Default band is 500 bps (`CMC_MAX_DEVIATION_BPS`). Outside the band, `quote_swap` returns `market_refused` and does not broadcast. The seed pool implies about 555 USD per BNB. On 26 Nov 2026 a live print of 553.71 USD was 23 bps away, inside the band, so 0.04 BNB was quoted. A print more than 5% away returns `market_refused`.
 
-The same check is rendered on the landing page. With no key, the page says the request was not sent.
+The same check is rendered on the landing page next to the Atlas read. With no key, CoinMarketCap stays skipped. Atlas is read on chain from `https://bsc-testnet-dataseed.bnbchain.org` and needs no key. A quote reports the Atlas price, the pool price, the bps gap, and pass or refuse.
 
 Live evidence, 26 Nov 2026: three CoinMarketCap Pro calls (14:12 and 16:14 Bangkok, all HTTP 200, 554.81 and 553.71 USD). 0.10 BNB was refused by the 0.05 cap. 0.04 BNB quoted 22.045482 rNOTE, a 23 bps gap inside the 500 bps band.
 
@@ -33,10 +34,10 @@ Live evidence, 26 Nov 2026: three CoinMarketCap Pro calls (14:12 and 16:14 Bangk
 
 - Round 0, a zero update time, a future update time, or age above `MAX_STALE_SECONDS` reverts `StaleOracle`.
 - A non-positive answer reverts `BadOraclePrice`.
-- Spot BNB/USD (`reserveToken / reserveBnb`, 1 rNOTE = 1 USD) versus the scaled oracle answer, above `MAX_DEVIATION_BPS`, reverts `OracleDeviation`. The note stays unspent. Trade slippage is the separate `minOut` check, so a 0.01 BNB swap on a 0.05 BNB / 27.75 rNOTE pool still passes when the feed matches the 555 USD spot.
+- Spot BNB/USD (`reserveToken / reserveBnb`, 1 rNOTE = 1 USD) versus the answer scaled by `decimals()`, above `MAX_DEVIATION_BPS`, reverts `OracleDeviation`. The note stays unspent. Trade slippage is the separate `minOut` check, so a 0.01 BNB swap on a 0.05 BNB / 27.75 rNOTE pool still passes when the feed matches the 555 USD spot. An 18 decimal mock and an 8 decimal mock both cover that scaling.
 
 `forge test` covers the aligned pass (the existing swap), the deviation revert, and the stale revert.
 
 ## Safety
 
-Testnet and devnet only. No mainnet key, no `0x77` proof, no claim that the rehearsal hides the sender or the amount. The oracle and CoinMarketCap checks can both refuse a trade. They do not make the rehearsal private. Atlas feeds may be whitelist-gated; a closed feed will revert on read until the contract is allowed.
+Testnet and devnet only. No mainnet key, no `0x77` proof, no claim that the rehearsal hides the sender or the amount. The oracle and CoinMarketCap checks can both refuse a trade. They do not make the rehearsal private. The Atlas team said an on-chain read is enough, and `eth_call` against the BSC testnet feed succeeds without a key.

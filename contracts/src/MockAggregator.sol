@@ -25,6 +25,11 @@ contract MockAggregator {
         updatedAt = updatedAt_;
     }
 
+    function setRound(uint80 roundId_, uint80 answeredInRound_) external {
+        roundId = roundId_;
+        answeredInRound = answeredInRound_;
+    }
+
     function latestRoundData()
         external
         view

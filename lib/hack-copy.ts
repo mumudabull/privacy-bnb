@@ -185,15 +185,20 @@ const ENGLISH: HackPageCopy = {
     // The endpoint already answers in English, so its own reason is shown as is.
     describeReason: (quote) => quote.reason,
     describeMarket: (market) => {
+      const atlas =
+        market.atlas.priceUsd === null
+          ? "Atlas was not read."
+          : `Atlas ${market.atlas.priceUsd}, ${market.atlas.deviationBps} bps from the pool at ${market.ammImpliedUsd}.`;
+      const cmc = market.cmcDecision === "skipped" ? "CoinMarketCap was not requested." : `CoinMarketCap ${market.cmcUsd}.`;
       switch (market.decision) {
         case "pass":
-          return `Within ${bandPercent(market)}% of CoinMarketCap BNB/USD (${market.cmcUsd}). The pool implies ${market.ammImpliedUsd}.`;
+          return `${atlas} ${cmc} Inside the ${bandPercent(market)}% band.`;
         case "refuse":
-          return `Outside the ${bandPercent(market)}% band. CoinMarketCap says ${market.cmcUsd}, the pool implies ${market.ammImpliedUsd}.`;
+          return `${atlas} ${cmc} Outside the ${bandPercent(market)}% band.`;
         case "unavailable":
-          return "CoinMarketCap could not be read, so the price was not checked.";
+          return `${atlas} ${cmc} The on-chain check did not complete.`;
         case "skipped":
-          return "Not checked. This deployment has no CoinMarketCap key.";
+          return `${atlas} ${cmc}`;
       }
     },
     describeUnsupportedAsset: (assetName) =>
@@ -313,15 +318,20 @@ const CHINESE: HackPageCopy = {
       }
     },
     describeMarket: (market) => {
+      const atlas =
+        market.atlas.priceUsd === null
+          ? "未能读取 Atlas。"
+          : `Atlas ${market.atlas.priceUsd}，与资金池 ${market.ammImpliedUsd} 相差 ${market.atlas.deviationBps} bps。`;
+      const cmc = market.cmcDecision === "skipped" ? "未请求 CoinMarketCap。" : `CoinMarketCap ${market.cmcUsd}。`;
       switch (market.decision) {
         case "pass":
-          return `与 CoinMarketCap 的 BNB/USD 价格（${market.cmcUsd}）相差在 ${bandPercent(market)}% 以内。资金池隐含价格为 ${market.ammImpliedUsd}。`;
+          return `${atlas}${cmc}在 ${bandPercent(market)}% 区间内。`;
         case "refuse":
-          return `超出 ${bandPercent(market)}% 的区间。CoinMarketCap 报价 ${market.cmcUsd}，资金池隐含价格为 ${market.ammImpliedUsd}。`;
+          return `${atlas}${cmc}超出 ${bandPercent(market)}% 区间。`;
         case "unavailable":
-          return "无法读取 CoinMarketCap，因此未检查价格。";
+          return `${atlas}${cmc}链上检查没有完成。`;
         case "skipped":
-          return "未检查。此部署没有配置 CoinMarketCap 密钥。";
+          return `${atlas}${cmc}`;
       }
     },
     describeUnsupportedAsset: (assetName) =>
