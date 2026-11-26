@@ -43,7 +43,7 @@
 
 Small, split pools mean thin anonymity sets, and every hop between them leaks.
 
-**Roadmap, for LPs.** Move liquidity into DarkSwap dark pools on BNB for higher yield and arbitrage flow from private order routing. Not live.
+**Dark pools on BNB:** limited access, on the roadmap.
 
 Funnel: any chain, intent, one pool, agent. That funnel is the roadmap. No type 0x77 proof in this repo yet. Deposits are public today.
 
