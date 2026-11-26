@@ -92,16 +92,16 @@ function bandPercent(market: MarketSummary): number {
 const ENGLISH: HackPageCopy = {
   metadataTitle: "The hackathon build · DarkSwap on BNB",
   metadataDescription:
-    "Say a swap in a sentence. A guarded agent quotes it, refuses what breaks its limits, and is built to settle through BNB Chain’s shielded pool.",
+    "Say a swap in a sentence. A guarded agent quotes it on BNB testnet, refuses what breaks its limits, and does not move funds.",
   navigationLabel: "Hackathon page",
   navigationTechnicalPage: "Technical page",
   navigationCode: "Code",
   otherLanguage: { locale: "zh", label: "中文" },
   heroTitle: "Say the swap. The agent holds the line.",
   heroBody:
-    "DarkSwap on BNB is a swap agent that takes a plain sentence, quotes it, and refuses anything that breaks its limits. It runs on BNB Smart Chain today and is built to settle through the shielded pool on BNB Chain’s New L1.",
+    "DarkSwap on BNB is a swap agent that takes a plain sentence, quotes it, and refuses anything that breaks its limits. The quote runs against BNB testnet and is built for the shielded pool on BNB Chain’s New L1. This page does not send a swap.",
   heroNote:
-    "Built for the BNB Chain hackathon, November 2026. What you can try here is a public rehearsal. No swap on this page is private yet.",
+    "Built for the BNB Chain hackathon, November 2026. What you can try here is a public quote on BNB testnet. This page does not send a swap or move funds.",
   lineageTitle: "From purple to gold",
   lineage: [
     {
@@ -123,7 +123,7 @@ const ENGLISH: HackPageCopy = {
     "An agent reads a swap sentence and quotes it against a pool.",
     "A hard cap refuses anything above 0.05 BNB.",
     "A CoinMarketCap check refuses a quote that strays from the market price.",
-    "An on-chain oracle guard refuses a stale or divergent price inside the swap itself.",
+    "An on-chain oracle guard refuses a stale or divergent price. This page only quotes.",
     "Other agents can call the quote over MCP at /api/mcp on this site.",
     "The New L1 devnet shielded pool is read live, without a key.",
   ],
@@ -207,7 +207,7 @@ const ENGLISH: HackPageCopy = {
       }
     },
     describeUnsupportedAsset: (assetName) =>
-      `${assetName} is not executable. This rehearsal only swaps BNB for rNOTE.`,
+      `${assetName} is not executable. This page only quotes BNB for rNOTE.`,
     privacyLine:
       "Public rehearsal. Owners and amounts are visible. This is not a type 0x77 shielded transfer and not ShieldedPool.",
     errorEndpointStatus: (httpStatus) =>
@@ -220,16 +220,16 @@ const ENGLISH: HackPageCopy = {
 const CHINESE: HackPageCopy = {
   metadataTitle: "黑客松构建 · DarkSwap on BNB",
   metadataDescription:
-    "用一句话说出兑换。带防护的智能体给出报价，拒绝超出限制的请求，并为通过 BNB Chain 屏蔽池结算而构建。",
+    "用一句话说出兑换。带防护的智能体在 BNB 测试网上给出报价，拒绝超出限制的请求，不会转移资金。",
   navigationLabel: "黑客松页面",
   navigationTechnicalPage: "技术页面",
   navigationCode: "代码",
   otherLanguage: { locale: "en", label: "English" },
   heroTitle: "说出你的兑换，智能体守住底线。",
   heroBody:
-    "DarkSwap on BNB 是一个兑换智能体：它读懂一句普通的话，给出报价，并拒绝任何超出限制的请求。它目前运行在 BNB 智能链上，并为通过 BNB Chain 新 L1 的屏蔽池结算而构建。",
+    "DarkSwap on BNB 是一个兑换智能体：它读懂一句普通的话，给出报价，并拒绝任何超出限制的请求。报价针对 BNB 测试网，并为 BNB Chain 新 L1 的屏蔽池而构建。本页面不会发送兑换。",
   heroNote:
-    "为 2026 年 11 月的 BNB Chain 黑客松而构建。这里可以体验的是公开演练，本页面上的兑换目前都不是隐私交易。",
+    "为 2026 年 11 月的 BNB Chain 黑客松而构建。这里可以体验的是 BNB 测试网上的公开报价。本页面不会发送兑换，也不会转移资金。",
   lineageTitle: "从紫到金",
   lineage: [
     {
@@ -251,7 +251,7 @@ const CHINESE: HackPageCopy = {
     "智能体读取一句兑换指令，并按资金池给出报价。",
     "硬性上限会拒绝任何超过 0.05 BNB 的请求。",
     "CoinMarketCap 价格检查会拒绝偏离市场价的报价。",
-    "链上预言机防护会在兑换内部拒绝过期或偏离的价格。",
+    "链上预言机防护会拒绝过期或偏离的价格。本页面只提供报价。",
     "其他智能体可以通过本站的 /api/mcp，以 MCP 协议调用报价。",
     "无需密钥即可实时读取新 L1 开发网的屏蔽池。",
   ],
@@ -345,7 +345,7 @@ const CHINESE: HackPageCopy = {
       }
     },
     describeUnsupportedAsset: (assetName) =>
-      `${assetName} 无法执行。本演练只支持将 BNB 兑换为 rNOTE。`,
+      `${assetName} 无法执行。本页面只对 BNB 兑换 rNOTE 提供报价。`,
     privacyLine:
       "公开演练。所有者和金额均可见。这不是 0x77 类型的屏蔽转账，也没有使用 ShieldedPool。",
     errorEndpointStatus: (httpStatus) => `报价端点返回了 ${httpStatus}。请稍后再试。`,

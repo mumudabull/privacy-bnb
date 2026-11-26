@@ -12,7 +12,7 @@ const LAYERS = [
   {
     name: "Swap",
     detail:
-      "A small constant-product AMM. The honest demo calls it in the clear and names that. The real shape is atomicCall on the system pool.",
+      "A small constant-product AMM. This page only quotes it, in the clear, and names that. The real shape is atomicCall on the system pool.",
   },
   {
     name: "New L1",
@@ -28,8 +28,8 @@ export function Architecture() {
       <h2>Four layers, one route.</h2>
       <p className="section-lead">
         darkswap.app: live private swaps (private routing) and Multi Exchange, with real
-        users. This repository is the new BNB code, kept separate. It reads the live devnet pool and, beside that,
-        runs a public rehearsal of the same three hops. The rehearsal is not a privacy
+        users. This repository is the new BNB code, kept separate. It reads the devnet pool and, beside that,
+        shows a public quote of the same three hops. The quote is not a privacy
         guarantee.
       </p>
       <ol className="arch-list">

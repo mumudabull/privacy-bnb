@@ -10,6 +10,7 @@
 
 import { ArrowRight, Check, LoaderCircle, X } from "lucide-react";
 import { useId, useState, type FormEvent } from "react";
+import { TestnetReadonlyNote } from "@/components/testnet-readonly-note";
 import type { AgentQuote } from "@/lib/agent-quote";
 import { HACK_COPY, type HackConsoleCopy, type HackLocale } from "@/lib/hack-copy";
 import { MAXIMUM_INTENT_LENGTH } from "@/lib/intent";
@@ -91,6 +92,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
 
   return (
     <div className="hack-console">
+      <TestnetReadonlyNote />
       <form onSubmit={handleSubmit} className="hack-console-form">
         <label htmlFor={inputId}>{copy.inputLabel}</label>
         <div className="hack-console-row">
