@@ -47,8 +47,8 @@
   <path d="M80 74h52M1308 446h52" stroke="#f0b90b" stroke-width="2"/>
   <g font-family="Arial, Helvetica, sans-serif">
     <text x="82" y="134" fill="#f0b90b" font-size="19" font-weight="700" letter-spacing="4">DARKSWAP ON BNB</text>
-    <text x="75" y="250" fill="#f6f4ef" font-size="107" font-weight="900" letter-spacing="-6">GO DARK</text>
-    <text x="75" y="350" fill="#f0b90b" font-size="107" font-weight="900" letter-spacing="-6">ON BNB.</text>
+    <text x="75" y="250" fill="#f6f4ef" font-size="107" font-weight="900">GO DARK</text>
+    <text x="75" y="350" fill="#f0b90b" font-size="107" font-weight="900">ON BNB.</text>
     <text x="82" y="409" fill="#f6f4ef" font-size="20" font-weight="700" letter-spacing="2">BNB CHAIN NEW L1 PREVIEW</text>
   </g>
   <text x="82" y="481" fill="#b8b2a5" font-family="monospace" font-size="15" letter-spacing="2">BUILT AT BNB BANGKOK</text>
