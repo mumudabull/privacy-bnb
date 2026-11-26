@@ -203,17 +203,33 @@ describe("hackathon page copy", () => {
     assert.equal(english.agents.mcpMethod, "POST");
     assert.equal(chinese.agents.mcpMethod, "POST");
     assert.match(english.agents.mcpBody, /POST https:\/\/hack\.darkswap\.app\/api\/mcp, tool quote_swap/);
+    assert.equal(
+      english.heroSubline,
+      "An AI swap agent, and an MCP API other agents can call on BNB. Built by the team behind darkswap.app on Solana and NEAR.",
+    );
+    assert.equal(
+      chinese.heroSubline,
+      "一个 AI 兑换智能体，以及供其他智能体在 BNB 上调用的 MCP API。由曾在 Solana 和 NEAR 上推出 darkswap.app 的团队构建。",
+    );
+    assert.deepEqual(
+      english.agents.chains.map((chain) => chain.name),
+      ["BNB testnet"],
+    );
+    assert.deepEqual(
+      chinese.agents.chains.map((chain) => chain.name),
+      ["BNB 测试网"],
+    );
     assert.deepEqual(
       english.agents.chains.map((chain) => chain.status),
-      ["Live (testnet)", "Launching soon", "Launching soon"],
+      ["Live (testnet)"],
     );
     assert.deepEqual(
       chinese.agents.chains.map((chain) => chain.status),
-      ["已上线（测试网）", "即将上线", "即将上线"],
+      ["已上线（测试网）"],
     );
     assert.deepEqual(
       english.agents.chains.map((chain) => chain.state),
-      ["live", "soon", "soon"],
+      ["live"],
     );
     assert.deepEqual(
       chinese.agents.chains.map((chain) => chain.state),
@@ -224,11 +240,19 @@ describe("hackathon page copy", () => {
       chinese.heroSubline,
       english.agents.intro,
       chinese.agents.intro,
-      ...english.agents.chains.map((chain) => chain.status),
-      ...chinese.agents.chains.map((chain) => chain.status),
+      ...english.agents.chains.map((chain) => `${chain.name} ${chain.status}`),
+      ...chinese.agents.chains.map((chain) => `${chain.name} ${chain.status}`),
     ].join(" ");
-    assert.doesNotMatch(framing, /not live/i);
-    assert.doesNotMatch(framing, /尚未上线/);
+    assert.doesNotMatch(framing, /not live|launching soon|across Solana/i);
+    assert.doesNotMatch(framing, /尚未上线|即将/);
+    assert.doesNotMatch(
+      english.agents.chains.map((chain) => chain.name).join(" "),
+      /Solana|NEAR/,
+    );
+    assert.doesNotMatch(
+      chinese.agents.chains.map((chain) => chain.name).join(" "),
+      /Solana|NEAR/,
+    );
   });
 
   it("links each language to the other", () => {

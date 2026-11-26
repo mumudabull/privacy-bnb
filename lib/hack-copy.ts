@@ -57,7 +57,7 @@ export type HackSimulationCopy = {
   ];
 };
 
-export type HackChainState = "live" | "soon";
+export type HackChainState = "live";
 
 export type HackChainCopy = {
   name: string;
@@ -82,7 +82,7 @@ export type HackAgentsCopy = {
   mcpTechnical: string;
   chainsTitle: string;
   chainsBody: string;
-  chains: readonly [HackChainCopy, HackChainCopy, HackChainCopy];
+  chains: readonly [HackChainCopy];
 };
 
 export type HackConsoleCopy = {
@@ -177,7 +177,7 @@ const ENGLISH: HackPageCopy = {
   heroEyebrow: "AI swap agent",
   heroTitle: "Say the swap. The agent holds the line.",
   heroSubline:
-    "An AI agent for private swaps on BNB, and an MCP API other agents can call across Solana, NEAR, and BNB. The BNB testnet quote is live here as a public rehearsal. Solana and NEAR on this API are launching soon.",
+    "An AI swap agent, and an MCP API other agents can call on BNB. Built by the team behind darkswap.app on Solana and NEAR.",
   heroBody:
     "DarkSwap on BNB is a swap agent that takes a plain sentence, quotes it, and refuses anything that breaks its limits. The quote runs against BNB testnet and is built for the shielded pool on BNB Chain’s New L1. This page does not send a swap.",
   heroNote:
@@ -259,11 +259,7 @@ const ENGLISH: HackPageCopy = {
     mcpTechnical: "Technical page",
     chainsTitle: "Chains",
     chainsBody: "Where this API quotes today.",
-    chains: [
-      { name: "BNB testnet", status: "Live (testnet)", state: "live" },
-      { name: "Solana", status: "Launching soon", state: "soon" },
-      { name: "NEAR", status: "Launching soon", state: "soon" },
-    ],
+    chains: [{ name: "BNB testnet", status: "Live (testnet)", state: "live" }],
   },
   console: {
     inputLabel: "Say the swap",
@@ -376,7 +372,7 @@ const CHINESE: HackPageCopy = {
   heroEyebrow: "AI 兑换智能体",
   heroTitle: "说出你的兑换，智能体守住底线。",
   heroSubline:
-    "面向隐私兑换的 AI 智能体，以及供其他智能体调用的 MCP API，覆盖 Solana、NEAR 和 BNB。这里的 BNB 测试网报价已经可用，并且是公开演练。本 API 上的 Solana 和 NEAR 即将上线。",
+    "一个 AI 兑换智能体，以及供其他智能体在 BNB 上调用的 MCP API。由曾在 Solana 和 NEAR 上推出 darkswap.app 的团队构建。",
   heroBody:
     "DarkSwap on BNB 是一个兑换智能体：它读懂一句普通的话，给出报价，并拒绝任何超出限制的请求。报价针对 BNB 测试网，并为 BNB Chain 新 L1 的屏蔽池而构建。本页面不会发送兑换。",
   heroNote:
@@ -457,11 +453,7 @@ const CHINESE: HackPageCopy = {
     mcpTechnical: "技术页面",
     chainsTitle: "链",
     chainsBody: "这个 API 目前在哪些链上报价。",
-    chains: [
-      { name: "BNB 测试网", status: "已上线（测试网）", state: "live" },
-      { name: "Solana", status: "即将上线", state: "soon" },
-      { name: "NEAR", status: "即将上线", state: "soon" },
-    ],
+    chains: [{ name: "BNB 测试网", status: "已上线（测试网）", state: "live" }],
   },
   console: {
     inputLabel: "说出你的兑换",
