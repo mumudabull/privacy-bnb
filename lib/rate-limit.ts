@@ -1,13 +1,21 @@
 /**
  * File: lib/rate-limit.ts
- * Purpose: Best-effort per-address rate limit for the public MCP quote route.
- * Counts live in this process. A warm Vercel instance remembers them, and a
- * new instance starts empty. This repo has no shared KV or Upstash, so the
- * cap is per instance rather than global across the deployment.
+ * Purpose: Per-address rate limit for the public MCP quote route. On Vercel
+ * the count is the Firewall rule MCP_FIREWALL_RATE_LIMIT_ID, which is shared
+ * by every instance in a region. The in-memory window is the fallback for
+ * local runs and for a deployment whose firewall rule is not published yet.
  */
+
+import { checkRateLimit } from "@vercel/firewall";
 
 export const MCP_REQUESTS_PER_WINDOW = 30;
 export const MCP_WINDOW_MS = 60_000;
+
+/**
+ * Must match the Rate limit ID of the @vercel/firewall rule on the
+ * privacy-bnb project. The rule is 30 requests per 60 seconds, counted by IP.
+ */
+export const MCP_FIREWALL_RATE_LIMIT_ID = "mcp-quote";
 
 /** JSON-RPC server error in the implementation-defined range. HTTP status is 429. */
 export const RATE_LIMIT_JSON_RPC_CODE = -32029;
@@ -34,16 +42,16 @@ function firstAddress(header: string | null): string | null {
 }
 
 /**
- * Address Vercel reports for the caller. x-vercel-forwarded-for is the
- * unspoofable client address on Vercel. x-real-ip is the next choice.
- * x-forwarded-for is only used when neither is present (local servers).
- * Requests with none of those headers share one bucket.
+ * Address Vercel reports for the caller. x-real-ip is the client address the
+ * Firewall SDK counts, so the fallback uses it first. x-vercel-forwarded-for
+ * is the unspoofable chain. x-forwarded-for is only used when neither is
+ * present (local servers). Requests with none of those headers share one bucket.
  */
 export function clientAddress(headers: Headers): string {
-  const vercelAddress = firstAddress(headers.get("x-vercel-forwarded-for"));
-  if (vercelAddress !== null) return vercelAddress;
   const realIp = headers.get("x-real-ip")?.trim() ?? "";
   if (realIp.length > 0) return realIp;
+  const vercelAddress = firstAddress(headers.get("x-vercel-forwarded-for"));
+  if (vercelAddress !== null) return vercelAddress;
   const forwarded = firstAddress(headers.get("x-forwarded-for"));
   if (forwarded !== null) return forwarded;
   return "unknown";
@@ -97,6 +105,63 @@ export function consumeRateLimit(address: string, now = Date.now()): RateLimitDe
   recent.push(now);
   hitsByAddress.set(address, recent);
   return { allowed: true, remaining: MCP_REQUESTS_PER_WINDOW - recent.length };
+}
+
+export type PlatformRateLimit = "limited" | "allowed" | "unavailable";
+
+/**
+ * Asks the Vercel Firewall for this region's shared count. Outside production
+ * the SDK does not count, so the caller uses the in-memory window. A missing
+ * rule or a failed check is also unavailable, and does not invent a 429.
+ */
+function firewallHeaders(request: Request): Record<string, string> {
+  const headers: Record<string, string> = {};
+  request.headers.forEach((value, key) => {
+    headers[key] = value;
+  });
+  // The Fetch API hides the host header. The Firewall SDK needs it to reach
+  // the shared counter, so it is copied from the request URL.
+  if (!headers.host) headers.host = new URL(request.url).host;
+  return headers;
+}
+
+export async function readPlatformRateLimit(request: Request): Promise<PlatformRateLimit> {
+  if (process.env.NODE_ENV !== "production") return "unavailable";
+  try {
+    const result = await checkRateLimit(MCP_FIREWALL_RATE_LIMIT_ID, {
+      headers: firewallHeaders(request),
+      timeout: 1500,
+    });
+    if (result.rateLimited) return "limited";
+    if (result.error) return "unavailable";
+    return "allowed";
+  } catch {
+    return "unavailable";
+  }
+}
+
+/**
+ * Production uses the shared Firewall count when the mcp-quote rule answers.
+ * Otherwise the in-memory window applies. `now` moves that window in tests.
+ */
+export async function enforceRateLimit(
+  request: Request,
+  now = Date.now(),
+  readPlatform: (request: Request) => Promise<PlatformRateLimit> = readPlatformRateLimit,
+): Promise<RateLimitDecision> {
+  const platform = await readPlatform(request);
+  switch (platform) {
+    case "limited":
+      return { allowed: false, retryAfterSeconds: Math.ceil(MCP_WINDOW_MS / 1000) };
+    case "allowed":
+      return { allowed: true, remaining: MCP_REQUESTS_PER_WINDOW };
+    case "unavailable":
+      return consumeRateLimit(clientAddress(request.headers), now);
+    default: {
+      const unreachable: never = platform;
+      return unreachable;
+    }
+  }
 }
 
 /** Clears in-memory buckets. Tests use this so files do not share a full window. */

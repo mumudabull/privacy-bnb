@@ -25,6 +25,12 @@ function mcpRequest(body: unknown, address = "203.0.113.20"): Request {
   });
 }
 
+function setNodeEnv(value: string | undefined) {
+  const env = process.env as { NODE_ENV?: string };
+  if (value === undefined) delete env.NODE_ENV;
+  else env.NODE_ENV = value;
+}
+
 async function fillWindow(address: string): Promise<void> {
   for (let index = 0; index < MCP_REQUESTS_PER_WINDOW; index += 1) {
     const response = await POST(mcpRequest({ jsonrpc: "2.0", id: index, method: "ping" }, address));
@@ -32,7 +38,7 @@ async function fillWindow(address: string): Promise<void> {
   }
 }
 
-describe("POST /api/mcp rate limit", () => {
+describe("POST /api/mcp rate limit", { concurrency: false }, () => {
   it("returns 429 with Retry-After once the address is over the window", async () => {
     await fillWindow("203.0.113.20");
     const response = await POST(
@@ -86,5 +92,64 @@ describe("POST /api/mcp rate limit", () => {
     assert.equal(body.id, null);
     assert.equal(body.error.code, RATE_LIMIT_JSON_RPC_CODE);
     assert.ok(response.headers.get("retry-after"));
+  });
+
+  it("returns the JSON-RPC 429 when the shared firewall count is full", async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousFetch = globalThis.fetch;
+    setNodeEnv("production");
+    const calls: string[] = [];
+    globalThis.fetch = (async (url: string | URL) => {
+      calls.push(String(url));
+      return new Response(null, { status: 429 });
+    }) as typeof fetch;
+    try {
+      const response = await POST(
+        new Request("https://hack.darkswap.app/api/mcp", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-real-ip": "203.0.113.40" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: "quote-9",
+            method: "tools/call",
+            params: { name: "quote_swap", arguments: { intent: "swap 0.04 bnb to rNOTE privately" } },
+          }),
+        }),
+      );
+      assert.equal(response.status, 429);
+      assert.equal(response.headers.get("retry-after"), "60");
+      const body = (await response.json()) as { id: string; error: { code: number }; result?: unknown };
+      assert.equal(body.id, "quote-9");
+      assert.equal(body.error.code, RATE_LIMIT_JSON_RPC_CODE);
+      assert.equal(body.result, undefined);
+      assert.equal(calls.length, 1);
+      assert.match(calls[0] ?? "", /\/\.well-known\/vercel\/rate-limit-api\/mcp-quote$/);
+    } finally {
+      setNodeEnv(previousNodeEnv);
+      globalThis.fetch = previousFetch;
+    }
+  });
+
+  it("still runs the handler when the shared firewall count allows the request", async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousFetch = globalThis.fetch;
+    setNodeEnv("production");
+    globalThis.fetch = (async () => new Response(null, { status: 204 })) as typeof fetch;
+    try {
+      const response = await POST(
+        new Request("https://hack.darkswap.app/api/mcp", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-real-ip": "203.0.113.41" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 7, method: "ping" }),
+        }),
+      );
+      assert.equal(response.status, 200);
+      const body = (await response.json()) as { id: number; result: unknown };
+      assert.equal(body.id, 7);
+      assert.deepEqual(body.result, {});
+    } finally {
+      setNodeEnv(previousNodeEnv);
+      globalThis.fetch = previousFetch;
+    }
   });
 });

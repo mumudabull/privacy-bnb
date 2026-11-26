@@ -11,6 +11,7 @@
     "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts lib/atlas.test.ts lib/risk.test.ts lib/mcp-server.test.ts lib/hack-copy.test.ts lib/social-card.test.ts lib/rate-limit.test.ts && tsx --tsconfig tsconfig.test.json --test components/hack/swap-simulation.test.tsx components/hack/agent-platform.test.tsx components/hack/agent-console.test.tsx lib/mcp-route.test.ts"
   },
   "dependencies": {
+    "@vercel/firewall": "^1.2.6",
     "lucide-react": "^1.81.0",
     "next": "^15.5.4",
     "react": "^19.1.0",

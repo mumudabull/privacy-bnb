@@ -8,14 +8,17 @@ import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
 import {
   MAX_TRACKED_ADDRESSES,
+  MCP_FIREWALL_RATE_LIMIT_ID,
   MCP_REQUESTS_PER_WINDOW,
   MCP_WINDOW_MS,
   RATE_LIMIT_JSON_RPC_CODE,
   clientAddress,
   consumeRateLimit,
+  enforceRateLimit,
   rateLimitedJsonRpc,
   readJsonRpcId,
   resetRateLimits,
+  type PlatformRateLimit,
 } from "./rate-limit.ts";
 
 const START = 1_700_000_000_000;
@@ -80,18 +83,56 @@ describe("consumeRateLimit", () => {
   });
 });
 
+describe("enforceRateLimit", () => {
+  const request = new Request("https://hack.darkswap.app/api/mcp", {
+    headers: { "x-real-ip": "203.0.113.40" },
+  });
+
+  function platform(answer: PlatformRateLimit) {
+    return async () => answer;
+  }
+
+  it("uses the shared firewall decision and does not also apply the process window", async () => {
+    for (let index = 0; index < MCP_REQUESTS_PER_WINDOW; index += 1) {
+      consumeRateLimit("203.0.113.40", START);
+    }
+    assert.equal(consumeRateLimit("203.0.113.40", START).allowed, false);
+    const allowed = await enforceRateLimit(request, START, platform("allowed"));
+    assert.equal(allowed.allowed, true);
+    const limited = await enforceRateLimit(request, START, platform("limited"));
+    assert.equal(limited.allowed, false);
+    if (!limited.allowed) assert.equal(limited.retryAfterSeconds, 60);
+  });
+
+  it("falls back to this process when the firewall rule is not available", async () => {
+    for (let index = 0; index < MCP_REQUESTS_PER_WINDOW; index += 1) {
+      assert.equal((await enforceRateLimit(request, START, platform("unavailable"))).allowed, true);
+    }
+    const blocked = await enforceRateLimit(request, START, platform("unavailable"));
+    assert.equal(blocked.allowed, false);
+  });
+
+  it("keeps the firewall id stable for the dashboard rule", () => {
+    assert.equal(MCP_FIREWALL_RATE_LIMIT_ID, "mcp-quote");
+  });
+});
+
 describe("clientAddress", () => {
-  it("prefers the Vercel client address over a caller-supplied forwarded header", () => {
+  it("prefers x-real-ip, the same address the Firewall SDK counts", () => {
     const headers = new Headers({
       "x-vercel-forwarded-for": "203.0.113.8",
       "x-forwarded-for": "198.51.100.4, 203.0.113.8",
       "x-real-ip": "198.51.100.9",
     });
-    assert.equal(clientAddress(headers), "203.0.113.8");
+    assert.equal(clientAddress(headers), "198.51.100.9");
   });
 
   it("uses x-real-ip, then the first x-forwarded-for hop, then a shared bucket", () => {
     assert.equal(clientAddress(new Headers({ "x-real-ip": "203.0.113.10" })), "203.0.113.10");
+    assert.equal(
+      clientAddress(new Headers({ "x-vercel-forwarded-for": "203.0.113.12, 10.0.0.2" })),
+      "203.0.113.12",
+    );
     assert.equal(
       clientAddress(new Headers({ "x-forwarded-for": "203.0.113.11, 10.0.0.1" })),
       "203.0.113.11",
