@@ -26,15 +26,15 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
         <img className="warp-still" src="/brand/final-v3-512.png" alt="DarkSwap on BNB" />
       </div>
       <div>
-        <p className="kicker">Solana roots · NEAR routes · BNB shield</p>
+        <p className="kicker">Solana roots · private routing · BNB shield</p>
         <h1>
           Private swaps,
           <br />
           settled on New L1.
         </h1>
         <p className="lede">
-          DarkSwap routes private swaps that start on Solana, through NEAR Intents. This
-          build brings that path to BNB Chain: shield native BNB into the New L1 pool,
+          darkswap.app: live private swaps (private routing) and Multi Exchange, with real
+          users. This build brings that path to BNB Chain: shield native BNB into the New L1 pool,
           swap inside one atomic call, and reshield the result. An agent can take the
           intent as a sentence.
         </p>

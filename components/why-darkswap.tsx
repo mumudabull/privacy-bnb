@@ -4,7 +4,6 @@ const SOURCES = {
   privacyCash: "https://defillama.com/protocol/privacy-cash",
   zcash: "https://www.atlaszec.com/shielded.html",
   forum: "https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481",
-  near: "https://nearstats.org/",
 } as const;
 
 const CARDS = [
@@ -64,8 +63,7 @@ export function WhyDarkswap() {
         </p>
         <p>
           <strong>Roadmap.</strong> DarkSwap&apos;s ERC-8004 agent (id 2930) becomes the relayer for
-          user intents, routing liquidity from the $41.25B / 39-chain NEAR Intents network (
-          <a href={SOURCES.near}>NEAR Stats</a>) into one New L1 pool.
+          user intents into one New L1 pool.
         </p>
       </div>
       <ol className="flow-grid why-funnel">

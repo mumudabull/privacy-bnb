@@ -11,7 +11,7 @@ const CRITERIA = [
   },
   {
     title: "Innovation",
-    body: "atomicCall is the private swap: unshield, call a public pool, reshield. The agent takes a natural-language intent, in the line of NEAR Intents.",
+    body: "atomicCall is the private swap: unshield, call a public pool, reshield. The agent takes a natural-language intent.",
   },
   {
     title: "Open source and integration",
