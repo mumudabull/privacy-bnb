@@ -5,19 +5,14 @@
  * POST, answered with one JSON body. This is the URL published in the agent's
  * ERC-8004 registration, so other agents and explorers can call quote_swap.
  * The same route answers the quote control on the hackathon page.
- * Each address may send 30 requests a minute. The count is per server
- * instance: this deployment has no shared KV.
+ * Each address may send 30 requests a minute. On Vercel that count is the
+ * Firewall rule mcp-quote, shared by every instance in the region.
  */
 
 import { stringifyJson } from "@/lib/json";
 import { handleMcpMessage, parseErrorResponse } from "@/lib/mcp-server";
 import { readQuoteMarket } from "@/lib/quote-market";
-import {
-  clientAddress,
-  consumeRateLimit,
-  rateLimitedJsonRpc,
-  readJsonRpcId,
-} from "@/lib/rate-limit";
+import { enforceRateLimit, rateLimitedJsonRpc, readJsonRpcId } from "@/lib/rate-limit";
 
 // readMarketCheck uses node:crypto and node:fs, so this cannot run on the edge runtime.
 export const runtime = "nodejs";
@@ -84,7 +79,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // Checked before the quote runs, so a full window never reads the market.
-  const decision = consumeRateLimit(clientAddress(request.headers));
+  const decision = await enforceRateLimit(request);
   if (!decision.allowed) {
     return jsonResponse(rateLimitedJsonRpc(readJsonRpcId(message), decision.retryAfterSeconds), 429, {
       "Retry-After": String(decision.retryAfterSeconds),
