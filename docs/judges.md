@@ -29,7 +29,7 @@ The rehearsal stores every amount in the clear. It is not a New L1 type `0x77` p
 | Guarded swap, 41 bps gap | [`0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca`](https://testnet.bscscan.com/tx/0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca) |
 | Atlas BNB/USD, 18 decimals | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D) |
 | ERC-8004 registry, agent 2930 | [`0x8004A818BFB912233c491871b3d84c89A494BD9e`](https://testnet.bscscan.com/address/0x8004A818BFB912233c491871b3d84c89A494BD9e) |
-| DecisionLog | Not deployed. Roadmap. Interface in [decision-log.md](./decision-log.md). |
+| DecisionLog | [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2). Verified on BscScan and Sourcify. Deploy [tx](https://testnet.bscscan.com/tx/0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f). Record 0, pass, 20 bps, risk 34 normal: [tx](https://testnet.bscscan.com/tx/0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd). Recording from the site is roadmap. |
 
 That transaction called `PublicRehearsal.atomicSwap` and succeeded. The gap for that swap is 41 bps. Registration of agent 2930: [`0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00`](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00). Owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`.
 
@@ -47,7 +47,7 @@ The off-chain quote uses those same two calls with `eth_call` against `https://b
 
 **Response hash.** Each call stores the sha256 of the response body. Those 32 bytes are the value `DecisionLog` takes as `cmcResponseHash`. Zero means there was no body.
 
-**Risk score.** `DecisionLog` stores a `uint8` submitted by the authorized agent. The quote path does not compute a risk score. Writing one is roadmap.
+**Risk score.** When `CMC_API_KEY` is set, the quote path reads CoinMarketCap's BNB quote (1h, 24h, and 7d moves, plus 24h volume change), the fear-and-greed index, and the global market-cap 24h change. `lib/risk.ts` adds the highest matching band for each input. A missing input adds nothing. The total is capped at 100. The bands are a design choice for this build. 0-39 is normal and keeps the 500 bps band and the 0.05 BNB cap. 40-69 is caution: 250 bps and 0.02 BNB. 70-100 is quote-only: 100 bps and a zero cap. [`DecisionLog`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2) stores the `uint8` the writer submits. Record 0 is 34, the normal tier, with decision pass and a 20 bps gap, written by the operator wallet in [`0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd`](https://testnet.bscscan.com/tx/0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd). Recording from the site is roadmap.
 
 The two checks can refuse a quote. They do not make the rehearsal private.
 
@@ -55,7 +55,7 @@ The two checks can refuse a quote. They do not make the rehearsal private.
 
 An authorized agent can record `atlasPrice`, `cmcPrice`, `cmcResponseHash`, `riskScore`, the gap in bps, an amount, a decision, and an optional `txRef`. The decision is `pass`, `block_gap`, `block_stale`, `block_cap`, or `quote_only`. The owner chooses which addresses may write. Each record emits one event.
 
-The contract is in the repo and is not deployed. Wiring it from the site is roadmap. When you deploy it, run this from `contracts/` with a funded local wallet:
+The contract is deployed at [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2). Deploy transaction [`0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f`](https://testnet.bscscan.com/tx/0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f). Record 0 is pass, a 20 bps gap, and risk 34 (normal), written by the operator wallet in [`0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd`](https://testnet.bscscan.com/tx/0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd). Recording from the site is roadmap. The script a local wallet used:
 
 ```bash
 export DECISION_LOG_AGENT=0x...
@@ -65,4 +65,4 @@ forge script script/DeployDecisionLog.s.sol --rpc-url bsc_testnet --broadcast
 
 The field list, units, and ABI are in [decision-log.md](./decision-log.md).
 
-**Roadmap.** Deploy DecisionLog and have the site agent write records, including a risk score. Settle a proof-backed swap on New L1.
+**Roadmap.** Have the site write DecisionLog records. Settle a proof-backed swap on New L1.

@@ -1,6 +1,6 @@
 # DecisionLog
 
-On-chain record of one guarded decision. The contract does not read Atlas, call CoinMarketCap, or move funds. The authorized agent supplies every field. It is not deployed. `contracts/script/DeployDecisionLog.s.sol` deploys it from a funded local wallet.
+On-chain record of one guarded decision. The contract does not read Atlas, call CoinMarketCap, or move funds. The authorized agent supplies every field. Deployed on BSC testnet at [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2), verified on BscScan and Sourcify. Deploy transaction [`0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f`](https://testnet.bscscan.com/tx/0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f). Record 0 is pass, a 20 bps gap, and risk 34 (normal), written by the operator wallet in [`0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd`](https://testnet.bscscan.com/tx/0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd). Recording from the site is roadmap.
 
 Source: `contracts/src/DecisionLog.sol`.
 
@@ -31,7 +31,7 @@ The enum is a `uint8`. The names and values are fixed:
 | `atlasPrice` | `uint256` | 18-decimal USD per BNB, the scaled Atlas answer. `0` if Atlas was not read |
 | `cmcPrice` | `uint256` | 18-decimal USD per BNB, the same scaling the quote path uses for CoinMarketCap. `0` if CoinMarketCap was not read |
 | `cmcResponseHash` | `bytes32` | sha256 of the raw CoinMarketCap response body. `bytes32(0)` when there was no body |
-| `riskScore` | `uint8` | Stored as the agent sent it. The contract does not compute it. The quote path does not produce one yet |
+| `riskScore` | `uint8` | The `lib/risk.ts` score the writer submits. 0-39 normal, 40-69 caution, 70-100 quote-only. The contract does not compute it |
 | `gapBps` | `uint256` | Integer basis points, not a percentage. The quote path uses `abs(pool - reference) * 10000 / reference` |
 | `amount` | `uint256` | Wei of the amount the agent quoted or refused |
 | `decision` | `uint8` | The enum above |
@@ -43,7 +43,7 @@ The enum is a `uint8`. The names and values are fixed:
 
 ## Deploy
 
-Not run from this repository.
+Deployed at [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2). Recording from the site is roadmap. A local wallet runs:
 
 ```bash
 cd contracts

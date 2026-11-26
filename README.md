@@ -86,7 +86,7 @@ See the [contract guide](./contracts/README.md) for the full Anvil walkthrough, 
 
 ## For judges
 
-[Before Bangkok and the Bangkok build](./docs/judges.md) covers the CoinMarketCap × Atlas addresses on BSC testnet. The DecisionLog interface is in [docs/decision-log.md](./docs/decision-log.md). That contract is not deployed.
+[Before Bangkok and the Bangkok build](./docs/judges.md) covers the CoinMarketCap × Atlas addresses on BSC testnet. DecisionLog is [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2) on BSC testnet. Recording from the site is roadmap. The interface is in [docs/decision-log.md](./docs/decision-log.md).
 
 ## Built at BNB Bangkok
 

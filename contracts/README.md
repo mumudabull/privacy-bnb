@@ -7,7 +7,7 @@ A Foundry demo of shield → swap → reshield. It is public on purpose.
 | `IShieldedPool` | Interface whose selectors match the live New L1 devnet pool at `0x0000000000000000000000000000000000005000` |
 | `DemoAMM` + `DemoToken` (`rNOTE`) | Constant-product pool, 0.30% fee. Not `$DARK` |
 | `PublicRehearsal` | Cleartext notes. No proof, no type `0x77`, not the system pool |
-| `DecisionLog` | Owner-authorized agent records a decision. It does not swap. Not deployed |
+| `DecisionLog` | Owner-authorized agent records a decision. It does not swap. [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2) on BSC testnet. Recording from the site is roadmap |
 | `script/probe-devnet.sh` | Read-only `cast` calls against the real pool |
 
 `atomicSwap` spends a BNB note, swaps to rNOTE, and records an open note. New L1 can reshield native BNB only, so that token note cannot exist inside ShieldedPool. `reshieldBnb` is the native-only step the real pool can do, still stored in the clear here.
@@ -67,7 +67,7 @@ export DEMO_RNOTE_PER_BNB=555
 forge script script/Deploy.s.sol --rpc-url https://bsc-testnet-dataseed.bnbchain.org --broadcast
 ```
 
-The wallet key is not in this repo. The rehearsal addresses already on BSC testnet are listed below. DecisionLog is not among them.
+The wallet key is not in this repo. The rehearsal addresses already on BSC testnet are listed below, including DecisionLog [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2). Recording from the site is roadmap.
 
 Fund the `PRIVATE_KEY` address with **0.2 tBNB** before that command.
 
@@ -82,7 +82,7 @@ New L1 devnet (chain id 1105) has no faucet. Bridge that same tBNB from BSC test
 
 `DemoFlow` quotes the AMM and passes that amount as `minOut`. A worse fill reverts. `MIN_OUT_WEI` overrides the quote.
 
-`DecisionLog` has its own script, [DeployDecisionLog.s.sol](./script/DeployDecisionLog.s.sol). It is not deployed. Set `DECISION_LOG_AGENT` to the address that may call `record`. The signer becomes the owner. The interface is in [docs/decision-log.md](../docs/decision-log.md). Run that script from a funded local wallet when you want it on chain.
+`DecisionLog` is deployed at [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2). Deploy transaction [`0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f`](https://testnet.bscscan.com/tx/0xb5b094fc0538a5501e62de110c5f4c006147040d1fcd9cf4df2fa007a9f3dd8f). Verified on BscScan and Sourcify. Record 0 is pass, a 20 bps gap, and risk 34 (normal), written by the operator wallet in [`0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd`](https://testnet.bscscan.com/tx/0x9746cb34f3e6fa500488f346f5de14cca9eda1d08892b468f311c5b60cc41bbd). Recording from the site is roadmap. The interface is in [docs/decision-log.md](../docs/decision-log.md).
 
 BSC testnet (chain 97) rehearsal deployment. rNOTE's total supply is `27750000000000000000` wei, the explicit liquidity passed at deploy.
 
@@ -93,6 +93,7 @@ BSC testnet (chain 97) rehearsal deployment. rNOTE's total supply is `2775000000
 | rNOTE | [`0x9Df7CC1878B45E69A421c2476C00B99E45d68bb7`](https://testnet.bscscan.com/address/0x9Df7CC1878B45E69A421c2476C00B99E45d68bb7) |
 | Atlas BNB/USD | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D) |
 | ERC-8004 registry, agent 2930 | [`0x8004A818BFB912233c491871b3d84c89A494BD9e`](https://testnet.bscscan.com/address/0x8004A818BFB912233c491871b3d84c89A494BD9e) |
+| DecisionLog | [`0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2`](https://testnet.bscscan.com/address/0x0253Aff4b3493E86EeFfC03FD8b524688cfaFCa2) |
 
 Guarded swap, 41 bps gap: [`0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca`](https://testnet.bscscan.com/tx/0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca).
 
