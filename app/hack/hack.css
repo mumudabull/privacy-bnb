@@ -545,6 +545,15 @@
   word-break: keep-all;
   line-break: strict;
 }
+/*
+ * The shared testnet note is red on other pages. On /hack the same sentence
+ * is a neutral status note: the meaning stays, the warning color does not.
+ */
+.hack-page .testnet-readonly-note {
+  border-color: var(--line-strong);
+  color: var(--muted);
+  background: transparent;
+}
 .hack-page .hack-simulation {
   margin-top: 16px;
   padding-top: 14px;
@@ -556,34 +565,32 @@
   line-height: 1.45;
   color: var(--muted);
 }
-.hack-page .hack-simulation-steps {
-  margin: 12px 0 0;
-  padding: 0 0 0 1.4rem;
-}
-.hack-page .hack-simulation-steps li + li {
+.hack-page .hack-simulation-step {
   margin-top: 12px;
 }
-.hack-page .hack-simulation-steps h3 {
+.hack-page .hack-simulation-step h3 {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-}
-.hack-page .hack-simulation-steps li[aria-current="step"] h3 {
   color: var(--hack-accent);
 }
-.hack-page .hack-simulation-steps p {
+.hack-page .hack-simulation-step h3:focus {
+  outline: 2px solid var(--hack-accent);
+  outline-offset: 4px;
+}
+.hack-page .hack-simulation-step p {
   margin: 6px 0 0;
   max-width: 42rem;
   font-size: 15px;
   color: var(--muted);
 }
-.hack-page .hack-simulation-steps a {
+.hack-page .hack-simulation-step a {
   color: var(--hack-accent);
 }
-.hack-page .hack-simulation-steps a:focus-visible {
+.hack-page .hack-simulation-step a:focus-visible {
   outline: 2px solid var(--hack-accent);
   outline-offset: 3px;
 }
@@ -597,6 +604,10 @@
   min-height: 40px;
   padding: 0 14px;
   font-size: 15px;
+}
+.hack-page .hack-simulation-actions .hack-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .hack-page:lang(zh-Hans) .hack-lineage li p,

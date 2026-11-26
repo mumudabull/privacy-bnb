@@ -34,10 +34,12 @@ type SimulationStepCopy = {
 
 /** Presenter-paced walk-through shown only under an accepted quote. */
 export type HackSimulationCopy = {
-  start: string;
+  /** Names the whole control as a simulation. */
+  label: string;
+  back: string;
   next: string;
-  startOver: string;
-  status: string;
+  /** Spoken and shown as the step changes. Step numbers are 1-based. */
+  status: (stepNumber: number, stepCount: number, title: string) => string;
   recordedLink: string;
   steps: readonly [
     SimulationStepCopy,
@@ -206,37 +208,35 @@ const ENGLISH: HackPageCopy = {
     demoBadge: "Read-only quote",
     demoFallback: "The quote endpoint did not answer. Nothing was sent.",
     simulation: {
-      start: "Simulate this swap",
-      next: "Next step",
-      startOver: "Start over",
-      status:
-        "Simulation. New L1 is on devnet only and BNB Chain has not published the proof tool needed to spend a shielded note, so nothing is sent.",
-      recordedLink: "Recorded rehearsal on BSC testnet",
+      label: "Simulation",
+      back: "Back",
+      next: "Next",
+      status: (stepNumber, stepCount, title) =>
+        `Simulation. Step ${stepNumber} of ${stepCount}: ${title}. New L1 is on devnet only. Public testnet and mainnet have not launched.`,
+      recordedLink: "Recorded BSC testnet rehearsal",
       steps: [
         {
           title: "Review",
           body: (quote, marketCheck) =>
-            `Sell ${quote.amountBnb} BNB for about ${quote.quoteRnote} rNOTE. Market check: ${marketCheck}`,
+            `Sell ${quote.amountBnb} BNB. Pool quote about ${quote.quoteRnote} rNOTE. Cap ${quote.executionCapBnb} BNB. Market check: ${marketCheck}`,
         },
         {
           title: "Shield",
-          body: (quote) =>
-            `${quote.amountBnb} BNB is deposited into the pool. On New L1 this deposit is public.`,
+          body: (quote) => `${quote.amountBnb} BNB enters the New L1 shielded pool as a note.`,
         },
         {
           title: "Atomic call",
-          body: () =>
-            "The pool unshields that amount into one DEX call and takes the output back in the same transaction. The DEX call and amounts are public.",
+          body: (quote) =>
+            `The shielded note funds an admitted public EVM swap of ${quote.amountBnb} BNB in one call, for about ${quote.quoteRnote} rNOTE, per the BNB New L1 litepaper.`,
         },
         {
           title: "Reshield",
-          body: (quote) =>
-            `About ${quote.quoteRnote} rNOTE is recorded as a note. The real pool reshields native BNB only today.`,
+          body: (quote) => `The output, about ${quote.quoteRnote} rNOTE, goes back into a new note.`,
         },
         {
           title: "Receipt",
           body: () =>
-            "No transaction was sent. A real run of this path on BSC testnet is linked below. This is a recorded run, not a receipt for this quote.",
+            "This is a recorded run on PublicRehearsal: unshield, swap, and reshield. It is not a receipt for this quote.",
         },
       ],
     },
@@ -371,36 +371,35 @@ const CHINESE: HackPageCopy = {
     demoBadge: "只读报价",
     demoFallback: "报价端点没有响应。没有发送任何交易。",
     simulation: {
-      start: "模拟这笔兑换",
+      label: "模拟",
+      back: "上一步",
       next: "下一步",
-      startOver: "重新开始",
-      status:
-        "模拟演示。New L1 目前仅有开发网，BNB Chain 尚未发布花费隐私票据所需的证明工具，因此不会发送任何交易。",
-      recordedLink: "BNB 测试网上的已记录演练",
+      status: (stepNumber, stepCount, title) =>
+        `模拟。第 ${stepNumber} 步，共 ${stepCount} 步：${title}。New L1 仅有开发网。公开测试网和主网尚未推出。`,
+      recordedLink: "已记录的 BSC 测试网演练",
       steps: [
         {
           title: "核对",
           body: (quote, marketCheck) =>
-            `卖出 ${quote.amountBnb} BNB，大约换得 ${quote.quoteRnote} rNOTE。市场检查：${marketCheck}`,
+            `卖出 ${quote.amountBnb} BNB。资金池报价约 ${quote.quoteRnote} rNOTE。上限 ${quote.executionCapBnb} BNB。市场检查：${marketCheck}`,
         },
         {
           title: "屏蔽",
-          body: (quote) => `${quote.amountBnb} BNB 存入资金池。在 New L1 上，这笔存入是公开的。`,
+          body: (quote) => `${quote.amountBnb} BNB 进入 New L1 屏蔽池，成为一张票据。`,
         },
         {
           title: "原子调用",
-          body: () =>
-            "资金池在同一笔交易中把该金额解屏蔽，送入一次 DEX 调用，并取回输出。DEX 调用和金额都是公开的。",
+          body: (quote) =>
+            `这张屏蔽票据在一次调用中，为一笔获准的公开 EVM 兑换提供 ${quote.amountBnb} BNB，约得 ${quote.quoteRnote} rNOTE。依据是 BNB New L1 轻皮书。`,
         },
         {
           title: "重新屏蔽",
-          body: (quote) =>
-            `大约 ${quote.quoteRnote} rNOTE 被记为一张票据。真实资金池目前只重新屏蔽原生 BNB。`,
+          body: (quote) => `输出回到一张新票据。这笔报价的输出约为 ${quote.quoteRnote} rNOTE。`,
         },
         {
           title: "回执",
           body: () =>
-            "没有发送任何交易。下面链接的是这条路径在 BNB 测试网上的一次已记录运行，不是这笔报价的回执。",
+            "这是 PublicRehearsal 上的一次已记录运行：解屏蔽、兑换、重新屏蔽。它不是这笔报价的回执。",
         },
       ],
     },

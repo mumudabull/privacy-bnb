@@ -1,0 +1,8 @@
+{
+  // File: tsconfig.test.json
+  // Purpose: Load the walk-through test with the automatic JSX runtime. Next keeps jsx preserve in tsconfig.json.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
+}

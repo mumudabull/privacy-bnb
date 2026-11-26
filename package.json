@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts lib/atlas.test.ts lib/risk.test.ts lib/mcp-server.test.ts lib/hack-copy.test.ts lib/social-card.test.ts"
+    "test": "node --experimental-strip-types --test lib/format.test.ts lib/quote.test.ts lib/market.test.ts lib/atlas.test.ts lib/risk.test.ts lib/mcp-server.test.ts lib/hack-copy.test.ts lib/social-card.test.ts && tsx --tsconfig tsconfig.test.json --test components/hack/swap-simulation.test.tsx"
   },
   "dependencies": {
     "lucide-react": "^1.81.0",
@@ -17,9 +17,12 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "jsdom": "^31.0.1",
+    "tsx": "^4.23.15",
     "typescript": "^5.8.3"
   }
 }

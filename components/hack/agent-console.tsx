@@ -145,7 +145,7 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
   );
 }
 
-function QuoteAnswer({ quote, copy }: { quote: AgentQuote; copy: HackConsoleCopy }) {
+export function QuoteAnswer({ quote, copy }: { quote: AgentQuote; copy: HackConsoleCopy }) {
   const wasAccepted = quote.status === "quoted";
   const reason = copy.describeReason(quote);
   return (
