@@ -80,7 +80,8 @@ function toolCallResult(quote: AgentQuote) {
   return {
     // Text content is the form every protocol version understands. A rejected
     // sentence is a tool-level error, so the calling model can correct itself.
-    // stringifyJson writes bigint reserves as decimal strings. JSON.stringify throws.
+    // The quote's market is a plain MarketSummary. stringifyJson still writes
+    // any leftover bigint as a decimal string, because JSON.stringify throws.
     content: [{ type: "text", text: stringifyJson(quote) }],
     isError: quote.status === "rejected",
   };

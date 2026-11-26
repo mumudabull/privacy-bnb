@@ -27,6 +27,27 @@ const CANONICAL_SENTENCE = "swap 0.04 bnb to rNOTE privately";
 type TitledParagraph = { name: string; body: string };
 type PathStep = { when: string; title: string; body: string };
 
+type SimulationStepCopy = {
+  title: string;
+  body: (quote: AgentQuote, marketCheck: string) => string;
+};
+
+/** Presenter-paced walk-through shown only under an accepted quote. */
+export type HackSimulationCopy = {
+  start: string;
+  next: string;
+  startOver: string;
+  status: string;
+  recordedLink: string;
+  steps: readonly [
+    SimulationStepCopy,
+    SimulationStepCopy,
+    SimulationStepCopy,
+    SimulationStepCopy,
+    SimulationStepCopy,
+  ];
+};
+
 export type HackConsoleCopy = {
   inputLabel: string;
   submit: string;
@@ -46,10 +67,11 @@ export type HackConsoleCopy = {
   privacyLine: string;
   /** Same fact as TESTNET_READONLY_NOTE, in this page's language. */
   readonlyNote: string;
-  /** Small label on the quote control. The live feed is not connected yet. */
+  /** Small label on the quote control. The endpoint quotes and does not send. */
   demoBadge: string;
-  /** Shown when /api/mcp fails. No price is invented. */
+  /** Shown when /api/mcp does not answer. No price is invented. */
   demoFallback: string;
+  simulation: HackSimulationCopy;
   errorEndpointStatus: (httpStatus: number) => string;
   errorNoAnswer: string;
   errorGeneric: string;
@@ -181,8 +203,43 @@ const ENGLISH: HackPageCopy = {
     ],
     idleHint: "The answer comes from this site’s public agent endpoint. Nothing is signed or sent.",
     readonlyNote: TESTNET_READONLY_NOTE,
-    demoBadge: "Demo until live",
-    demoFallback: "Live quote is in demo mode until the market data feed is connected.",
+    demoBadge: "Read-only quote",
+    demoFallback: "The quote endpoint did not answer. Nothing was sent.",
+    simulation: {
+      start: "Simulate this swap",
+      next: "Next step",
+      startOver: "Start over",
+      status:
+        "Simulation. New L1 is on devnet only and BNB Chain has not published the proof tool needed to spend a shielded note, so nothing is sent.",
+      recordedLink: "Recorded rehearsal on BSC testnet",
+      steps: [
+        {
+          title: "Review",
+          body: (quote, marketCheck) =>
+            `Sell ${quote.amountBnb} BNB for about ${quote.quoteRnote} rNOTE. Market check: ${marketCheck}`,
+        },
+        {
+          title: "Shield",
+          body: (quote) =>
+            `${quote.amountBnb} BNB is deposited into the pool. On New L1 this deposit is public.`,
+        },
+        {
+          title: "Atomic call",
+          body: () =>
+            "The pool unshields that amount into one DEX call and takes the output back in the same transaction. The DEX call and amounts are public.",
+        },
+        {
+          title: "Reshield",
+          body: (quote) =>
+            `About ${quote.quoteRnote} rNOTE is recorded as a note. The real pool reshields native BNB only today.`,
+        },
+        {
+          title: "Receipt",
+          body: () =>
+            "No transaction was sent. A real run of this path on BSC testnet is linked below. This is a recorded run, not a receipt for this quote.",
+        },
+      ],
+    },
     statusHeadlines: {
       quoted: "Quoted",
       refused: "Refused: above the cap",
@@ -311,8 +368,42 @@ const CHINESE: HackPageCopy = {
     ],
     idleHint: `回答来自本站公开的智能体端点，不会签名，也不会发送任何交易。目前只识别英文指令，例如：${CANONICAL_SENTENCE}`,
     readonlyNote: "测试网演示：兑换在 BNB 测试网上是只读的，不会转移真实资金。",
-    demoBadge: "演示，上线前",
-    demoFallback: "在市场数据源接通之前，实时报价处于演示模式。",
+    demoBadge: "只读报价",
+    demoFallback: "报价端点没有响应。没有发送任何交易。",
+    simulation: {
+      start: "模拟这笔兑换",
+      next: "下一步",
+      startOver: "重新开始",
+      status:
+        "模拟演示。New L1 目前仅有开发网，BNB Chain 尚未发布花费隐私票据所需的证明工具，因此不会发送任何交易。",
+      recordedLink: "BNB 测试网上的已记录演练",
+      steps: [
+        {
+          title: "核对",
+          body: (quote, marketCheck) =>
+            `卖出 ${quote.amountBnb} BNB，大约换得 ${quote.quoteRnote} rNOTE。市场检查：${marketCheck}`,
+        },
+        {
+          title: "屏蔽",
+          body: (quote) => `${quote.amountBnb} BNB 存入资金池。在 New L1 上，这笔存入是公开的。`,
+        },
+        {
+          title: "原子调用",
+          body: () =>
+            "资金池在同一笔交易中把该金额解屏蔽，送入一次 DEX 调用，并取回输出。DEX 调用和金额都是公开的。",
+        },
+        {
+          title: "重新屏蔽",
+          body: (quote) =>
+            `大约 ${quote.quoteRnote} rNOTE 被记为一张票据。真实资金池目前只重新屏蔽原生 BNB。`,
+        },
+        {
+          title: "回执",
+          body: () =>
+            "没有发送任何交易。下面链接的是这条路径在 BNB 测试网上的一次已记录运行，不是这笔报价的回执。",
+        },
+      ],
+    },
     statusHeadlines: {
       quoted: "已报价",
       refused: "已拒绝：超过上限",

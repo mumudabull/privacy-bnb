@@ -94,7 +94,7 @@ export function buildAgentQuote(
       status: "rejected",
       reason: "The BSC testnet DemoAMM reserves could not be read.",
       privacy: PRIVACY_LINE,
-      market,
+      market: toSerializableMarketSummary(market),
     };
   }
   const capWei = market.capWei ? BigInt(market.capWei) : executionCapWei;
@@ -113,7 +113,7 @@ export function buildAgentQuote(
     priceImpactBps: impact === null ? null : impact.toString(),
     executionCapBnb: formatBnb(capWei, 6),
     pool: `DemoAMM ${formatBnb(reserves.bnb, 6)} BNB / ${formatBnb(reserves.token, 6)} rNOTE`,
-    market,
+    market: toSerializableMarketSummary(market),
   };
 
   if (!EXECUTABLE_ASSETS.has(intent.assetOut.toLowerCase())) {
@@ -132,6 +132,45 @@ export function buildAgentQuote(
     quote.reason = market.detail;
   }
   return quote;
+}
+
+/**
+ * Copies only the fields MarketSummary declares, so the answer is always safe
+ * for JSON.stringify. The caller may pass a wider object: readQuoteMarket in
+ * lib/quote-market.ts returns a QuoteMarket whose extra `pool` field holds
+ * bigint reserves, and JSON.stringify throws on a bigint. That threw inside
+ * /api/mcp for every sentence that reached a quote, which the hackathon
+ * console showed as its fallback line. Add new MarketSummary fields here
+ * too, or they will not reach the client.
+ */
+export function toSerializableMarketSummary(market: MarketSummary): MarketSummary {
+  return {
+    decision: market.decision,
+    cmcDecision: market.cmcDecision,
+    ammImpliedUsd: market.ammImpliedUsd,
+    cmcUsd: market.cmcUsd,
+    deviationBps: market.deviationBps,
+    maxDeviationBps: market.maxDeviationBps,
+    detail: market.detail,
+    reserveBnbWei: market.reserveBnbWei,
+    reserveTokenWei: market.reserveTokenWei,
+    capWei: market.capWei,
+    cmcHttpStatus: market.cmcHttpStatus,
+    cmcFetchedAt: market.cmcFetchedAt,
+    cmcSha256: market.cmcSha256,
+    riskScore: market.riskScore,
+    riskTier: market.riskTier,
+    atlas: {
+      status: market.atlas.status,
+      priceUsd: market.atlas.priceUsd,
+      deviationBps: market.atlas.deviationBps,
+      decimals: market.atlas.decimals,
+      updatedAt: market.atlas.updatedAt,
+      roundId: market.atlas.roundId,
+      feed: market.atlas.feed,
+      explorer: market.atlas.explorer,
+    },
+  };
 }
 
 function reservesOf(market: MarketSummary): { bnb: bigint; token: bigint } | null {

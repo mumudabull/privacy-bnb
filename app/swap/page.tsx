@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { readDevnet } from "@/lib/devnet";
 import { readDemoPool } from "@/lib/pool";
 import { formatBnb, formatInteger } from "@/lib/format";
-import { NETWORK } from "@/lib/network";
+import { BSC_TESTNET_CHAIN_ID, NETWORK, PUBLIC_REHEARSAL_EXPLORER } from "@/lib/network";
 
 export const metadata: Metadata = {
   title: "Public rehearsal · DarkSwap on BNB",
@@ -54,8 +54,10 @@ export default async function SwapPage() {
             </article>
             <article className="stat-card">
               <span>Deployed rehearsal</span>
-              <strong>Local</strong>
-              <em>no testnet key in this environment</em>
+              <strong>BSC testnet</strong>
+              <em>
+                <a href={PUBLIC_REHEARSAL_EXPLORER}>PublicRehearsal, chain {BSC_TESTNET_CHAIN_ID}</a>
+              </em>
             </article>
           </div>
           <SwapDemo

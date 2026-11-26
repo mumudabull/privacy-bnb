@@ -545,6 +545,60 @@
   word-break: keep-all;
   line-break: strict;
 }
+.hack-page .hack-simulation {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.hack-page .hack-simulation-status {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.hack-page .hack-simulation-steps {
+  margin: 12px 0 0;
+  padding: 0 0 0 1.4rem;
+}
+.hack-page .hack-simulation-steps li + li {
+  margin-top: 12px;
+}
+.hack-page .hack-simulation-steps h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.hack-page .hack-simulation-steps li[aria-current="step"] h3 {
+  color: var(--hack-accent);
+}
+.hack-page .hack-simulation-steps p {
+  margin: 6px 0 0;
+  max-width: 42rem;
+  font-size: 15px;
+  color: var(--muted);
+}
+.hack-page .hack-simulation-steps a {
+  color: var(--hack-accent);
+}
+.hack-page .hack-simulation-steps a:focus-visible {
+  outline: 2px solid var(--hack-accent);
+  outline-offset: 3px;
+}
+.hack-page .hack-simulation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.hack-page .hack-simulation-actions .hack-button {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 15px;
+}
+
 .hack-page:lang(zh-Hans) .hack-lineage li p,
 .hack-page:lang(zh-Hans) .hack-path li p:last-child {
   /* A Chinese character is about two Latin characters wide, so the measure is halved. */

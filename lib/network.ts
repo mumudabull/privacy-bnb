@@ -13,6 +13,19 @@ export const NETWORK = {
   atomicCallOperation: 2,
 } as const;
 
+/**
+ * BSC testnet rehearsal named in contracts/README.md and docs/judges.md.
+ * The recorded transaction swapped 0.01 BNB for rNOTE through PublicRehearsal.
+ * It is a past run, not a receipt for a visitor's quote.
+ */
+export const BSC_TESTNET_CHAIN_ID = 97;
+export const PUBLIC_REHEARSAL_ADDRESS = "0x8341dC4948FfCecd7dc5cDA1366f3DC55AC24258";
+export const PUBLIC_REHEARSAL_EXPLORER =
+  `https://testnet.bscscan.com/address/${PUBLIC_REHEARSAL_ADDRESS}`;
+export const RECORDED_REHEARSAL_TX =
+  "0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca";
+export const RECORDED_REHEARSAL_TX_URL = `https://testnet.bscscan.com/tx/${RECORDED_REHEARSAL_TX}`;
+
 export const LINKS = {
   darkswap: "https://darkswap.app",
   darkswapDocs: "https://darkswap.app/docs",

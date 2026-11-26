@@ -9,7 +9,8 @@
 "use client";
 
 import { ArrowRight, Check, LoaderCircle, X } from "lucide-react";
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
+import { SwapSimulation } from "@/components/hack/swap-simulation";
 import { TestnetReadonlyNote } from "@/components/testnet-readonly-note";
 import type { AgentQuote } from "@/lib/agent-quote";
 import { HACK_COPY, type HackConsoleCopy, type HackLocale } from "@/lib/hack-copy";
@@ -21,7 +22,7 @@ const QUOTE_TOOL_NAME = "quote_swap";
 type ConsoleState =
   | { phase: "idle" }
   | { phase: "loading" }
-  | { phase: "answered"; quote: AgentQuote }
+  | { phase: "answered"; quote: AgentQuote; answerId: number }
   | { phase: "failed" };
 
 type McpToolCallResponse = {
@@ -29,7 +30,7 @@ type McpToolCallResponse = {
   error?: { message?: string };
 };
 
-/** The quote endpoint failed. The console shows a fixed demo line, not the raw error. */
+/** The quote endpoint did not answer. The console shows demoFallback, not a raw error. */
 class QuoteRequestError extends Error {}
 
 /** Calls quote_swap over MCP and returns the agent's structured answer. */
@@ -61,16 +62,18 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
   const inputId = useId();
   const [sentence, setSentence] = useState<string>(copy.examples[0].sentence);
   const [consoleState, setConsoleState] = useState<ConsoleState>({ phase: "idle" });
+  const answerSeq = useRef(0);
 
   async function submitSentence(sentenceToQuote: string) {
     const trimmedSentence = sentenceToQuote.trim();
     if (trimmedSentence.length === 0) return;
     setConsoleState({ phase: "loading" });
     try {
-      setConsoleState({ phase: "answered", quote: await requestQuote(trimmedSentence) });
+      const quote = await requestQuote(trimmedSentence);
+      answerSeq.current += 1;
+      setConsoleState({ phase: "answered", quote, answerId: answerSeq.current });
     } catch {
-      // /api/mcp can fail before the market feed is connected. Show the demo
-      // line only. Do not surface the status code or invent a price.
+      // The endpoint did not answer. Show the fixed line and do not invent a price.
       setConsoleState({ phase: "failed" });
     }
   }
@@ -134,7 +137,9 @@ export function AgentConsole({ locale }: { locale: HackLocale }) {
         {consoleState.phase === "failed" && (
           <p className="hack-console-demo">{copy.demoFallback}</p>
         )}
-        {consoleState.phase === "answered" && <QuoteAnswer quote={consoleState.quote} copy={copy} />}
+        {consoleState.phase === "answered" && (
+          <QuoteAnswer key={consoleState.answerId} quote={consoleState.quote} copy={copy} />
+        )}
       </div>
     </div>
   );
@@ -176,6 +181,7 @@ function QuoteAnswer({ quote, copy }: { quote: AgentQuote; copy: HackConsoleCopy
         <p className="hack-answer-reason">{copy.describeUnsupportedAsset(quote.assetOut)}</p>
       )}
       <p className="hack-answer-privacy">{copy.privacyLine}</p>
+      {wasAccepted ? <SwapSimulation quote={quote} copy={copy} /> : null}
     </div>
   );
 }
