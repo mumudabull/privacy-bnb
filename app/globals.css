@@ -130,12 +130,21 @@ main { position: relative; }
   padding: 72px 0 36px;
   align-items: end;
 }
-.hero-mark { width: 168px; height: 168px; justify-self: start; position: relative; }
-.hero-mark video, .hero-mark img { width: 100%; height: 100%; display: block; border-radius: 28px; }
-.warp-still { display: none; }
+/* The mark lines up with the top of the headline, not the bottom of the pills. */
+.hero-mark { width: 168px; height: 168px; justify-self: start; align-self: start; position: relative; }
+.hero-mark video, .hero-mark img { width: 100%; height: 100%; border-radius: 28px; }
+/*
+ * Exactly one of the two is ever in the layout: the video, or the still under
+ * reduced motion. Both selectors carry the .hero-mark prefix on purpose. A bare
+ * `.warp-still { display: none }` loses on specificity to a `.hero-mark img`
+ * rule that sets display, which rendered the still under the video and pushed
+ * a second mark over the next section.
+ */
+.hero-mark .warp { display: block; }
+.hero-mark .warp-still { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  .warp { display: none; }
-  .warp-still { display: block; }
+  .hero-mark .warp { display: none; }
+  .hero-mark .warp-still { display: block; }
 }
 .kicker, .section-index, .meta-label {
   font-family: var(--mono);
