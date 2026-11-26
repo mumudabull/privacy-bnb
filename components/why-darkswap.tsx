@@ -15,7 +15,7 @@ const STEPS = [
   { num: "01", title: "Any chain", body: "Assets start wherever the user already holds them." },
   { num: "02", title: "Intent", body: "A sentence names the swap. The route is an intent, not a new pool." },
   { num: "03", title: "One shielded pool", body: "Value is meant to settle in the New L1 shielded pool, not in a side pool." },
-  { num: "04", title: "Agent swap", body: "The ERC-8004 agent calls atomicCall and the funds stay in that pool." },
+  { num: "04", title: "Relayed swap", body: "A DarkSwap relayer submits the atomic call and the funds stay in that pool." },
 ] as const;
 
 export function WhyDarkswap() {
@@ -27,7 +27,7 @@ export function WhyDarkswap() {
         Shielded liquidity is split across dozens of small pools on Ethereum, Solana, and
         Zcash. Each anonymity set is thin, and moving between them leaks. DarkSwap is the
         plan to funnel assets from any chain, through intents, into one BNB New L1 pool,
-        where an agent swaps without leaving it.
+        where the swap happens without leaving it.
       </p>
       <ol className="flow-grid why-funnel">
         {STEPS.map((step) => (
@@ -40,8 +40,8 @@ export function WhyDarkswap() {
       </ol>
       <p className="fine">
         This funnel is the roadmap. Pool deposits are public today, and this repo does
-        not yet submit a type 0x77 proof. The agent and the public rehearsal are what
-        runs now.
+        not yet submit a type 0x77 proof. The guarded quote and the public rehearsal are
+        what run now.
       </p>
       <div className="why-sources">
         <p>
@@ -55,8 +55,9 @@ export function WhyDarkswap() {
         <p>
           <strong>Roadmap.</strong> New L1 relayers are the main submission path. They pay
           gas, hide the user&apos;s EOA, are paid with a private fee note, and cannot change
-          the recipient or the amount. DarkSwap&apos;s ERC-8004 agent is designed to be that
-          relayer for a user intent. ERC20 is a reserved field on BNB&apos;s roadmap.
+          the recipient or the amount. Dark Pools already runs a transaction relayer, and
+          running one on New L1 is the first piece of DarkSwap&apos;s core planned to move
+          over. ERC20 is a reserved field on BNB&apos;s roadmap.
         </p>
         <p>
           <a href={SOURCES.llama}>DefiLlama</a> tracks 55 privacy protocols with $763.5m

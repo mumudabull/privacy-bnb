@@ -92,14 +92,14 @@ function bandPercent(market: MarketSummary): number {
 const ENGLISH: HackPageCopy = {
   metadataTitle: "The hackathon build · DarkSwap on BNB",
   metadataDescription:
-    "Say a swap in a sentence. A guarded agent quotes it, refuses what breaks its limits, and is built to settle through BNB Chain’s shielded pool.",
+    "DarkSwap is a shielded zk pool and private swap. This build brings its core to BNB Chain’s New L1, where the shielded pool is part of the protocol.",
   navigationLabel: "Hackathon page",
   navigationTechnicalPage: "Technical page",
   navigationCode: "Code",
   otherLanguage: { locale: "zh", label: "中文" },
-  heroTitle: "Say the swap. The agent holds the line.",
+  heroTitle: "Private swaps, built on BNB’s shielded pool.",
   heroBody:
-    "DarkSwap on BNB is a swap agent that takes a plain sentence, quotes it, and refuses anything that breaks its limits. It runs on BNB Smart Chain today and is built to settle through the shielded pool on BNB Chain’s New L1.",
+    "DarkSwap is a shielded zk pool and private swap, live on Solana. We are building our core on BNB Chain’s New L1, where the shielded pool is part of the protocol and shared by every app. Say a swap in one sentence and get a guarded quote.",
   heroNote:
     "Built for the BNB Chain hackathon, November 2026. What you can try here is a public rehearsal. No swap on this page is private yet.",
   lineageTitle: "From purple to gold",
@@ -110,7 +110,7 @@ const ENGLISH: HackPageCopy = {
     },
     {
       name: "NEAR routes",
-      body: "Swaps travel as intents through NEAR. The same idea drives the agent here: you state the outcome, and the route is worked out for you.",
+      body: "Swaps travel as intents through NEAR. The same idea drives the quote here: you state the outcome, and the route is worked out for you.",
     },
     {
       name: "BNB shield",
@@ -120,31 +120,31 @@ const ENGLISH: HackPageCopy = {
   ledgerTitle: "What works, and what waits",
   worksTodayTitle: "Works today",
   worksToday: [
-    "An agent reads a swap sentence and quotes it against a pool.",
+    "A swap sentence is read and quoted against a pool.",
     "A hard cap refuses anything above 0.05 BNB.",
     "A CoinMarketCap check refuses a quote that strays from the market price.",
     "An on-chain oracle guard refuses a stale or divergent price inside the swap itself.",
-    "Other agents can call the quote over MCP at /api/mcp on this site.",
+    "Other tools can call the quote over MCP at /api/mcp on this site.",
     "The New L1 devnet shielded pool is read live, without a key.",
   ],
   waitsTitle: "Waits on New L1",
   waits: [
     "A private swap. Spending a shielded note needs a proof tool that BNB Chain has not published.",
     "Tokens other than native BNB inside the shielded pool.",
-    "A relayer, so the sender does not pay gas from a public address.",
+    "A DarkSwap relayer. Relayers are the main way a shielded transaction reaches New L1, and running one is the first piece of our core planned to move over.",
     "An audit of the circuits. The devnet pool is unaudited.",
   ],
   pathTitle: "The path onto BNB",
   path: [
     {
       when: "Now",
-      title: "Quote with the agent",
-      body: "Try the quote above, or point your own agent at the MCP endpoint. Everything it does is public and capped.",
+      title: "Get a guarded quote",
+      body: "Try the quote above, or point your own tool at the MCP endpoint. Everything it does is public and capped.",
     },
     {
       when: "Public testnet",
       title: "Shield BNB",
-      body: "Deposit native BNB into the shielded pool from the agent. BNB Chain’s planning target for the testnet is Q1 2027.",
+      body: "Shield and unshield native BNB through the protocol pool from DarkSwap, and run a relayer. BNB Chain’s planning target for the testnet is Q1 2027.",
     },
     {
       when: "Mainnet",
@@ -171,12 +171,12 @@ const ENGLISH: HackPageCopy = {
       { label: "A swap over the cap", sentence: EXAMPLE_SENTENCES.overCap },
       { label: "Not a swap", sentence: EXAMPLE_SENTENCES.notASwap },
     ],
-    idleHint: "The answer comes from this site’s public agent endpoint. Nothing is signed or sent.",
+    idleHint: "The answer comes from this site’s public quote endpoint. Nothing is signed or sent.",
     statusHeadlines: {
       quoted: "Quoted",
       refused: "Refused: above the cap",
       market_refused: "Refused: outside the market band",
-      rejected: "Not a swap this agent accepts",
+      rejected: "Not a swap this build accepts",
     },
     fieldSell: "You sell",
     fieldPoolQuote: "Pool quote",
@@ -210,14 +210,14 @@ const ENGLISH: HackPageCopy = {
 const CHINESE: HackPageCopy = {
   metadataTitle: "黑客松构建 · DarkSwap on BNB",
   metadataDescription:
-    "用一句话说出兑换。带防护的智能体给出报价，拒绝超出限制的请求，并为通过 BNB Chain 屏蔽池结算而构建。",
+    "DarkSwap 是屏蔽式零知识资金池与隐私兑换产品。本次构建把它的核心带到 BNB Chain 的新 L1，那里的屏蔽池是协议的一部分。",
   navigationLabel: "黑客松页面",
   navigationTechnicalPage: "技术页面",
   navigationCode: "代码",
   otherLanguage: { locale: "en", label: "English" },
-  heroTitle: "说出你的兑换，智能体守住底线。",
+  heroTitle: "隐私兑换，构建于 BNB 的屏蔽池之上。",
   heroBody:
-    "DarkSwap on BNB 是一个兑换智能体：它读懂一句普通的话，给出报价，并拒绝任何超出限制的请求。它目前运行在 BNB 智能链上，并为通过 BNB Chain 新 L1 的屏蔽池结算而构建。",
+    "DarkSwap 是屏蔽式零知识资金池与隐私兑换产品，已在 Solana 上线。我们正把核心构建在 BNB Chain 的新 L1 上：那里的屏蔽池是协议的一部分，由所有应用共享。用一句话说出兑换，即可获得带防护的报价。",
   heroNote:
     "为 2026 年 11 月的 BNB Chain 黑客松而构建。这里可以体验的是公开演练，本页面上的兑换目前都不是隐私交易。",
   lineageTitle: "从紫到金",
@@ -228,7 +228,7 @@ const CHINESE: HackPageCopy = {
     },
     {
       name: "NEAR 路由",
-      body: "兑换以意图（intent）的形式经由 NEAR 传递。这里的智能体沿用同一思路：你说出想要的结果，路径由系统替你规划。",
+      body: "兑换以意图（intent）的形式经由 NEAR 传递。这里的报价沿用同一思路：你说出想要的结果，路径由系统替你规划。",
     },
     {
       name: "BNB 屏蔽",
@@ -238,31 +238,31 @@ const CHINESE: HackPageCopy = {
   ledgerTitle: "已经可用的，和仍在等待的",
   worksTodayTitle: "今天可用",
   worksToday: [
-    "智能体读取一句兑换指令，并按资金池给出报价。",
+    "读取一句兑换指令，并按资金池给出报价。",
     "硬性上限会拒绝任何超过 0.05 BNB 的请求。",
     "CoinMarketCap 价格检查会拒绝偏离市场价的报价。",
     "链上预言机防护会在兑换内部拒绝过期或偏离的价格。",
-    "其他智能体可以通过本站的 /api/mcp，以 MCP 协议调用报价。",
+    "其他工具可以通过本站的 /api/mcp，以 MCP 协议调用报价。",
     "无需密钥即可实时读取新 L1 开发网的屏蔽池。",
   ],
   waitsTitle: "等待新 L1",
   waits: [
     "隐私兑换。花费屏蔽票据需要证明工具，而 BNB Chain 尚未发布该工具。",
     "屏蔽池内除原生 BNB 以外的代币。",
-    "中继器，让发送方不必从公开地址支付 gas。",
+    "DarkSwap 中继器。中继器是屏蔽交易进入新 L1 的主要方式，运行中继器是我们计划最先迁移的核心部分。",
     "电路审计。开发网的屏蔽池尚未经过审计。",
   ],
   pathTitle: "通往 BNB 的路线",
   path: [
     {
       when: "现在",
-      title: "用智能体获取报价",
-      body: "试试上面的报价，或让你自己的智能体接入 MCP 端点。它所做的一切都是公开且有上限的。",
+      title: "获取带防护的报价",
+      body: "试试上面的报价，或让你自己的工具接入 MCP 端点。它所做的一切都是公开且有上限的。",
     },
     {
       when: "公开测试网",
       title: "屏蔽 BNB",
-      body: "通过智能体把原生 BNB 存入屏蔽池。BNB Chain 对测试网的规划目标是 2027 年第一季度。",
+      body: "通过 DarkSwap 在协议屏蔽池中存入和取出原生 BNB，并运行中继器。BNB Chain 对测试网的规划目标是 2027 年第一季度。",
     },
     {
       when: "主网",
@@ -288,12 +288,12 @@ const CHINESE: HackPageCopy = {
       { label: "超过上限的兑换", sentence: EXAMPLE_SENTENCES.overCap },
       { label: "不是兑换", sentence: EXAMPLE_SENTENCES.notASwap },
     ],
-    idleHint: `回答来自本站公开的智能体端点，不会签名，也不会发送任何交易。目前只识别英文指令，例如：${CANONICAL_SENTENCE}`,
+    idleHint: `回答来自本站公开的报价端点，不会签名，也不会发送任何交易。目前只识别英文指令，例如：${CANONICAL_SENTENCE}`,
     statusHeadlines: {
       quoted: "已报价",
       refused: "已拒绝：超过上限",
       market_refused: "已拒绝：超出市场价区间",
-      rejected: "智能体不接受这条指令",
+      rejected: "本构建不接受这条指令",
     },
     fieldSell: "卖出",
     fieldPoolQuote: "资金池报价",

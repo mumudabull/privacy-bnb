@@ -33,10 +33,10 @@ export function Hero({ status }: { status: DevnetSnapshot }) {
           settled on New L1.
         </h1>
         <p className="lede">
-          DarkSwap routes private swaps that start on Solana, through NEAR Intents. This
-          build brings that path to BNB Chain: shield native BNB into the New L1 pool,
-          swap inside one atomic call, and reshield the result. An agent can take the
-          intent as a sentence.
+          DarkSwap is a shielded zk pool and private swap, live on Solana. This build
+          brings its core to BNB Chain’s New L1, where the shielded pool is part of the
+          protocol: shield native BNB, swap inside one atomic call, and reshield the
+          result.
         </p>
         <div className="actions">
           <a className="btn primary" href="#flow">

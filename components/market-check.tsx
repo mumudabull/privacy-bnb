@@ -17,7 +17,7 @@ export async function MarketCheck() {
       <p className="section-index">06 — Market check</p>
       <h2>CoinMarketCap against the pool.</h2>
       <p className="section-lead">
-        The agent asks CoinMarketCap for BNB/USD and compares it with the rehearsal pool.
+        Each quote asks CoinMarketCap for BNB/USD and compares it with the rehearsal pool.
         One rNOTE is treated as one dollar, so rNOTE out per BNB is an implied BNB price.
         The seed pool spot is about {check.ammImpliedUsd} USD per BNB. A live print outside{" "}
         {check.maxDeviationBps} bps refuses the swap. This is a public rehearsal, not a

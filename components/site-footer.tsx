@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="wrap">
         <div className="footer-grid">
-          <div>DarkSwap on BNB · BNB Bangkok</div>
+          <div>DarkSwap on BNB · BNB Chain hackathon, November 2026</div>
           <nav className="footer-links" aria-label="Footer">
             <a href={LINKS.darkswap}>darkswap.app</a>
             <a href={LINKS.darkswapDocs}>Docs</a>

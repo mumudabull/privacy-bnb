@@ -15,7 +15,7 @@ const ITEMS = [
   },
   {
     when: "After",
-    text: "DarkSwap product work waits on those networks: ERC-20 shielding when the protocol has it, a relayer, and an agent identity pointed at a stable pool. This repo takes no fee and launches no token.",
+    text: "DarkSwap product work waits on those networks: ERC-20 shielding when the protocol has it, and a DarkSwap relayer pointed at a stable pool. This repo takes no fee and launches no token.",
   },
 ] as const;
 

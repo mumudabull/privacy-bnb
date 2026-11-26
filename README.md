@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="./docs/brand/darkswap-bnb-banner.svg" width="100%" alt="DarkSwap on BNB. Go Dark on BNB. BNB Chain New L1 preview, built at BNB Bangkok.">
+  <img src="./docs/brand/darkswap-bnb-banner.svg" width="100%" alt="DarkSwap on BNB. Go Dark on BNB. BNB Chain New L1 preview, built for the BNB Chain hackathon, November 2026.">
 </p>
 
 # DarkSwap on BNB
 
-**A trading interface for BNB Chain’s native privacy layer.** DarkSwap brings its intent-based swap experience to BNB Chain New L1. The Bangkok build reads the live shielded pool and lets judges walk through a public swap rehearsal with a capped quoting agent.
+**A shielded zk pool and private swap, building its core on BNB Chain’s native privacy layer.** DarkSwap is live on Solana, where every app-level shielded pool has to fill itself. New L1 has one shielded pool built into the protocol and shared by every app. This hackathon build reads that live pool and lets judges walk through a public swap rehearsal with a capped, guarded quote.
 
 **Live demo:** [hack.darkswap.app](https://hack.darkswap.app) · [简体中文](https://hack.darkswap.app/hack/zh) · [technical page](https://hack.darkswap.app/)
 
 [Run the demo](#run-the-demo) · [What stays public](#what-stays-public) · [HackQuest submission notes](./docs/hackquest-submission.md) · [CoinMarketCap × Atlas write-up](./docs/cmc-atlas-writeup.md)
 
-> **BNB Bangkok hackathon preview.** Pool data comes from New L1 devnet. The rehearsal runs with public amounts and cleartext notes on a local chain. Proof-backed swap settlement is the next milestone.
+> **BNB Chain hackathon preview, November 2026.** Pool data comes from New L1 devnet. The rehearsal runs with public amounts and cleartext notes on a local chain. Proof-backed swap settlement is the next milestone.
 
 ## The three-minute demo
 

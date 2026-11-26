@@ -2,12 +2,12 @@ const LAYERS = [
   {
     name: "Intent",
     detail:
-      "A sentence, the way DarkSwap already takes a route. The agent parses amount, direction, and the word “privately”.",
+      "A sentence, the way DarkSwap already takes a route. The quote parses amount, direction, and the word “privately”.",
   },
   {
-    name: "Agent",
+    name: "Quote",
     detail:
-      "ERC-8004 identity on BSC testnet via the BNBAgent SDK. Optional ERC-8183 job escrow and, later, an MCP or x402 surface.",
+      "A capped, read-only quote, checked against CoinMarketCap and served over MCP. Its endpoint is registered in the ERC-8004 registry on BSC testnet.",
   },
   {
     name: "Swap",

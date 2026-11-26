@@ -1,3 +1,11 @@
+/**
+ * File: components/bangkok.tsx
+ * Purpose: Front-page section that maps the build to the hackathon's judging
+ * criteria and links out to the event page. Visible copy names the event by
+ * chain and month only, with a date and no clock time. The file and export keep
+ * their original names so imports elsewhere hold.
+ */
+
 import { LINKS } from "@/lib/network";
 
 const CRITERIA = [
@@ -11,11 +19,11 @@ const CRITERIA = [
   },
   {
     title: "Innovation",
-    body: "atomicCall is the private swap: unshield, call a public pool, reshield. The agent takes a natural-language intent, in the line of NEAR Intents.",
+    body: "atomicCall is the private swap: unshield, call a public pool, reshield. The swap is stated as a natural-language intent, in the line of NEAR Intents.",
   },
   {
     title: "Open source and integration",
-    body: "This repository is the new code. It integrates the genesis pool at 0x…5000 and the BNBAgent SDK, and it says where the proof CLI is missing.",
+    body: "This repository is the new code. It integrates the genesis pool at 0x…5000 and the ERC-8004 registry on BSC testnet, and it says where the proof CLI is missing.",
   },
   {
     title: "Roadmap and model",
@@ -25,13 +33,13 @@ const CRITERIA = [
 
 export function Bangkok() {
   return (
-    <section className="section" id="bangkok">
-      <div className="stamp">Built at BNB Bangkok</div>
-      <h2>Built for BNB Bangkok on HackQuest.</h2>
+    <section className="section" id="judging">
+      <div className="stamp">BNB Chain hackathon · November 2026</div>
+      <h2>Built for the BNB Chain hackathon on HackQuest.</h2>
       <p className="section-lead">
-        Deadline Friday 27 November 2026, 09:00 Asia/Bangkok. The build is testnet and
-        devnet only. Production DarkSwap at darkswap.app is a separate app; this repo does
-        not replace it.
+        Submissions close on 27 November 2026. The build is testnet and devnet only.
+        Production DarkSwap at darkswap.app is a separate app; this repo does not replace
+        it.
       </p>
       <div className="criteria">
         {CRITERIA.map((item) => (
@@ -42,7 +50,7 @@ export function Bangkok() {
         ))}
       </div>
       <p className="fine">
-        <a href={LINKS.hackquest}>BNB Bangkok on HackQuest</a>
+        <a href={LINKS.hackquest}>The hackathon on HackQuest</a>
         {" · "}
         <a href={LINKS.darkswap}>darkswap.app</a>
         {" · "}

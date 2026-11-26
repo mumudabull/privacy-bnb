@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "DarkSwap on BNB",
   description:
-    "Private swaps on BNB Chain New L1. Shield native BNB, swap through atomicCall, reshield. Built at BNB Bangkok.",
+    "A shielded zk pool and private swap, building its core on BNB Chain New L1. Shield native BNB, swap through atomicCall, reshield.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "DarkSwap on BNB",

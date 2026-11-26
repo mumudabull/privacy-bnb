@@ -3,13 +3,13 @@ import { LINKS } from "@/lib/network";
 const NAV = [
   ["Flow", "/#flow"],
   ["Swap", "/swap"],
-  ["Agent", "/#agent"],
+  ["Quote", "/#quote"],
   ["Architecture", "/#architecture"],
   ["Devnet", "/#devnet"],
   ["Market", "/#market"],
   ["Why", "/#why"],
   ["Roadmap", "/#roadmap"],
-  ["Bangkok", "/#bangkok"],
+  ["Judging", "/#judging"],
   ["Hackathon build", "/hack"],
 ] as const;
 

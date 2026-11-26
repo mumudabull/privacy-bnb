@@ -44,8 +44,8 @@ export function SwapDemo() {
         </p>
         {overCap ? (
           <p className="banner">
-            Above the 0.05 BNB agent cap. A quote can still be shown. The agent will not
-            execute it until a funded testnet wallet is configured.
+            Above the 0.05 BNB execution cap. A quote can still be shown. The rehearsal
+            will not execute it until a funded testnet wallet is configured.
           </p>
         ) : null}
       </form>
