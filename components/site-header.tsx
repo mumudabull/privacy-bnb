@@ -9,6 +9,7 @@ const NAV = [
   ["Market", "/#market"],
   ["Roadmap", "/#roadmap"],
   ["Bangkok", "/#bangkok"],
+  ["Hackathon build", "/hack"],
 ] as const;
 
 export function SiteHeader() {

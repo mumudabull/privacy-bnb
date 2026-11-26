@@ -13,7 +13,9 @@ export function AgentSection() {
             quotes the pool, and refuses anything over a hard cap. Registration on BSC
             testnet is gas-free through MegaFuel. ERC-8183 can escrow a job. This
             hackathon build quotes and can execute the capped rehearsal. It does not take
-            a fee.
+            a fee. Other agents can call the quote tool over MCP at{" "}
+            <code>/api/mcp</code> on this site. That endpoint is read-only and holds no
+            key.
           </p>
           <p className="fine">
             SDK: <a href={LINKS.agentSdk}>BNB Agent SDK</a> ·{" "}
@@ -35,8 +37,10 @@ export function AgentSection() {
             </p>
           </div>
           <p className="note">
-            Example copy, not a live model call. Intents are the bridge from the NEAR
-            Intents route DarkSwap uses today.
+            Example copy, not a live model call. The command-line agent reads free-form
+            sentences with a Claude model when a key is configured; the cap and the
+            market guards still decide. Intents are the bridge from the NEAR Intents
+            route DarkSwap uses today.
           </p>
         </aside>
       </div>

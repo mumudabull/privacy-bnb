@@ -17,6 +17,7 @@ export const LINKS = {
   darkswap: "https://darkswap.app",
   darkswapDocs: "https://darkswap.app/docs",
   darkswapX: "https://x.com/darkswapapp",
+  repository: "https://github.com/mumudabull/privacy-bnb",
   hackquest: "https://www.hackquest.io/hackathons/BNB-Bangkok",
   overview: "https://docs.bnbchain.org/newl1/overview/",
   privacy: "https://docs.bnbchain.org/newl1/core-concepts/privacy/",

@@ -1,0 +1,457 @@
+/*
+ * File: app/hack/hack.css
+ * Purpose: Styles for the standalone hackathon page (/hack). Every class is
+ * prefixed with `hack-` so nothing here collides with app/globals.css.
+ *
+ * The page's one visual idea is a charge from DarkSwap lavender to BNB gold:
+ * `--hack-charge` runs from 0% to 100% with scroll position, and the accent
+ * color is mixed from it. Nothing pulses or glows; the color only moves when
+ * the reader scrolls.
+ */
+
+/* Registered so the browser can interpolate it as a percentage. */
+@property --hack-charge {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+.hack-page {
+  --hack-lavender: #cdaef8;
+  --hack-violet: #8b50e8;
+  --hack-gold: #f0b90b;
+  --hack-gold-bright: #ffd84d;
+  --hack-ink: #15100a;
+  --hack-accent: color-mix(in oklab, var(--hack-lavender), var(--hack-gold) var(--hack-charge));
+  --hack-accent-line: color-mix(in oklab, var(--hack-accent) 34%, transparent);
+  --hack-accent-wash: color-mix(in oklab, var(--hack-accent) 9%, transparent);
+  position: relative;
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-bottom: 96px;
+}
+/*
+ * A fixed gold wash rising from the bottom edge of the viewport. Its strength
+ * follows the charge, so the page ends lit in gold where it began in purple.
+ */
+.hack-page::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0 0;
+  height: 70vh;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(120% 100% at 50% 120%, rgba(240, 185, 11, 0.22), transparent 62%);
+  opacity: calc(var(--hack-charge) / 100%);
+}
+
+/* Scroll position drives the charge where the browser supports it. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hack-page {
+      animation: hack-charge-up linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+/* Full gold is reached by 60% of the scroll, so the lower half of the page is gold throughout. */
+@keyframes hack-charge-up {
+  60%, 100% { --hack-charge: 100%; }
+}
+
+/*
+ * Fallback: without scroll-driven animation, or with reduced motion, each
+ * section carries a fixed charge so the page still ends in gold.
+ */
+@supports not (animation-timeline: scroll()) {
+  .hack-hero { --hack-charge: 0%; }
+  .hack-lineage { --hack-charge: 35%; }
+  .hack-ledger { --hack-charge: 65%; }
+  .hack-path { --hack-charge: 85%; }
+  .hack-close { --hack-charge: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hack-hero { --hack-charge: 0%; }
+  .hack-lineage { --hack-charge: 35%; }
+  .hack-ledger { --hack-charge: 65%; }
+  .hack-path { --hack-charge: 85%; }
+  .hack-close { --hack-charge: 100%; }
+}
+
+.hack-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: var(--hack-charge);
+  min-height: 4px;
+  background: linear-gradient(to bottom, var(--hack-violet), var(--hack-lavender) 30%, var(--hack-gold));
+  background-size: 100% 100vh;
+  z-index: 30;
+}
+
+/* Header */
+.hack-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 0;
+}
+.hack-brand {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+.hack-brand span { color: var(--hack-accent); }
+.hack-header nav {
+  display: flex;
+  gap: 22px;
+}
+.hack-header nav a {
+  color: var(--muted);
+  font-size: 15px;
+  text-decoration: none;
+}
+.hack-header nav a:hover { color: var(--text); }
+
+/* Hero */
+.hack-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 56px;
+  align-items: start;
+  padding: 56px 0 88px;
+}
+.hack-hero h1 {
+  font-size: clamp(44px, 6.4vw, 84px);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  max-width: 11em;
+  /* The headline itself carries the transformation: lavender into gold. */
+  background: linear-gradient(170deg, var(--hack-lavender) 12%, var(--hack-gold-bright) 62%, var(--hack-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.08em;
+}
+.hack-hero-copy p {
+  margin: 26px 0 0;
+  max-width: 34rem;
+  font-size: 20px;
+  color: var(--muted);
+}
+.hack-hero-copy .hack-hero-note {
+  margin-top: 18px;
+  font-size: 16px;
+  color: var(--faint);
+  border-left: 2px solid var(--hack-accent-line);
+  padding-left: 14px;
+}
+
+/* Console */
+.hack-console {
+  border: 1px solid var(--hack-accent-line);
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--hack-accent-wash), rgba(18, 16, 24, 0.92));
+  padding: 22px;
+}
+.hack-console-form label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.hack-console-row {
+  display: flex;
+  gap: 10px;
+}
+.hack-console-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-inset);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.hack-console-row input:focus-visible {
+  outline: 2px solid var(--hack-accent);
+  outline-offset: 2px;
+}
+.hack-console-row button,
+.hack-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--hack-accent);
+  color: var(--hack-ink);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hack-console-row button:hover,
+.hack-button:hover {
+  background: color-mix(in oklab, var(--hack-accent), white 18%);
+}
+.hack-console-row button:disabled { cursor: progress; opacity: 0.75; }
+.hack-console-row button:focus-visible,
+.hack-button:focus-visible,
+.hack-console-examples button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hack-spin { animation: hack-spin 0.9s linear infinite; }
+}
+@keyframes hack-spin {
+  to { transform: rotate(360deg); }
+}
+.hack-console-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hack-console-examples button {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.hack-console-examples button:hover {
+  border-color: var(--hack-accent);
+  color: var(--text);
+}
+.hack-console-answer {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  min-height: 132px;
+}
+.hack-console-hint,
+.hack-console-error {
+  margin: 0;
+  font-size: 15px;
+  color: var(--faint);
+}
+.hack-console-error { color: var(--warn); }
+.hack-answer-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--warn);
+}
+.hack-answer[data-accepted="true"] .hack-answer-status { color: var(--hack-accent); }
+.hack-answer-reason {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+.hack-answer dl {
+  margin: 14px 0 0;
+  display: grid;
+  gap: 8px;
+}
+.hack-answer dl div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.hack-answer dt {
+  font-size: 14px;
+  color: var(--faint);
+}
+.hack-answer dd {
+  margin: 0;
+  font-size: 14px;
+}
+.hack-answer-privacy {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--faint);
+}
+
+/* Shared section rhythm */
+.hack-lineage,
+.hack-ledger,
+.hack-path,
+.hack-close {
+  padding: 72px 0;
+  border-top: 1px solid var(--hack-accent-line);
+}
+.hack-page h2 {
+  margin: 0;
+  font-size: clamp(30px, 3.8vw, 46px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+.hack-page h3 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* Lineage: three steps, each one further along the purple-to-gold mix. */
+.hack-lineage ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hack-lineage li {
+  padding: 22px 28px 4px 0;
+  border-top: 4px solid var(--hack-step-color);
+}
+.hack-lineage li:nth-child(1) { --hack-step-color: var(--hack-lavender); }
+.hack-lineage li:nth-child(2) {
+  --hack-step-color: color-mix(in oklab, var(--hack-lavender), var(--hack-gold) 50%);
+}
+.hack-lineage li:nth-child(3) { --hack-step-color: var(--hack-gold); }
+.hack-lineage h3 { color: var(--hack-step-color); }
+.hack-lineage li p {
+  margin: 10px 0 0;
+  max-width: 30ch;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+/* Ledger */
+.hack-ledger-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+  margin-top: 36px;
+}
+.hack-ledger ul {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.hack-ledger li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  font-size: 17px;
+  color: var(--muted);
+}
+.hack-ledger li svg {
+  margin-top: 4px;
+  color: var(--faint);
+}
+.hack-ledger-columns > div:first-child li svg { color: var(--hack-accent); }
+
+/* Path: a real sequence in time, so it is drawn as a line with stops. */
+.hack-path ol {
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+}
+.hack-path li {
+  position: relative;
+  padding: 28px 28px 0 0;
+  border-top: 1px solid var(--hack-accent-line);
+}
+.hack-path li::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--hack-accent);
+}
+.hack-path-when {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--hack-accent);
+}
+.hack-path li p:last-child {
+  margin: 10px 0 0;
+  max-width: 32ch;
+  font-size: 17px;
+  color: var(--muted);
+}
+.hack-path-caveat {
+  margin: 32px 0 0;
+  max-width: 44rem;
+  font-size: 15px;
+  color: var(--faint);
+}
+.hack-path-caveat a { color: var(--muted); }
+
+/* Close */
+.hack-close p {
+  margin: 14px 0 0;
+  max-width: 36rem;
+  font-size: 19px;
+  color: var(--muted);
+}
+.hack-close-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+.hack-button-quiet {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.hack-button-quiet:hover {
+  background: transparent;
+  border-color: var(--hack-accent);
+}
+
+@media (max-width: 860px) {
+  .hack-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    padding: 28px 0 64px;
+  }
+  .hack-lineage ol,
+  .hack-path ol,
+  .hack-ledger-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .hack-path li { padding-right: 0; }
+  .hack-console-row { flex-direction: column; }
+  .hack-answer dl div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
