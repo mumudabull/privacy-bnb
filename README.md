@@ -84,6 +84,10 @@ forge test
 
 See the [contract guide](./contracts/README.md) for the full Anvil walkthrough, local addresses and testnet configuration.
 
+## For judges
+
+[Before Bangkok and the Bangkok build](./docs/judges.md) covers the CoinMarketCap × Atlas addresses on BSC testnet. The DecisionLog interface is in [docs/decision-log.md](./docs/decision-log.md). That contract is not deployed.
+
 ## Built at BNB Bangkok
 
 darkswap.app: live private swaps (private routing) and Multi Exchange, with real users. The Bangkok work adds New L1 pool reads, a public swap rehearsal, capped agent quotes and price guards. The next milestone is a proof-backed native BNB flow on New L1.

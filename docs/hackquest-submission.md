@@ -30,4 +30,5 @@ The production app at darkswap.app is unchanged. This repository is the new code
 - Repository
 - Pull requests, stacked from the landing page through this guard
 - `docs/cmc-atlas-writeup.md`
+- `docs/judges.md`
 - `agent/logs/cmc-requests.jsonl` after a run with `CMC_API_KEY` (proof of the API call; the key is not in the file)
