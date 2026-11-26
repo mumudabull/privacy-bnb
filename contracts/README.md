@@ -55,7 +55,7 @@ export DEMO_RNOTE_PER_BNB=555
 forge script script/Deploy.s.sol --rpc-url bsc_testnet --broadcast
 ```
 
-Also set `ORACLE_FEED` to an AggregatorV3 you have verified. The deploy script refuses a zero address. On 25 Nov 2026 the public Atlas catalog had no BNB/USD SingleFeed on BSC testnet (chain 97). Do not paste `0xeace519ebb14fb8404fa6ddd23c3b34abade44aa`; that contract is shared by other BNB Chain pairs in the catalog and was not verified as this feed. Optional: `MAX_DEVIATION_BPS` (default 500) and `MAX_STALE_SECONDS` (default 3600).
+Also set `ORACLE_FEED`. The deploy script refuses a zero address. On BSC testnet (chain 97) use the Atlas SingleFeed BNB/USD at `0x3957d289ee9C38272377786787ea34F9dd29788D`, which the site already reads on chain (`lib/atlas.ts`). It reports 18 decimals. Optional: `MAX_DEVIATION_BPS` (default 500) and `MAX_STALE_SECONDS` (default 3600).
 
 Fund the `PRIVATE_KEY` address with **0.2 tBNB** before that command.
 
