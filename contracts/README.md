@@ -7,6 +7,7 @@ A Foundry demo of shield → swap → reshield. It is public on purpose.
 | `IShieldedPool` | Interface whose selectors match the live New L1 devnet pool at `0x0000000000000000000000000000000000005000` |
 | `DemoAMM` + `DemoToken` (`rNOTE`) | Constant-product pool, 0.30% fee. Not `$DARK` |
 | `PublicRehearsal` | Cleartext notes. No proof, no type `0x77`, not the system pool |
+| `DecisionLog` | Owner-authorized agent records a decision. It does not swap. Not deployed |
 | `script/probe-devnet.sh` | Read-only `cast` calls against the real pool |
 
 `atomicSwap` spends a BNB note, swaps to rNOTE, and records an open note. New L1 can reshield native BNB only, so that token note cannot exist inside ShieldedPool. `reshieldBnb` is the native-only step the real pool can do, still stored in the clear here.
@@ -47,11 +48,13 @@ On chain 31337 with `ORACLE_FEED` unset, the script deploys a `MockAggregator` p
 
 Stop here unless you already have a throwaway key and testnet funds. This repo does not contain a key.
 
+`AMM_BNB_LIQUIDITY` and `AMM_TOKEN_LIQUIDITY` are both wei. `DEMO_RNOTE_PER_BNB` is a whole-token ratio, not wei. When token liquidity is unset, rNOTE wei equals BNB wei times that ratio. For 0.05 BNB and 555 that is `27750000000000000000` wei (27.75 rNOTE). An earlier version divided the product by `1 ether`, which minted 27 wei. The BSC testnet pool was seeded by setting `AMM_TOKEN_LIQUIDITY` to that wei value. The explicit override is still wei and is not scaled again.
+
 ```bash
 export PRIVATE_KEY=0x...   # not committed
-export AMM_BNB_LIQUIDITY=50000000000000000      # 0.05 tBNB seeded into the AMM
-export DEMO_RNOTE_PER_BNB=555
-# token liquidity defaults to BNB liquidity times 555, so 0.05 BNB seeds 27.75 rNOTE
+export AMM_BNB_LIQUIDITY=50000000000000000      # wei. 0.05 tBNB
+export DEMO_RNOTE_PER_BNB=555                    # whole rNOTE per 1 BNB
+# optional: export AMM_TOKEN_LIQUIDITY=27750000000000000000
 forge script script/Deploy.s.sol --rpc-url bsc_testnet --broadcast
 ```
 
@@ -64,14 +67,14 @@ export DEMO_RNOTE_PER_BNB=555
 forge script script/Deploy.s.sol --rpc-url https://bsc-testnet-dataseed.bnbchain.org --broadcast
 ```
 
-This command was not run here. The wallet key is not on this machine.
+The wallet key is not in this repo. The rehearsal addresses already on BSC testnet are listed below. DecisionLog is not among them.
 
 Fund the `PRIVATE_KEY` address with **0.2 tBNB** before that command.
 
 - 0.05 tBNB is locked as AMM liquidity.
 - The deploy used about 2,006,377 gas in a local run. At 10 gwei that is about 0.02 tBNB. New L1 charges the declared gas limit, so the same transaction can cost more than gas-used.
 - 0.01 tBNB is enough for one demo swap under the agent cap.
-- 0.2 tBNB covers those three with room. The script default without `AMM_BNB_LIQUIDITY` is 10 tBNB of liquidity, which a faucet will not supply.
+- 0.2 tBNB covers those three with room. The script default without `AMM_BNB_LIQUIDITY` is 10 tBNB of BNB liquidity and `10 ether * 555` wei of rNOTE (5,550 rNOTE). A faucet will not supply the 10 tBNB default.
 
 `PRIVATE_KEY` is the only signer variable. BSC testnet is chain id 97. Get tBNB from the [BSC faucet](https://www.bnbchain.org/en/testnet-faucet). RPC name in `foundry.toml`: `bsc_testnet`.
 
@@ -79,7 +82,19 @@ New L1 devnet (chain id 1105) has no faucet. Bridge that same tBNB from BSC test
 
 `DemoFlow` quotes the AMM and passes that amount as `minOut`. A worse fill reverts. `MIN_OUT_WEI` overrides the quote.
 
-This environment did not have `PRIVATE_KEY` or a funded deployer, so nothing was deployed to BSC testnet or New L1.
+`DecisionLog` has its own script, [DeployDecisionLog.s.sol](./script/DeployDecisionLog.s.sol). It is not deployed. Set `DECISION_LOG_AGENT` to the address that may call `record`. The signer becomes the owner. The interface is in [docs/decision-log.md](../docs/decision-log.md). Run that script from a funded local wallet when you want it on chain.
+
+BSC testnet (chain 97) rehearsal deployment. rNOTE's total supply is `27750000000000000000` wei, the explicit liquidity passed at deploy.
+
+| Contract | Address |
+| --- | --- |
+| PublicRehearsal | [`0x8341dC4948FfCecd7dc5cDA1366f3DC55AC24258`](https://testnet.bscscan.com/address/0x8341dC4948FfCecd7dc5cDA1366f3DC55AC24258) |
+| DemoAMM | [`0x7C5Cd03B1e554675b146844B7C8Ff3DE20F0Db2E`](https://testnet.bscscan.com/address/0x7C5Cd03B1e554675b146844B7C8Ff3DE20F0Db2E) |
+| rNOTE | [`0x9Df7CC1878B45E69A421c2476C00B99E45d68bb7`](https://testnet.bscscan.com/address/0x9Df7CC1878B45E69A421c2476C00B99E45d68bb7) |
+| Atlas BNB/USD | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D) |
+| ERC-8004 registry, agent 2930 | [`0x8004A818BFB912233c491871b3d84c89A494BD9e`](https://testnet.bscscan.com/address/0x8004A818BFB912233c491871b3d84c89A494BD9e) |
+
+Guarded swap, 41 bps gap: [`0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca`](https://testnet.bscscan.com/tx/0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca).
 
 A local anvil run of the scripts above (chain id 31337, ephemeral) produced:
 

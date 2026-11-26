@@ -9,7 +9,8 @@ Oracle-guarded public rehearsal of a private swap. Built for BNB Bangkok, Develo
 | ShieldedPool, read-only | New L1 devnet, chain 1105 | `0x0000000000000000000000000000000000005000` |
 | Auth verifier, documented | New L1 devnet | `0x0000000000000000000000000000000000005003` |
 | ERC-8004 agent id 2930 | BSC testnet, chain 97 | registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`, owner `0x57f37b891980616e76ED2f650e7e38BeAFd59084`, [tx](https://testnet.bscscan.com/tx/0xb1e4d02d93129995dfb26f1fed3f2c2ad9eeac997c8d0b9a2d889e1a564b6a00) |
-| Public rehearsal | Not deployed | Needs `PRIVATE_KEY` and 0.2 tBNB. `ORACLE_FEED` defaults on chain 97 |
+| Public rehearsal | BSC testnet, chain 97 | [PublicRehearsal](https://testnet.bscscan.com/address/0x8341dC4948FfCecd7dc5cDA1366f3DC55AC24258), [DemoAMM](https://testnet.bscscan.com/address/0x7C5Cd03B1e554675b146844B7C8Ff3DE20F0Db2E), [rNOTE](https://testnet.bscscan.com/address/0x9Df7CC1878B45E69A421c2476C00B99E45d68bb7). Guarded swap, 41 bps gap: [tx](https://testnet.bscscan.com/tx/0x8e50e2af0598310885023e424abe8025c3695b23747f927637673e8ad6c84fca) |
+| DecisionLog | Not deployed | Interface in [docs/decision-log.md](./decision-log.md). Run `DeployDecisionLog.s.sol` from a local wallet |
 | Atlas BNB/USD | BSC testnet, chain 97 | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D). Confirmed by the Atlas team, read on chain. 18 decimals. Upgradeable proxy. |
 
 The BSC testnet deploy script uses that feed when `ORACLE_FEED` is unset. Local Anvil still deploys a `MockAggregator` at the pool spot. The guard reads `decimals()` from the feed, so an 18 decimal answer is not treated as an 8 decimal one. `roundId` 1 is a normal round. A round older than `MAX_STALE_SECONDS` (default 1 hour) reverts.
