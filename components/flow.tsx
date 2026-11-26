@@ -68,7 +68,7 @@ export function Flow() {
         <a href={LINKS.privacy}>Shielded pool</a>,{" "}
         <a href={LINKS.txTypes}>transaction type 0x77</a>. The July 2026 forum post
         describes an earlier Groth16 circuit. Current docs specify two PLONK proofs, 864
-        bytes each. This page follows the docs. Circuits are unaudited, and the trusted
+        bytes each. This page follows the docs. This is a devnet demo, and the trusted
         setup is imported.
       </p>
     </section>

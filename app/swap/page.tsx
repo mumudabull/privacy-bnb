@@ -45,7 +45,7 @@ export default async function SwapPage() {
             <article className="stat-card">
               <span>Real pool shielded</span>
               <strong>{pool.ok ? `${formatBnb(pool.totalShieldedWei)} BNB` : "—"}</strong>
-              <em>devnet native BNB, unaudited</em>
+              <em>Devnet demo, native BNB</em>
             </article>
             <article className="stat-card">
               <span>This demo</span>

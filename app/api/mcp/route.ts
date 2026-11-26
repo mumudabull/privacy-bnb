@@ -6,8 +6,9 @@
  * ERC-8004 registration, so other agents and explorers can call quote_swap.
  */
 
-import { readQuoteMarket } from "@/lib/quote-market";
+import { stringifyJson } from "@/lib/json";
 import { handleMcpMessage, parseErrorResponse } from "@/lib/mcp-server";
+import { readQuoteMarket } from "@/lib/quote-market";
 
 // readMarketCheck uses node:crypto and node:fs, so this cannot run on the edge runtime.
 export const runtime = "nodejs";
@@ -22,7 +23,7 @@ const RESPONSE_HEADERS = {
 } as const;
 
 function jsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), { status, headers: RESPONSE_HEADERS });
+  return new Response(stringifyJson(body), { status, headers: RESPONSE_HEADERS });
 }
 
 /**
