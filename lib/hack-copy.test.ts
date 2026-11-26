@@ -88,8 +88,11 @@ describe("hackathon page copy", () => {
     assert.equal(chinese.console.demoBadge, "只读报价");
     assert.equal(english.console.demoFallback, "The quote endpoint did not answer. Nothing was sent.");
     assert.equal(chinese.console.demoFallback, "报价端点没有响应。没有发送任何交易。");
+    assert.equal(english.console.rateLimited, "Too many quotes. Wait a moment and try again. Nothing was sent.");
+    assert.equal(chinese.console.rateLimited, "报价次数过多。请稍等再试。没有发送任何交易。");
     assert.doesNotMatch(english.console.demoFallback, /\d/);
     assert.doesNotMatch(chinese.console.demoFallback, /\d/);
+    assert.doesNotMatch(`${english.console.rateLimited} ${chinese.console.rateLimited}`, /\d|—|not live/i);
     assert.doesNotMatch(english.console.demoFallback, /market data feed/i);
     assert.doesNotMatch(chinese.console.demoFallback, /市场数据源/);
   });
@@ -213,46 +216,43 @@ describe("hackathon page copy", () => {
     );
     assert.deepEqual(
       english.agents.chains.map((chain) => chain.name),
-      ["BNB testnet"],
+      ["BNB testnet", "Solana", "NEAR"],
     );
     assert.deepEqual(
       chinese.agents.chains.map((chain) => chain.name),
-      ["BNB 测试网"],
+      ["BNB 测试网", "Solana", "NEAR"],
     );
     assert.deepEqual(
       english.agents.chains.map((chain) => chain.status),
-      ["Live (testnet)"],
+      ["Live (testnet)", "Launching soon", "Launching soon"],
     );
     assert.deepEqual(
       chinese.agents.chains.map((chain) => chain.status),
-      ["已上线（测试网）"],
+      ["已上线（测试网）", "即将上线", "即将上线"],
     );
     assert.deepEqual(
       english.agents.chains.map((chain) => chain.state),
-      ["live"],
+      ["live", "soon", "soon"],
     );
     assert.deepEqual(
       chinese.agents.chains.map((chain) => chain.state),
       english.agents.chains.map((chain) => chain.state),
     );
-    const framing = [
-      english.heroSubline,
-      chinese.heroSubline,
-      english.agents.intro,
-      chinese.agents.intro,
+    const heroFraming = [english.heroSubline, chinese.heroSubline, english.agents.intro, chinese.agents.intro].join(
+      " ",
+    );
+    assert.doesNotMatch(heroFraming, /not live|launching soon|across Solana/i);
+    assert.doesNotMatch(heroFraming, /尚未上线|即将/);
+    const chainFraming = [
       ...english.agents.chains.map((chain) => `${chain.name} ${chain.status}`),
       ...chinese.agents.chains.map((chain) => `${chain.name} ${chain.status}`),
     ].join(" ");
-    assert.doesNotMatch(framing, /not live|launching soon|across Solana/i);
-    assert.doesNotMatch(framing, /尚未上线|即将/);
-    assert.doesNotMatch(
-      english.agents.chains.map((chain) => chain.name).join(" "),
-      /Solana|NEAR/,
-    );
-    assert.doesNotMatch(
-      chinese.agents.chains.map((chain) => chain.name).join(" "),
-      /Solana|NEAR/,
-    );
+    assert.doesNotMatch(chainFraming, /not live/i);
+    assert.doesNotMatch(chainFraming, /尚未上线/);
+    assert.match(chainFraming, /Solana/);
+    assert.match(chainFraming, /NEAR/);
+    assert.match(chainFraming, /Launching soon/);
+    assert.match(chainFraming, /即将上线/);
   });
 
   it("links each language to the other", () => {
