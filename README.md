@@ -34,19 +34,21 @@
 
 ## Why DarkSwap
 
-Shielded liquidity is fragmented across small pools, so anonymity sets stay thin and moving between them leaks.
+**One deep shielded pool instead of fifty shallow ones.**
 
-[DefiLlama](https://defillama.com/protocols/privacy) tracks 55 privacy protocols with $763.5m TVL, about 98% in Tornado Cash, Railgun, and Zama. Zcash shielded supply is split across four pools ([Atlas ZEC](https://www.atlaszec.com/shielded.html)). On Solana, Privacy Cash is about $1.18m ([DefiLlama](https://defillama.com/protocol/privacy-cash)), and Elusiv shut down on 29 Feb 2024 ([Elusiv](https://medium.com/elusiv-privacy/sunsetting-elusiv-transitioning-towards-the-future-of-privacy-and-confidentiality-0b078e9bcfac)). 17.65% of Railgun withdrawals are linkable ([arXiv 2606.25926](https://arxiv.org/abs/2606.25926)). 95.81% of bridge withdrawals were matched from public logs ([arXiv 2409.04937](https://arxiv.org/abs/2409.04937)).
+- 17.65% of Railgun withdrawals are linkable. [arXiv 2606.25926](https://arxiv.org/abs/2606.25926)
+- 95.81% of bridge withdrawals matched from public logs. [arXiv 2409.04937](https://arxiv.org/abs/2409.04937)
+- Solana's largest shielded pool holds about $1.18m. Zcash splits its shielded supply across four pools. [DefiLlama](https://defillama.com/protocol/privacy-cash), [Atlas ZEC](https://www.atlaszec.com/shielded.html)
 
-NEAR Intents has routed $41.25B across 39 chains, including BNB ([NEAR Stats](https://nearstats.org/)). New L1 says atomicCall privacy comes from "the set of other users doing the same kind of operation" ([BNB Chain docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)).
+Small, split pools mean thin anonymity sets, and every hop between them leaks.
 
-DarkSwap funnels assets from any chain, through an intent, into one BNB New L1 shielded pool, where the ERC-8004 agent swaps with atomicCall without leaving that pool. **One deep shielded pool instead of fifty shallow ones.**
+**Live.** The private swap step is one atomicCall on New L1, about 1.01m gas against a mock DEX ([BNB forum](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481)). The preview pool is native BNB, so the funnel lands assets as BNB notes.
 
-That funnel is the roadmap. Deposits into the pool are public today. This repository does not submit a type 0x77 proof yet. The seed pool is about 555 rNOTE per BNB so a live CoinMarketCap print can sit inside the 500 bps band. Set `DEMO_RNOTE_PER_BNB` to change it.
+**Roadmap.** DarkSwap's ERC-8004 agent (id 2930) becomes the relayer for user intents, routing liquidity from the $41.25B / 39-chain NEAR Intents network ([NEAR Stats](https://nearstats.org/)) into one New L1 pool.
 
-**Live on New L1.** atomicCall unshields, calls public DeFi, and reshields in one transaction. [BNB's post](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481) measured that at about 1,010,000 gas against a mock DEX. That call is DarkSwap's private swap step. The preview pool holds native BNB only, so the funnel lands assets as BNB notes for now. Withdrawals can never be paused by governance.
+Funnel: any chain, intent, one pool, agent. That funnel is the roadmap. No type 0x77 proof in this repo yet. Deposits are public today.
 
-**Roadmap.** New L1 relayers are the main submission path. They pay gas, hide the user's EOA, are paid with a private fee note, and cannot change the recipient or the amount. DarkSwap's ERC-8004 agent is designed to be that relayer for a user intent. ERC20 is a reserved field on BNB's roadmap.
+The seed pool is about 555 rNOTE per BNB so a live CoinMarketCap print can sit inside the 500 bps band. Set `DEMO_RNOTE_PER_BNB` to change it.
 
 ## What stays public
 

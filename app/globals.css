@@ -299,6 +299,11 @@ h1 {
   gap: 14px;
 }
 .why-funnel { grid-template-columns: repeat(4, minmax(0, 1fr)); list-style: none; padding: 0; }
+.stats.why-stats { margin-top: 28px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.why-stats a { color: var(--gold); }
+.why-lines { margin-top: 22px; display: grid; gap: 10px; max-width: 68ch; }
+.why-lines p { margin: 0; }
+.why-lines a { color: var(--gold); }
 .why-sources { margin-top: 18px; display: grid; gap: 10px; }
 .why-sources p { margin: 0; color: var(--muted); font-size: 15px; }
 .why-sources a { color: var(--gold); }
@@ -542,7 +547,7 @@ h1 {
 }
 
 @media (max-width: 900px) {
-  .hero, .split, .flow-grid, .why-funnel, .stats, .public-grid, .criteria { grid-template-columns: 1fr; }
+  .hero, .split, .flow-grid, .why-funnel, .stats, .stats.why-stats, .public-grid, .criteria { grid-template-columns: 1fr; }
   .arch-list li, .timeline li { grid-template-columns: 1fr; gap: 6px; }
   .header-inner { flex-wrap: wrap; padding: 10px 0; }
   .nav { margin-left: 0; width: 100%; }

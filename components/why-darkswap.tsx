@@ -1,21 +1,32 @@
 const SOURCES = {
-  llama: "https://defillama.com/protocols/privacy",
-  zcash: "https://www.atlaszec.com/shielded.html",
-  privacyCash: "https://defillama.com/protocol/privacy-cash",
-  elusiv:
-    "https://medium.com/elusiv-privacy/sunsetting-elusiv-transitioning-towards-the-future-of-privacy-and-confidentiality-0b078e9bcfac",
   railgun: "https://arxiv.org/abs/2606.25926",
   bridges: "https://arxiv.org/abs/2409.04937",
-  near: "https://nearstats.org/",
-  bnb: "https://docs.bnbchain.org/newl1/core-concepts/privacy/",
+  privacyCash: "https://defillama.com/protocol/privacy-cash",
+  zcash: "https://www.atlaszec.com/shielded.html",
   forum: "https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481",
+  near: "https://nearstats.org/",
 } as const;
 
+const CARDS = [
+  {
+    figure: "17.65%",
+    body: "of Railgun withdrawals are linkable.",
+    href: SOURCES.railgun,
+    label: "arXiv 2606.25926",
+  },
+  {
+    figure: "95.81%",
+    body: "of bridge withdrawals matched from public logs.",
+    href: SOURCES.bridges,
+    label: "arXiv 2409.04937",
+  },
+] as const;
+
 const STEPS = [
-  { num: "01", title: "Any chain", body: "Assets start wherever the user already holds them." },
-  { num: "02", title: "Intent", body: "A sentence names the swap. The route is an intent, not a new pool." },
-  { num: "03", title: "One shielded pool", body: "Value is meant to settle in the New L1 shielded pool, not in a side pool." },
-  { num: "04", title: "Agent swap", body: "The ERC-8004 agent calls atomicCall and the funds stay in that pool." },
+  { num: "01", title: "Any chain", body: "Assets start where they are." },
+  { num: "02", title: "Intent", body: "A sentence, not a new pool." },
+  { num: "03", title: "One pool", body: "BNB notes on New L1." },
+  { num: "04", title: "Agent", body: "The relayer for the swap." },
 ] as const;
 
 export function WhyDarkswap() {
@@ -23,12 +34,40 @@ export function WhyDarkswap() {
     <section className="section" id="why">
       <p className="section-index">Why DarkSwap</p>
       <h2>One deep shielded pool instead of fifty shallow ones.</h2>
+      <div className="stats why-stats">
+        {CARDS.map((card) => (
+          <article className="stat-card" key={card.figure}>
+            <strong>{card.figure}</strong>
+            <em>
+              {card.body} <a href={card.href}>{card.label}</a>
+            </em>
+          </article>
+        ))}
+        <article className="stat-card">
+          <strong>$1.18m</strong>
+          <em>
+            Solana&apos;s largest shielded pool. Zcash splits its shielded supply across four pools.{" "}
+            <a href={SOURCES.privacyCash}>DefiLlama</a>
+            {", "}
+            <a href={SOURCES.zcash}>Atlas ZEC</a>
+          </em>
+        </article>
+      </div>
       <p className="section-lead">
-        Shielded liquidity is split across dozens of small pools on Ethereum, Solana, and
-        Zcash. Each anonymity set is thin, and moving between them leaks. DarkSwap is the
-        plan to funnel assets from any chain, through intents, into one BNB New L1 pool,
-        where an agent swaps without leaving it.
+        Small, split pools mean thin anonymity sets, and every hop between them leaks.
       </p>
+      <div className="why-lines">
+        <p>
+          <strong>Live.</strong> The private swap step is one atomicCall on New L1, about 1.01m gas
+          against a mock DEX (<a href={SOURCES.forum}>BNB forum</a>). The preview pool is native BNB,
+          so the funnel lands assets as BNB notes.
+        </p>
+        <p>
+          <strong>Roadmap.</strong> DarkSwap&apos;s ERC-8004 agent (id 2930) becomes the relayer for
+          user intents, routing liquidity from the $41.25B / 39-chain NEAR Intents network (
+          <a href={SOURCES.near}>NEAR Stats</a>) into one New L1 pool.
+        </p>
+      </div>
       <ol className="flow-grid why-funnel">
         {STEPS.map((step) => (
           <li className="step" key={step.num}>
@@ -39,47 +78,8 @@ export function WhyDarkswap() {
         ))}
       </ol>
       <p className="fine">
-        This funnel is the roadmap. Pool deposits are public today, and this repo does
-        not yet submit a type 0x77 proof. The agent and the public rehearsal are what
-        runs now.
+        Roadmap funnel. No type 0x77 proof in this repo yet. Deposits are public today.
       </p>
-      <div className="why-sources">
-        <p>
-          <strong>Live on New L1.</strong> atomicCall unshields, calls public DeFi, and
-          reshields in one transaction.{" "}
-          <a href={SOURCES.forum}>BNB&apos;s post</a> measured that at about 1,010,000 gas
-          against a mock DEX. That call is DarkSwap&apos;s private swap step. The preview
-          pool holds native BNB only, so the funnel lands assets as BNB notes for now.
-          Withdrawals can never be paused by governance.
-        </p>
-        <p>
-          <strong>Roadmap.</strong> New L1 relayers are the main submission path. They pay
-          gas, hide the user&apos;s EOA, are paid with a private fee note, and cannot change
-          the recipient or the amount. DarkSwap&apos;s ERC-8004 agent is designed to be that
-          relayer for a user intent. ERC20 is a reserved field on BNB&apos;s roadmap.
-        </p>
-        <p>
-          <a href={SOURCES.llama}>DefiLlama</a> tracks 55 privacy protocols with $763.5m
-          TVL, about 98% of it in Tornado Cash, Railgun, and Zama.
-        </p>
-        <p>
-          Zcash shielded supply is split across four pools (
-          <a href={SOURCES.zcash}>Atlas ZEC</a>). Solana&apos;s largest pool, Privacy Cash,
-          is about $1.18m (<a href={SOURCES.privacyCash}>DefiLlama</a>). Elusiv shut down
-          on 29 Feb 2024 (<a href={SOURCES.elusiv}>Elusiv</a>).
-        </p>
-        <p>
-          17.65% of Railgun withdrawals are linkable (
-          <a href={SOURCES.railgun}>arXiv 2606.25926</a>). 95.81% of bridge withdrawals
-          were matched from public logs (<a href={SOURCES.bridges}>arXiv 2409.04937</a>).
-        </p>
-        <p>
-          NEAR Intents has routed $41.25B across 39 chains, including BNB (
-          <a href={SOURCES.near}>NEAR Stats</a>). On New L1, atomicCall privacy comes from
-          &quot;the set of other users doing the same kind of operation&quot; (
-          <a href={SOURCES.bnb}>BNB Chain docs</a>).
-        </p>
-      </div>
     </section>
   );
 }
