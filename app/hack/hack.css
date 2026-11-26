@@ -305,8 +305,10 @@
   align-items: stretch;
 }
 /*
- * Near-white paragraph prompt. About five rows stay visible. The border and
- * the focus ring sit on the white field so they read on the dark console.
+ * Dark paragraph prompt. Same inset field as the rest of the site, on both
+ * /hack and /hack/zh. color-scheme keeps the caret, scrollbar, and resize
+ * handle on that dark field instead of the browser's light form controls.
+ * About five rows stay visible.
  */
 .hack-prompt {
   display: flex;
@@ -316,11 +318,12 @@
   min-width: 0;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid #b7aea3;
-  background: #f7f4ee;
-  color: #1a140c;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-inset);
+  color: var(--text);
+  color-scheme: dark;
 }
-.hack-prompt svg { color: #5b3a9e; flex: 0 0 auto; margin-top: 3px; }
+.hack-prompt svg { color: var(--accent); flex: 0 0 auto; margin-top: 3px; }
 .hack-prompt textarea {
   flex: 1 1 auto;
   min-width: 0;
@@ -331,20 +334,20 @@
   border-radius: 0;
   resize: vertical;
   background: transparent;
-  color: #1a140c;
+  color: var(--text);
   font-family: var(--mono);
   font-size: 17px;
   line-height: 1.45;
-  caret-color: #1a140c;
+  caret-color: var(--text);
 }
 .hack-prompt textarea::placeholder {
-  color: #4e463e;
+  color: var(--muted);
   opacity: 1;
 }
 .hack-prompt:focus-within {
-  outline: 3px solid #8b50e8;
+  outline: 3px solid var(--accent-deep);
   outline-offset: 2px;
-  border-color: #5b3a9e;
+  border-color: var(--accent);
 }
 .hack-prompt textarea:focus,
 .hack-prompt textarea:focus-visible {
