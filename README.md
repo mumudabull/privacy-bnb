@@ -40,13 +40,17 @@ Shielded liquidity is fragmented across small pools, so anonymity sets stay thin
 
 NEAR Intents has routed $41.25B across 39 chains, including BNB ([NEAR Stats](https://nearstats.org/)). New L1 says atomicCall privacy comes from "the set of other users doing the same kind of operation" ([BNB Chain docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)).
 
-DarkSwap funnels assets from any chain, through an intent, into one BNB New L1 shielded pool, where the ERC-8004 agent swaps with atomicCall without leaving that pool. **One deep shielded pool instead of fifty shallow ones.**
+**One shared pool for native BNB.** DarkSwap’s roadmap is to route supported assets into native BNB, bridge that BNB from BSC to New L1, then deposit it to create a shielded BNB note. The native bridge and shielded pool both handle BNB today. ERC-20/BEP-20 shielding and a per-asset compliance hook are on the New L1 roadmap. [Bridge docs](https://docs.bnbchain.org/newl1/developers/cross-chain-bridge/) · [Shielded pool docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)
 
-That funnel is the roadmap. Deposits into the pool are public today. This repository does not submit a type 0x77 proof yet. The seed pool is about 555 rNOTE per BNB so a live CoinMarketCap print can sit inside the 500 bps band. Set `DEMO_RNOTE_PER_BNB` to change it.
+**The next role for the agent is relaying.** Today the ERC-8004 agent quotes swaps and applies trade limits. In the proposed flow, users authorize a spend and generate its proofs with tooling such as `newl1-shield`. The agent submits the authorized call from its own address, pays the transaction gas and receives a private fee note. The user’s address stays off the outer relay transaction. The relayer can still see network metadata, and New L1 also supports direct `0x77` submission. [New L1 submission paths](https://docs.bnbchain.org/newl1/core-concepts/privacy/#flows)
+
+**The swap step is `atomicCall`.** It unshields into a public DeFi call and reshields the return in one transaction. The July 2026 New L1 forum post measured **about 1.01 million gas** against a mock DEX on the earlier Groth16 design. It projected **about 740 atomic calls per second** as a theoretical ceiling using 200 ms blocks and a 150M block gas limit. The current docs describe PLONK, and the Bangkok build runs a public rehearsal. [Forum measurements and projections](https://forum.bnbchain.org/t/introducing-the-new-l1-native-privacy-layer/5481) · [Current privacy docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)
+
+The demo seed pool is about 555 rNOTE per BNB. Set `DEMO_RNOTE_PER_BNB` to change it.
 
 ## What stays public
 
-In the **intended New L1 flow**, the deposit exposes the depositor, amount and asset. The atomic call reveals the swap target, calldata and input and output amounts. The reshielded open note can keep its owner private while its amount and asset remain visible. The devnet pool currently shields native BNB. The demo’s `rNOTE` is a local test token. [New L1 shielded pool docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)
+In the **intended New L1 flow**, the deposit exposes the depositor, amount and asset. The atomic call reveals the swap target, calldata and input and output amounts. The reshielded open note can keep its owner private while its amount and asset remain visible. Governance can pause new ShieldedPool deposits. Withdrawals stay available under that pause. The devnet pool currently shields native BNB. The demo’s `rNOTE` is a local test token. [New L1 shielded pool docs](https://docs.bnbchain.org/newl1/core-concepts/privacy/)
 
 ## Run the demo
 
