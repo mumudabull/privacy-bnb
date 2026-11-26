@@ -1,6 +1,7 @@
 import os
 
-from darkswap_agent.intent import IntentError, SwapIntent, parse_intent
+from darkswap_agent.intent import IntentError, SwapIntent
+from darkswap_agent.interpreter import interpret_intent
 from darkswap_agent.market import describe_market, fetch_cmc, implied_bnb_usd_wei
 from darkswap_agent.quote import (
     DEMO_RESERVE_BNB,
@@ -15,10 +16,13 @@ EXECUTABLE_ASSETS = {"rnote", "the demo token"}
 
 
 def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
+    # The model, when used, only fills in amount, asset, and privacy flag.
+    # Every limit below is applied to the validated intent by this code.
     try:
-        intent = parse_intent(text)
+        interpreted = interpret_intent(text)
     except IntentError as error:
         return {"status": "rejected", "reason": str(error), "privacy": PRIVACY_LINE}
+    intent = interpreted.intent
 
     cap = _cap_wei()
     quoted = quote_exact_in(intent.amount_wei, DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN)
@@ -28,6 +32,7 @@ def handle_intent(text: str, *, execute: bool = False) -> dict[str, object]:
         "amount_wei": intent.amount_wei,
         "asset_out": intent.asset_out,
         "private_requested": intent.private,
+        "parser": interpreted.describe(),
         "quote_rnote": format_units(quoted),
         "quote_rnote_wei": quoted,
         "execution_cap_bnb": format_units(cap),

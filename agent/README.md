@@ -37,3 +37,13 @@ Registration uses `bnbagent` 0.5.1 on `bsc-testnet` (chain 97). The SDK preset r
 ## MCP
 
 `python3 -m darkswap_agent mcp` speaks newline-delimited JSON-RPC (MCP stdio, 2024-11-05): `initialize`, `tools/list`, and `tools/call` for `quote_swap`. The tool quotes, calls CoinMarketCap when `CMC_API_KEY` is set, and applies the cap. It does not broadcast and it does not take an x402 payment. A quote whose implied BNB price is outside `CMC_MAX_DEVIATION_BPS` (default 500) returns `market_refused`. Each CMC call appends one line to `logs/cmc-requests.jsonl` (or `CMC_LOG_PATH`) with the price and the response sha256, and without the key. Execution only proceeds for rNOTE, and the on-chain swap uses the live pool quote as its minimum output. The contract also enforces an AggregatorV3 deviation and staleness guard. ERC-8183 escrow is the SDK’s job flow; this hackathon build stops at identity-ready registration plus the capped, market-checked quote.
+
+## Free-form sentences
+
+```bash
+pip install -r requirements.txt
+export ANTHROPIC_API_KEY=...   # never committed
+PYTHONPATH=. python3 -m darkswap_agent quote "put a twentieth of a bnb into the demo token and keep it hidden"
+```
+
+`interpreter.py` tries the fixed pattern first, so the canonical sentence never calls the model. Any other sentence is sent to Claude (`DARKSWAP_INTENT_MODEL`, default `claude-haiku-5-5`) with one forced tool call that returns a rejection code, an amount in BNB, an asset name, and a privacy flag. Each field is validated before use, and a reading that fails validation is rejected, not repaired. The model cannot set the cap, a price, or a recipient; those are decided by `service.py` after the reading. The result carries `"parser": {"kind": "pattern"}` or `{"kind": "model", "model": "..."}`. Without a key the agent behaves exactly as before.

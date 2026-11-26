@@ -12,11 +12,14 @@ from darkswap_agent.service import handle_intent
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 _SAVED_CMC_KEY = os.environ.pop("CMC_API_KEY", None)
+_SAVED_ANTHROPIC_KEY = os.environ.pop("ANTHROPIC_API_KEY", None)
 
 
 def tearDownModule() -> None:
     if _SAVED_CMC_KEY is not None:
         os.environ["CMC_API_KEY"] = _SAVED_CMC_KEY
+    if _SAVED_ANTHROPIC_KEY is not None:
+        os.environ["ANTHROPIC_API_KEY"] = _SAVED_ANTHROPIC_KEY
 
 
 class IntentTests(unittest.TestCase):

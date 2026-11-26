@@ -30,6 +30,7 @@ Live status is read from `https://newl1-devnet-rpc.bnbchain.org/` (chain id, lat
 | Shield → atomicCall → reshield as a user flow | Specified from the docs. This page does not submit it |
 | Privacy of a swap | Not claimed here. Circuits are unaudited. Proofs need the `newl1-shield` CLI, which has no public repo |
 | Agent quote, cap, and MCP tool | Real. `swap 0.1 bnb…` is quoted and refused at 0.05 BNB. `quote_swap` answers over stdio and over HTTPS at `/api/mcp` on the deployed site |
+| Free-form intent reading | Implemented in the Python agent. With `ANTHROPIC_API_KEY` set, a sentence the pattern cannot parse is read by Claude (`claude-haiku-5-5` by default) through one forced tool call. Tested against the SDK with a stub server. No live API call was made in this environment |
 | Agent execution | Real against the public rehearsal on a local anvil, under the cap. Not a shielded transfer |
 | ERC-8004 registration | Script is ready (`bnbagent` 0.5.1, BSC testnet registry `0x8004A818BFB912233c491871b3d84c89A494BD9e`). It publishes the hosted MCP endpoint, so it needs `AGENT_PUBLIC_URL`. Not submitted: no `PRIVATE_KEY` in this environment |
 | `PublicRehearsal` + `DemoAMM` | Simulated privacy. Real contracts, cleartext notes, tested in Foundry and run on a local anvil |
@@ -89,6 +90,15 @@ PYTHONPATH=. python3 -m unittest discover -s tests
 PYTHONPATH=. python3 -m darkswap_agent quote "swap 0.1 bnb to rNOTE privately"
 PYTHONPATH=. python3 -m darkswap_agent quote "swap 0.04 bnb to the demo token, privately"
 ```
+
+With `ANTHROPIC_API_KEY` exported, the agent also reads sentences that are not in the canonical form:
+
+```bash
+export ANTHROPIC_API_KEY=...   # your key, never committed
+PYTHONPATH=. python3 -m darkswap_agent quote "put a twentieth of a bnb into the demo token and keep it hidden"
+```
+
+The model proposes and the guards decide. The canonical sentence is parsed by a fixed pattern and never reaches the model. Any other sentence is sent to Claude, which can return only four typed fields: a rejection code, an amount in BNB, an asset name, and a privacy flag. Each field is validated in code, the sentence is passed as data and not as instructions, and the model has no field for a cap, a price, a recipient, or a transaction. The 0.05 BNB cap, the CoinMarketCap band, and the on-chain oracle guard run afterwards. The output's `parser` field says whether the pattern or the model read the sentence. The hosted `/api/mcp` endpoint is pattern-only, so a public caller cannot spend the key.
 
 The first command exits 1 after a quote: 0.1 BNB is over the 0.05 BNB cap. The second quotes about 39.72159 rNOTE and does not broadcast. `execute` broadcasts the rehearsal only when `RPC_URL`, `REHEARSAL`, and an unlocked `SENDER` are set. See `agent/README.md`.
 
