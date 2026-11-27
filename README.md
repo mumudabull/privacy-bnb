@@ -26,7 +26,7 @@
 | Capability | Network or environment | Status |
 | --- | --- | --- |
 | ShieldedPool reads | BNB Chain New L1 devnet · `1105` | Live read-only RPC integration. Pool at `0x0000000000000000000000000000000000005000`. |
-| Quote agent and spend cap | Local CLI and MCP | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://hack.darkswap.app/api/mcp`. The Python agent supports optional Claude parsing for free-form requests. |
+| Quote agent and spend cap | Local CLI, MCP, and the `agent-bnb` Vercel project | `quote_swap` is available over stdio and via the read-only HTTP endpoint at `/api/mcp`, live at `https://hack.darkswap.app/api/mcp`. The Python agent also serves `GET /health` and `POST /quote` from `agent/app.py` when the `agent-bnb` project’s Root Directory is `agent`. Optional Claude parsing is unchanged. |
 | Swap rehearsal and oracle guard | Local Anvil · `31337` | Executable public flow with a demo AMM, cleartext notes, and a mock AggregatorV3 feed. |
 | Atlas BNB/USD | BSC testnet · `97` | [`0x3957d289ee9C38272377786787ea34F9dd29788D`](https://testnet.bscscan.com/address/0x3957d289ee9C38272377786787ea34F9dd29788D). Confirmed by the Atlas team, read on chain. 18 decimals. The quote uses it with no key. |
 | CoinMarketCap BNB/USD | CoinMarketCap Pro API | Compared as well when `CMC_API_KEY` is set. With the key unset, that half of the check is skipped. |
@@ -62,7 +62,7 @@ npm install
 npm run dev
 ```
 
-Open the hackathon console in [English](http://localhost:3000/hack) or [简体中文](http://localhost:3000/hack/zh). The [technical homepage](http://localhost:3000) shows the devnet receipt, and [the swap page](http://localhost:3000/swap) provides a stand-alone rehearsal quote. The pool read and demo quote require no wallet. See [the environment template](./.env.example) for optional RPC and market-data settings. The site can be deployed to Vercel with the repo root and Next.js preset.
+Open the hackathon console in [English](http://localhost:3000/hack) or [简体中文](http://localhost:3000/hack/zh). The [technical homepage](http://localhost:3000) shows the devnet receipt, and [the swap page](http://localhost:3000/swap) provides a stand-alone rehearsal quote. The pool read and demo quote require no wallet. See [the environment template](./.env.example) for optional RPC and market-data settings. The site can be deployed to Vercel with the repo root and Next.js preset. The separate `agent-bnb` project uses Root Directory `agent`; leave this site’s Root Directory on the repository root.
 
 **Agent.** Try an over-cap request and an under-cap quote.
 

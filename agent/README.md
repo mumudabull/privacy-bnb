@@ -6,6 +6,7 @@ It does not submit a shielded proof. When it broadcasts, it broadcasts `PublicRe
 
 ```bash
 cd agent
+pip install -r requirements-dev.txt
 PYTHONPATH=. python3 -m darkswap_agent quote "swap 0.1 bnb to rNOTE privately"
 PYTHONPATH=. python3 -m darkswap_agent quote "swap 0.04 bnb to the demo token, privately"
 PYTHONPATH=. python3 -m unittest discover -s tests
@@ -21,6 +22,25 @@ PYTHONPATH=. python3 -m darkswap_agent execute "swap 0.01 bnb to rNOTE privately
 ```
 
 `SENDER` must be unlocked on that node (`anvil`, or `forge` `--unlocked`). This path does not read `PRIVATE_KEY`. A remote testnet that is not unlocked needs a signer; that signer is intentionally not built here, so a key never has to land in this process for the demo. Use `contracts/script/DemoFlow.s.sol` with `PRIVATE_KEY` for BSC testnet or New L1 once the address is funded.
+
+## HTTP
+
+`app.py` is the Vercel Python entrypoint. It exports an ASGI object named `app` (FastAPI). `pyproject.toml` sets `tool.vercel.entrypoint` to `app:app`. `GET /health` returns `{"status": "ok", "mode": "quote-only"}`. `POST /quote` takes `{"intent": "swap 0.04 bnb to rNOTE privately"}`, and `GET /quote?intent=...` takes the same sentence. Both call `handle_intent` with execution left off, so the 0.05 BNB cap and the CoinMarketCap and Atlas guard are the ones in `service.py`. A sentence over the cap comes back as `"status": "refused"` with the quote still filled in. A pool price outside the band comes back as `"status": "market_refused"`. The body is the same object the CLI prints. HTTP status 200 means the quoter ran.
+
+The CLI commands above are unchanged, including `execute`, `register`, and `mcp`.
+
+### agent-bnb on Vercel
+
+That project deploys this directory. In its project settings:
+
+- Root Directory: `agent`
+- Framework: FastAPI, or automatic detection once this directory is the root
+- Install command and output directory: leave them empty so Vercel installs `requirements.txt` and serves the Python app
+- Clear an override that still points the runtime at `darkswap_agent/__main__.py`
+
+`vercel.json` in this directory sets the function timeout and leaves tests and logs out of the bundle. It applies when the project root is `agent`. The privacy-bnb site keeps its root on the repository root, so this file is not part of that Next.js build.
+
+Optional environment variables, same names as the CLI: `CMC_API_KEY`, `CMC_MAX_DEVIATION_BPS`, `RPC_URL_BSC_TESTNET`, `ORACLE_FEED`, `ANTHROPIC_API_KEY`, `DARKSWAP_INTENT_MODEL`, `DARKSWAP_CAP_WEI`. On Vercel the market logs go to `/tmp`. An explicit `CMC_LOG_PATH` or `ATLAS_LOG_PATH` still wins.
 
 ## ERC-8004
 

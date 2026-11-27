@@ -1,0 +1,13 @@
+[project]
+name = "darkswap-agent"
+version = "0.1.0"
+requires-python = ">=3.12"
+description = "Read-only quote API for the DarkSwap agent."
+dependencies = [
+    "fastapi==0.165.0",
+    "bnbagent==0.5.1",
+    "anthropic==2.14.0",
+]
+
+[tool.vercel]
+entrypoint = "app:app"

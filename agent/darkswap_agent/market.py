@@ -45,18 +45,32 @@ def parse_bnb_usd(body: bytes) -> str | None:
     return match.group(1).decode("ascii")
 
 
-def log_path() -> Path:
-    configured = os.environ.get("CMC_LOG_PATH", "").strip()
+def _log_file(env_name: str, filename: str) -> Path:
+    configured = os.environ.get(env_name, "").strip()
     if configured:
         return Path(configured)
-    return Path(__file__).resolve().parents[1] / "logs" / "cmc-requests.jsonl"
+    # Vercel can write under /tmp. The bundle directory cannot.
+    if os.environ.get("VERCEL"):
+        return Path("/tmp") / filename
+    return Path(__file__).resolve().parents[1] / "logs" / filename
+
+
+def log_path() -> Path:
+    return _log_file("CMC_LOG_PATH", "cmc-requests.jsonl")
+
+
+def _write_jsonl(path: Path, record: dict[str, object]) -> None:
+    """Append one JSON line. A failed write must not fail the quote."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, separators=(",", ":")) + "\n")
+    except OSError:
+        return
 
 
 def _append_log(record: dict[str, object]) -> None:
-    path = log_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, separators=(",", ":")) + "\n")
+    _write_jsonl(log_path(), record)
 
 
 def fetch_cmc() -> dict[str, object] | None:
@@ -190,10 +204,7 @@ def assess_feed(round_id: int, answer: int, updated_at: int, answered_in_round: 
 
 
 def atlas_log_path() -> Path:
-    configured = os.environ.get("ATLAS_LOG_PATH", "").strip()
-    if configured:
-        return Path(configured)
-    return Path(__file__).resolve().parents[1] / "logs" / "atlas-requests.jsonl"
+    return _log_file("ATLAS_LOG_PATH", "atlas-requests.jsonl")
 
 
 def fetch_atlas(amm_price_wei: int) -> dict[str, object]:
@@ -360,8 +371,5 @@ def _eth_word(rpc: str, to: str, data: str) -> int:
 
 
 def _append_atlas(record: dict[str, object]) -> None:
-    path = atlas_log_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
     line = {"timestamp": _now(), "source": "atlas", **record}
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(line, separators=(",", ":")) + "\n")
+    _write_jsonl(atlas_log_path(), line)
