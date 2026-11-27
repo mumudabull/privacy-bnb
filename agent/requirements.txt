@@ -1,3 +1,4 @@
+Flask==3.1.3
 bnbagent==0.5.1
 # Optional. Only used when ANTHROPIC_API_KEY is set, to read free-form swap sentences.
 anthropic==2.14.0

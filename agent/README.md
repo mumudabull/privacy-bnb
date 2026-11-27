@@ -22,6 +22,45 @@ PYTHONPATH=. python3 -m darkswap_agent execute "swap 0.01 bnb to rNOTE privately
 
 `SENDER` must be unlocked on that node (`anvil`, or `forge` `--unlocked`). This path does not read `PRIVATE_KEY`. A remote testnet that is not unlocked needs a signer; that signer is intentionally not built here, so a key never has to land in this process for the demo. Use `contracts/script/DemoFlow.s.sol` with `PRIVATE_KEY` for BSC testnet or New L1 once the address is funded.
 
+## HTTP deployment
+
+The `agent-bnb` Vercel project uses `agent` as its Root Directory, the Python
+preset, and `pip install -r requirements.txt` as its Install Command.
+`app.py` exports the Flask `app` entrypoint; no custom Build Command is needed.
+
+Run locally:
+
+```bash
+cd agent
+pip install -r requirements.txt
+python3 -m flask --app app run
+```
+
+- `GET /` and `GET /health` return service health without calling upstream APIs.
+- `POST /quote` accepts only `{"intent":"swap 0.04 bnb to rNOTE privately"}`
+  (maximum 280 characters, 8 KiB request body) and returns the existing agent result.
+  Rejected/refused quotes are domain results with HTTP 200; malformed requests
+  return 400, unsupported content types 415, and oversized bodies 413.
+
+```bash
+curl http://127.0.0.1:5000/quote \
+  -H 'Content-Type: application/json' \
+  -d '{"intent":"swap 0.04 bnb to rNOTE privately"}'
+```
+
+The HTTP wrapper always uses `execute=False`; it exposes neither broadcasting
+nor registration. CLI and MCP stdio commands are unchanged. This is a quote API,
+not an MCP HTTP transport: the existing Next.js site's `/api/mcp` remains the
+registered MCP endpoint. Do not point the registration at this Python service.
+
+Market/model settings are the same as for the CLI. Live quotes depend on the
+configured RPC and optional API providers; health does not verify those providers.
+On Vercel, default CMC and Atlas request logs go to ephemeral `/tmp` files so
+quotes do not write to the read-only deployment source. Explicit `CMC_LOG_PATH`
+and `ATLAS_LOG_PATH` values are respected and must also be writable.
+The quote endpoint has no application-level authentication or distributed rate
+limit; restrict access before exposing configured paid API providers publicly.
+
 ## ERC-8004
 
 ```bash
