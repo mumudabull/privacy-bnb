@@ -1,11 +1,15 @@
 import os
 import unittest
+from pathlib import Path
 
 from darkswap_agent.market import (
+    _append_log,
     assess_feed,
+    atlas_log_path,
     deviation_bps,
     describe_market,
     implied_bnb_usd_wei,
+    log_path,
     parse_bnb_usd,
     scale_feed_answer,
     usd_to_wei,
@@ -52,3 +56,32 @@ class MarketMathTests(unittest.TestCase):
         decision = describe_market(10**18, None)
         self.assertEqual(decision["status"], "skipped")
         self.assertNotIn("response_sha256", decision)
+
+    def test_a_failed_log_write_stays_quiet(self) -> None:
+        saved = os.environ.get("CMC_LOG_PATH")
+        os.environ["CMC_LOG_PATH"] = "/dev/full"
+        try:
+            _append_log({"status": 0, "price_usd": None})
+        finally:
+            if saved is None:
+                os.environ.pop("CMC_LOG_PATH", None)
+            else:
+                os.environ["CMC_LOG_PATH"] = saved
+
+    def test_vercel_log_files_land_in_tmp(self) -> None:
+        keys = ("VERCEL", "CMC_LOG_PATH", "ATLAS_LOG_PATH")
+        saved = {key: os.environ.get(key) for key in keys}
+        os.environ["VERCEL"] = "1"
+        os.environ.pop("CMC_LOG_PATH", None)
+        os.environ.pop("ATLAS_LOG_PATH", None)
+        try:
+            self.assertEqual(log_path(), Path("/tmp/cmc-requests.jsonl"))
+            self.assertEqual(atlas_log_path(), Path("/tmp/atlas-requests.jsonl"))
+            os.environ["CMC_LOG_PATH"] = "/tmp/custom-cmc.jsonl"
+            self.assertEqual(log_path(), Path("/tmp/custom-cmc.jsonl"))
+        finally:
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value

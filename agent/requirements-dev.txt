@@ -1,0 +1,3 @@
+-r requirements.txt
+# Starlette's TestClient imports this for agent/tests/test_http.py.
+httpx2==2.16.2

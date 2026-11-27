@@ -1,3 +1,7 @@
+# Runtime dependencies for the CLI and the agent-bnb Vercel function.
+# fastapi, bnbagent, and anthropic are repeated in pyproject.toml.
 bnbagent==0.5.1
 # Optional. Only used when ANTHROPIC_API_KEY is set, to read free-form swap sentences.
 anthropic==2.14.0
+# ASGI app. Vercel loads app in app.py.
+fastapi==0.165.0
