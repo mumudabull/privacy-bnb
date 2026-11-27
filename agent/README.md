@@ -27,6 +27,8 @@ PYTHONPATH=. python3 -m darkswap_agent execute "swap 0.01 bnb to rNOTE privately
 
 `app.py` is the Vercel Python entrypoint. It exports an ASGI object named `app` (FastAPI). `pyproject.toml` sets `tool.vercel.entrypoint` to `app:app`. `GET /health` returns `{"status": "ok", "mode": "quote-only"}`. `POST /quote` takes `{"intent": "swap 0.04 bnb to rNOTE privately"}`, and `GET /quote?intent=...` takes the same sentence. Both call `handle_intent` with execution left off, so the 0.05 BNB cap and the CoinMarketCap and Atlas guard are the ones in `service.py`. A sentence over the cap comes back as `"status": "refused"` with the quote still filled in. A pool price outside the band comes back as `"status": "market_refused"`. The body is the same object the CLI prints. HTTP status 200 means the quoter ran.
 
+Each client address may quote 30 times a minute (`x-real-ip`, then `x-vercel-forwarded-for`, then `x-forwarded-for`). The 31st request is HTTP 429 with `Retry-After`, and the quoter does not run. The count is kept in this process, same window as `/api/mcp` on the site. The site's firewall rule is on the other Vercel project, so it does not cover this app. A POST body or a GET query string over 8KB is HTTP 413 and is measured before JSON parsing, so extra fields cannot widen the ceiling.
+
 The CLI commands above are unchanged, including `execute`, `register`, and `mcp`.
 
 ### agent-bnb on Vercel

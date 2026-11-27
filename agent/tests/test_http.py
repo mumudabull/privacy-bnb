@@ -4,6 +4,7 @@ Purpose: The ASGI app starts, health and quote routes answer, and the HTTP
 surface stays on the quote path. External price calls are mocked.
 """
 
+import json
 import os
 import unittest
 from unittest import mock
@@ -11,23 +12,10 @@ from unittest import mock
 from fastapi.testclient import TestClient
 
 from app import app
+from darkswap_agent.http_guard import MAXIMUM_HTTP_BODY_BYTES, reset_rate_limits
 from darkswap_agent.quote import DEMO_RESERVE_BNB, DEMO_RESERVE_TOKEN, quote_exact_in
 
-_SAVED = {key: os.environ.get(key) for key in ("DARKSWAP_POOL_SOURCE", "CMC_API_KEY", "ANTHROPIC_API_KEY")}
-
-
-def setUpModule() -> None:
-    os.environ["DARKSWAP_POOL_SOURCE"] = "seed"
-    os.environ.pop("CMC_API_KEY", None)
-    os.environ.pop("ANTHROPIC_API_KEY", None)
-
-
-def tearDownModule() -> None:
-    for key, value in _SAVED.items():
-        if value is None:
-            os.environ.pop(key, None)
-        else:
-            os.environ[key] = value
+_GUARD_ENV = ("DARKSWAP_POOL_SOURCE", "CMC_API_KEY", "ANTHROPIC_API_KEY")
 
 
 def _broadcast_env() -> dict[str, str]:
@@ -42,11 +30,22 @@ def _broadcast_env() -> dict[str, str]:
 
 class HttpAppTests(unittest.TestCase):
     def setUp(self) -> None:
+        self._saved_env = {key: os.environ.get(key) for key in _GUARD_ENV}
+        os.environ["DARKSWAP_POOL_SOURCE"] = "seed"
+        os.environ.pop("CMC_API_KEY", None)
+        os.environ.pop("ANTHROPIC_API_KEY", None)
+        reset_rate_limits()
         self.client = TestClient(app)
         self.client.__enter__()
 
     def tearDown(self) -> None:
         self.client.__exit__(None, None, None)
+        reset_rate_limits()
+        for key, value in self._saved_env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
 
     def test_health_and_index_do_not_call_the_market(self) -> None:
         with mock.patch("darkswap_agent.service.fetch_atlas") as fetch_atlas, mock.patch(
@@ -111,7 +110,7 @@ class HttpAppTests(unittest.TestCase):
         self.assertNotIn("settlement", body)
 
     def test_bad_requests_stay_out_of_the_quoter(self) -> None:
-        with mock.patch("darkswap_agent.service.handle_intent") as handle:
+        with mock.patch("app.handle_intent") as handle:
             missing = self.client.post("/quote", json={})
             numeric = self.client.post("/quote", json={"intent": 1})
             huge = self.client.post("/quote", json={"intent": "a" * (8 * 1024 + 1)})
@@ -126,6 +125,46 @@ class HttpAppTests(unittest.TestCase):
         response = self.client.post("/quote", json={"intent": "   "})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["status"], "rejected")
+
+    def test_a_long_query_string_does_not_reach_the_quoter(self) -> None:
+        with mock.patch("app.handle_intent") as handle:
+            response = self.client.get("/quote", params={"intent": "a" * (MAXIMUM_HTTP_BODY_BYTES + 1)})
+        self.assertEqual(response.status_code, 413)
+        handle.assert_not_called()
+
+    def test_padding_cannot_widen_the_body_ceiling(self) -> None:
+        payload = json.dumps(
+            {"intent": "swap 0.04 bnb to rNOTE privately", "padding": "x" * MAXIMUM_HTTP_BODY_BYTES}
+        ).encode()
+        self.assertGreater(len(payload), MAXIMUM_HTTP_BODY_BYTES)
+        with mock.patch("app.handle_intent") as handle:
+            response = self.client.post(
+                "/quote",
+                content=payload,
+                headers={"content-type": "application/json"},
+            )
+        self.assertEqual(response.status_code, 413)
+        handle.assert_not_called()
+
+    def test_each_address_may_quote_thirty_times(self) -> None:
+        quoted = {"status": "quoted"}
+        first = {"x-real-ip": "203.0.113.8"}
+        second = {"x-real-ip": "203.0.113.9"}
+        with mock.patch("darkswap_agent.http_guard.time.monotonic", return_value=1_700_000.0), mock.patch(
+            "app.handle_intent", return_value=quoted
+        ) as handle:
+            for _ in range(30):
+                allowed = self.client.post("/quote", json={"intent": "swap 0.04 bnb to rNOTE privately"}, headers=first)
+                self.assertEqual(allowed.status_code, 200)
+            blocked = self.client.post("/quote", json={"intent": "swap 0.04 bnb to rNOTE privately"}, headers=first)
+            health = self.client.get("/health")
+            other = self.client.post("/quote", json={"intent": "swap 0.04 bnb to rNOTE privately"}, headers=second)
+        self.assertEqual(blocked.status_code, 429)
+        self.assertEqual(blocked.headers["retry-after"], "60")
+        self.assertIn("Too many requests", blocked.json()["detail"])
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(other.status_code, 200)
+        self.assertEqual(handle.call_count, 31)
 
 
 if __name__ == "__main__":
